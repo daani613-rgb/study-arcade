@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}
+.lib-back{position:fixed;left:max(12px,env(safe-area-inset-left,0px));bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:50;font:700 14px system-ui,sans-serif;padding:8px 14px;border-radius:999px;background:rgba(20,20,40,.82);color:#fff;text-decoration:none}</style>
+</head><body>
+<a class="lib-back" href="../">&larr; All games</a>
+<title>Megadata Interview Quest</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800&family=Atkinson+Hyperlegible:wght@400;700&family=IBM+Plex+Mono:wght@500&family=Heebo:wght@400;600&display=swap">
+<style>
+/* Layout: a single column "implementation run": 6 stations on a pipeline track, each = cards, then a drill. Final mock interview at the end. */
+:root{
+  --bg:#eef2f1; --card:#ffffff; --ink:#15302c; --muted:#56706b; --line:#cfdcd9;
+  --accent:#0f6e64; --accent-soft:#d4ebe7; --amber:#c27a12; --amber-soft:#f8e8cc;
+  --good:#1d8a4e; --good-soft:#d8f1e2; --bad:#c23b32; --bad-soft:#f8deda;
+  --display:"Archivo","Arial Narrow",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+  --heb:"Heebo","Arial",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f1b19; --card:#172725; --ink:#e4efec; --muted:#9ab3ad; --line:#2a3f3b;
+  --accent:#4fc1b2; --accent-soft:#1b3d38; --amber:#f0ad4a; --amber-soft:#3d2c12;
+  --good:#5bd18f; --good-soft:#173a27; --bad:#ff7b70; --bad-soft:#47201c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1b19; --card:#172725; --ink:#e4efec; --muted:#9ab3ad; --line:#2a3f3b;
+  --accent:#4fc1b2; --accent-soft:#1b3d38; --amber:#f0ad4a; --amber-soft:#3d2c12;
+  --good:#5bd18f; --good-soft:#173a27; --bad:#ff7b70; --bad-soft:#47201c; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 48px}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1,h2,h3{font-family:var(--display);margin:0;line-height:1.1;text-wrap:balance}
+h1{font-size:2rem;font-weight:800;letter-spacing:-.01em} h2{font-size:1.45rem;font-weight:800} h3{font-size:1.15rem;font-weight:600}
+p{margin:0}
+.eyebrow{font-family:var(--mono);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.muted{color:var(--muted)}
+.he{font-family:var(--heb);direction:rtl;text-align:right;color:var(--muted);font-size:.95rem}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:12px}
+button{font:inherit;cursor:pointer}
+.btn{background:var(--accent);color:var(--card);border:0;border-radius:10px;padding:13px 18px;font-weight:700;min-height:48px}
+.btn.ghost{background:transparent;color:var(--accent);border:1.5px solid var(--accent)}
+.btn:focus-visible,.opt:focus-visible,.stop:focus-visible,.row:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.row-btns{display:flex;gap:10px;flex-wrap:wrap}
+.row-btns .btn{flex:1 1 140px}
+/* pipeline track */
+.track{display:flex;flex-direction:column;gap:0}
+.stop{display:grid;grid-template-columns:44px 1fr auto;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;text-align:left;color:var(--ink)}
+.node{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-family:var(--mono);font-weight:500;background:var(--accent-soft);color:var(--accent)}
+.stop.done .node{background:var(--accent);color:var(--card)}
+.pipe{width:3px;height:14px;background:var(--line);margin-left:32px}
+.stars{font-family:var(--mono);color:var(--amber);letter-spacing:2px;white-space:nowrap}
+.stop small{display:block;color:var(--muted);font-size:.85rem}
+.final{border:2px solid var(--amber);background:var(--amber-soft)}
+.final .node{background:var(--amber);color:var(--card)}
+/* cards */
+.term{font-family:var(--display);font-size:1.6rem;font-weight:800;color:var(--accent)}
+.tag{display:inline-block;font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:var(--accent-soft);color:var(--accent)}
+.tag.rec{background:var(--amber-soft);color:var(--amber)}
+.ex{border-left:3px solid var(--amber);padding-left:12px}
+.src{font-size:.8rem;color:var(--muted)}
+.progress{height:6px;background:var(--line);border-radius:4px;overflow:hidden}
+.progress i{display:block;height:100%;background:var(--accent);transition:width .3s}
+/* quiz */
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{text-align:left;background:var(--card);color:var(--ink);border:1.5px solid var(--line);border-radius:10px;padding:12px 14px;min-height:48px}
+.opt.right{border-color:var(--good);background:var(--good-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt:disabled{cursor:default}
+.fb{border-radius:10px;padding:12px 14px}
+.fb.ok{background:var(--good-soft)} .fb.no{background:var(--bad-soft)}
+/* spot table */
+.tbl-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-family:var(--mono);font-size:.82rem;font-variant-numeric:tabular-nums}
+th,td{border-bottom:1px solid var(--line);padding:8px 6px;text-align:left;white-space:nowrap}
+th{color:var(--muted);font-weight:500}
+tr.row{cursor:pointer}
+tr.row.flag td{background:var(--amber-soft)}
+tr.row.hit td{background:var(--good-soft)}
+tr.row.miss td{background:var(--bad-soft)}
+.score{font-family:var(--display);font-size:3rem;font-weight:800;color:var(--accent);font-variant-numeric:tabular-nums}
+ul.review{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap" id="app"></div>
+
+<script>
+const STATIONS = [
+{ id:"co", name:"The Company and the Role", he:"החברה והתפקיד", cards:[
+ {t:"Megadata", d:"A business-intelligence and data-analytics platform for skilled nursing and assisted living facilities. It gives dashboards and reports on clinical, financial and operational data, with data mapping and support for many data sources.", he:"פלטפורמת BI וניתוח נתונים לבתי אבות סיעודיים ולדיור מוגן.", ex:"A nursing-home group opens one dashboard and sees staffing, census and budget for all its buildings together.", src:"Capterra listing"},
+ {t:"Company facts", d:"Based in Lakewood, New Jersey. Went to market in 2018. In its funding announcement it served 700+ healthcare facilities in over 35 states, with about 20 employees.", he:"לייקווד, ניו ג'רזי. בשוק מ-2018. יותר מ-700 מוסדות ביותר מ-35 מדינות (נכון לפרסום ההוא).", ex:"Say: \"You serve 700-plus facilities, so a repeatable onboarding process matters a lot.\"", src:"TIMIA Capital case study (numbers as of that report)"},
+ {t:"SNF / ALF", d:"SNF = Skilled Nursing Facility. ALF = Assisted Living Facility. These are the two kinds of customers Megadata names.", he:"SNF = בית אבות סיעודי. ALF = דיור מוגן.", ex:"\"Do you onboard SNFs and ALFs the same way, or do ALFs have fewer data sources?\" is a smart question to ask them.", src:"Capterra listing"},
+ {t:"Implementation Specialist", d:"Connects each client's systems (payroll, accounting, HR, clinical) to Megadata, checks that the data arrives complete and correct, solves problems with the client or the software vendor, and tracks each onboarding project.", he:"מחבר את המערכות של הלקוח, בודק שהנתונים נכונים, פותר תקלות ועוקב אחרי הפרויקט.", ex:"Not a programmer and not regular customer service. A technical-operations role.", src:"From the job description you shared"}
+], qs:[
+ {q:"What does Megadata sell?", o:["Payroll software for hospitals","A BI and analytics platform for skilled nursing and assisted living","An electronic health record (EHR)","Staffing agency services"], a:1, e:"Megadata sits on top of other systems and turns their data into dashboards. It is not the EHR or the payroll system itself."},
+ {q:"In its funding announcement, about how many facilities did Megadata serve?", o:["About 70","About 700","About 7,000","About 70,000"], a:1, e:"700+ facilities in 35+ states (TIMIA Capital case study). Say \"over 700\" and note it may have grown."},
+ {q:"Which task is the core of the Implementation Specialist role?", o:["Writing the Megadata source code","Selling subscriptions","Connecting client systems and validating the data that flows in","Caring for residents"], a:2, e:"The role is connection plus validation plus troubleshooting plus project tracking."}
+]},
+{ id:"nh", name:"Nursing-Home Data", he:"עולם הנתונים של בית אבות", cards:[
+ {t:"Census", d:"How many residents are in the building on a given day. CMS calculates a daily census from MDS resident assessments: a resident counts for a day if not yet discharged on that date.", he:"מספר הדיירים בבניין ביום מסוים.", ex:"Census 100 on Monday means 100 residents were in the facility that day.", src:"CMS PBJ public-use-file documentation"},
+ {t:"PBJ (Payroll-Based Journal)", d:"The CMS system where nursing homes must submit direct-care staffing hours, including agency and contract staff, based on payroll and other auditable data. Submitted quarterly, due by the 45th day after the quarter ends. CMS uses it in the Five-Star Quality Rating.", he:"דיווח רבעוני חובה לממשל (CMS) של שעות צוות, מבוסס שכר.", ex:"If payroll job codes are mapped wrong, PBJ staffing looks wrong, and the facility's star rating can suffer.", src:"CMS PBJ page"},
+ {t:"HPRD", d:"Hours Per Resident Day: total staff hours divided by total resident days (summed daily census) for the period.", he:"שעות צוות לדייר ליום = סך השעות חלקי סך ימי הדיירים.", ex:"300 nursing hours on a day with census 100 → 3.0 HPRD.", src:"CMS PBJ public-use-file documentation"},
+ {t:"RN, LPN, CNA", d:"Nursing job categories in PBJ: Registered Nurse (code 7), Licensed Practical Nurse (code 9), Certified Nurse Aide (code 10). There are also codes for the Director of Nursing, admin RNs and LPNs, aides in training and medication aides.", he:"אחות מוסמכת, אחות מעשית, כוח עזר מוסמך.", ex:"Payroll title \"Night CNA\" must map to code 10, or those hours disappear from the CNA total.", src:"CMS PBJ public-use-file documentation"},
+ {t:"Employee vs contract hours", d:"PBJ splits every job category into employee hours and contract hours. Contract covers agency and contract staff. Only paid hours are reported.", he:"שעות של עובדי הבית מול שעות של חברת כוח אדם.", ex:"A building that leans on agency nurses will show high contract hours.", src:"CMS PBJ page and documentation"}
+], qs:[
+ {q:"A facility has 450 nursing hours on a day with a census of 150. What is the HPRD?", o:["0.33","3.0","300","4.5"], a:1, e:"450 ÷ 150 = 3.0 hours per resident day."},
+ {q:"How often is PBJ staffing data submitted to CMS?", o:["Daily","Monthly","Quarterly, within 45 days after the quarter ends","Once a year"], a:2, e:"Quarterly. Example: Q4 (July 1 to Sept 30) is due November 14."},
+ {q:"Agency nurse hours in PBJ are reported as…", o:["Not reported","Contract hours","Employee hours","Volunteer hours"], a:1, e:"Each category has employee (_emp) and contract (_ctr) hours. Agency staff are contract."},
+ {q:"What is census?", o:["The number of staff on shift","The number of residents in the building on a day","The monthly budget","The number of beds licensed"], a:1, e:"Census counts residents on a given day. Licensed beds is a different number."}
+]},
+{ id:"sys", name:"Connecting Systems", he:"חיבור מערכות", cards:[
+ {t:"Three core sources", d:"EHR (for example PointClickCare) gives census and resident movement. General ledger (for example Sage Intacct) gives budget vs actual. Timekeeping and payroll (for example Smartlinx) gives hours by role and can feed PBJ.", he:"תיק רפואי, הנהלת חשבונות, שעון ושכר.", ex:"The examples are common tools in the field. Ask Megadata which ones their clients use most.", src:"Nirmitee article on SNF data platforms"},
+ {t:"Facility crosswalk", d:"The same building often has a different name or ID in each system. A crosswalk table gives one ID per building before any numbers are rolled up.", he:"טבלת מיפוי: מזהה אחד לכל בניין בכל המערכות.", ex:"\"Oak Ridge\" in payroll, \"OakRidge SNF\" in the EHR, \"Facility 104\" in the GL: one building.", src:"Nirmitee article"},
+ {t:"Data mapping", d:"Matching each field or code in the client's system to the right field in the target system. Labor mapping means payroll job codes must map to roles, with a rule for agency hours and paid-not-worked hours.", he:"התאמה בין שדה או קוד אצל הלקוח לשדה הנכון אצלנו.", ex:"Payroll code \"RN-PRN\" → RN. \"PTO\" → paid but not worked, so not care hours.", src:"Nirmitee article"},
+ {t:"Grain", d:"The level of detail of a data set. Monthly GL data cannot explain daily staffing. A facility-day grain lets daily facts roll up to monthly finance periods.", he:"רמת הפירוט: יומי, חודשי.", ex:"You can turn daily rows into a monthly total, never the other way round.", src:"Nirmitee article"},
+ {t:"Fragile feeds", d:"Report exports can change without notice. The defense: schema checks (same columns, same types) and count checks (expected number of rows), each with a named owner for the alert.", he:"קבצי יצוא שמשתנים בלי הודעה. בודקים עמודות ומספר שורות.", ex:"A vendor renames a column and suddenly hours load as zero. A schema check catches it the same day.", src:"Nirmitee article"}
+], qs:[
+ {q:"Census and admissions/discharges usually come from which system?", o:["The general ledger","The EHR","Payroll","The bank"], a:1, e:"The EHR (like PointClickCare) holds resident movement and census."},
+ {q:"The same building appears under three different names in three systems. What do you build?", o:["A facility crosswalk with one ID per building","A new EHR","A pivot chart","Nothing, the totals will be fine"], a:0, e:"Without a crosswalk, rollups double-count or drop buildings."},
+ {q:"A vendor changed its export and hours now load as zero. Which check would have caught it?", o:["A spelling check","A schema and row-count check","A budget review","A survey"], a:1, e:"Schema plus count checks, with a named alert owner."},
+ {q:"Why can't monthly GL data explain a bad staffing day?", o:["It is the wrong grain","GL data is always wrong","GL has no numbers","It is protected by HIPAA"], a:0, e:"Monthly grain is too coarse for daily questions."}
+]},
+{ id:"det", name:"Data Detective", he:"בלש נתונים", cards:[
+ {t:"Census reconciliation", d:"Opening census + admissions − discharges should equal closing census. When it doesn't, a movement record is missing, for example a discharge that was never entered.", he:"פותח + קבלות − שחרורים = סוגר. אם לא, חסרה תנועה.", ex:"Open 98 + 3 admits − 2 discharges = 99. If the EHR says 100, look for a missing discharge or an extra admission.", src:"Nirmitee article"},
+ {t:"XLOOKUP", d:"=XLOOKUP(lookup_value, lookup_array, return_array, [if_not_found], …). Finds a value in one column and returns the matching value from another. If nothing matches and if_not_found is missing, it returns #N/A.", he:"מוצאת ערך בעמודה ומחזירה את הערך המתאים מעמודה אחרת.", ex:"=XLOOKUP(A2, Map!A:A, Map!B:B, \"UNMAPPED\") flags every payroll code that has no role yet.", src:"Microsoft Support"},
+ {t:"Flexed budget", d:"A fixed budget may not match the actual census. Comparing against a budget flexed to the real census is fairer.", he:"תקציב שמותאם לתפוסה בפועל.", ex:"Budget assumed census 100, actual was 90. Compare spending to a 90-resident budget, not the 100 one.", src:"Nirmitee article"},
+ {t:"Gaps vs CMS files", d:"CMS public staffing files lag internal data and use CMS's own counting rules, so expect gaps, not exact matches.", he:"קבצי CMS מתעדכנים באיחור וסופרים אחרת, אז לא יהיה שוויון מדויק.", ex:"A client asks why your HPRD differs from Care Compare. Timing and counting rules are the first two things to check.", src:"Nirmitee article"}
+], spot:{
+ intro:"Payroll and census feed for one week. Tap every row that has a problem, then press Check.",
+ cols:["Facility","Date","Open","Adm","Dis","Close","Job code"],
+ rows:[
+  {c:["Oak Ridge","11/02","98","3","2","99","RN"], bad:false},
+  {c:["Oak Ridge","11/03","99","1","0","102","CNA"], bad:true, why:"99 + 1 − 0 = 100, not 102. Census does not reconcile."},
+  {c:["Maple Court","11/03","120","2","2","120","LPN"], bad:false},
+  {c:["Maple Court","11/04","120","0","1","119","RN-NIGHT"], bad:true, why:"\"RN-NIGHT\" is not in the job-code map. XLOOKUP would return UNMAPPED and those hours would drop out."},
+  {c:["OakRidge SNF","11/04","102","0","0","102","CNA"], bad:true, why:"\"OakRidge SNF\" is the same building as \"Oak Ridge\" under another name. It needs the crosswalk."},
+  {c:["Maple Court","11/05","119","1","0","120","CNA"], bad:false}
+ ]},
+ qs:[
+ {q:"Open 50, admissions 4, discharges 3. What should the closing census be?", o:["47","51","53","57"], a:1, e:"50 + 4 − 3 = 51."},
+ {q:"XLOOKUP finds no match and you did not give if_not_found. What do you see?", o:["0","Blank","#N/A","The first row"], a:2, e:"Microsoft: if no match is found and if_not_found is missing, #N/A is returned."},
+ {q:"Budget assumed census 100, actual census was 80. What is the fair comparison?", o:["Against the 100-resident budget","Against a budget flexed to 80 residents","No comparison","Against last year"], a:1, e:"A flexed budget matches the real census."}
+]},
+{ id:"pv", name:"Privacy and People", he:"פרטיות ואנשים", cards:[
+ {t:"PHI", d:"Protected Health Information: individually identifiable health information held or sent by a covered entity or business associate, in any form (digital, paper or spoken).", he:"מידע רפואי מזהה. מוגן בחוק.", ex:"A resident's name next to a diagnosis is PHI. A count of 100 residents is not.", src:"HHS Summary of the HIPAA Privacy Rule"},
+ {t:"Covered entity and business associate", d:"Covered entities are health plans, clearinghouses and providers that transmit health information electronically in standard transactions. A business associate performs services for a covered entity that involve PHI.", he:"הגוף המטפל, ומי שנותן לו שירות עם מידע רפואי.", ex:"A vendor that processes a provider's PHI is typically its business associate. Ask how Megadata handles this with clients.", src:"HHS Summary of the HIPAA Privacy Rule"},
+ {t:"Minimum necessary", d:"Use, disclose and request only the minimum PHI needed for the purpose.", he:"רק המינימום ההכרחי של מידע רפואי.", ex:"To test a payroll feed you need hours and job codes, not diagnoses.", src:"HHS Summary of the HIPAA Privacy Rule"},
+ {t:"De-identified data", d:"Data that does not identify a person and gives no reasonable basis to identify one is not under the Privacy Rule's use limits.", he:"נתונים שלא מזהים אף אדם.", ex:"Use de-identified sample rows when you build or test a check.", src:"HHS Summary of the HIPAA Privacy Rule"},
+ {t:"Who you talk to", d:"Finance leaders (CFO, controller), IT staff and operations managers at the client, plus software vendors when a feed breaks.", he:"כספים, IT, תפעול, וספקי תוכנה.", ex:"Finance cares that numbers tie out. IT cares about access and security. Operations cares that the dashboard is right on Monday morning.", src:"From the job description you shared"}
+], qs:[
+ {q:"Which of these is PHI?", o:["\"Census was 100 today\"","\"Jane Doe, room 12, diabetic\"","\"RN code is 7\"","\"Q4 is due Nov 14\""], a:1, e:"A named person with a health condition is individually identifiable health information."},
+ {q:"You are testing a payroll feed. What data do you request?", o:["Everything, just in case","Only hours, job codes and dates needed for the test","Resident diagnoses","Social Security numbers"], a:1, e:"Minimum necessary."},
+ {q:"A company vendor that processes PHI for a nursing home is usually a…", o:["Covered entity","Business associate","Regulator","Patient"], a:1, e:"Business associates perform services for covered entities that involve PHI."}
+]},
+{ id:"me", name:"Your Story", he:"הסיפור שלך", rec:true, cards:[
+ {t:"Your 30-second pitch", d:"\"I've spent years as a kosher-supervision auditor with the OU in food plants, checking that processes match strict written standards and working with plant managers and vendors. In parallel I built several data tools with AI assistance, including a bottleneck-analysis engine. This role joins both: careful auditing and making systems talk to each other.\"", he:"מבקר נהלים בכשרות + בונה כלי נתונים. התפקיד מחבר את השניים.", ex:"Keep it under 30 seconds. End on why this role, not on your history.", src:"Recommendation, built from your background"},
+ {t:"The Radar story", d:"Constraint Radar reads records of task, stage and date, and finds where work waits. Three points that fit Megadata: it was tested on data from a bank, a hospital and traffic fines; stuck jobs are left out of the queue math; and when a real export did not have enough data, it answered \"cannot determine\" instead of guessing.", he:"כשהנתונים לא הספיקו, הכלי אמר \"אי אפשר לקבוע\" במקום לנחש. זה בדיוק ערך של בדיקת נתונים.", ex:"Interviewer: \"Tell me about a data problem you solved.\" Answer with the \"cannot determine\" moment. It shows data integrity.", src:"Recommendation, from the Radar project documents reviewed earlier"},
+ {t:"No healthcare experience", d:"The posting says healthcare and integration experience are not required. Bridge it: audits in a regulated industry, reading compliance rules, and the PBJ, HPRD and census terms you studied here.", he:"לא נדרש. מגשרים דרך ביקורת בתעשייה מפוקחת והמושגים שלמדת.", ex:"\"I haven't worked in healthcare, but I already know PBJ is quarterly and why job-code mapping drives HPRD.\"", src:"Recommendation"},
+ {t:"Answer shape: STAR", d:"Situation, Task, Action, Result. One sentence each for S and T, most time on A, end with a concrete R.", he:"מצב, משימה, פעולה, תוצאה.", ex:"S: a plant changed a supplier. T: verify the new ingredient. A: traced the paperwork to the source. R: caught a mismatch before production.", src:"Recommendation (use a real case of your own)"}
+], qs:[
+ {q:"\"Do you know how to code?\" Best answer:", o:["\"Yes, I'm a software engineer.\"","\"No, nothing technical.\"","\"I build tools with AI assistance and understand the logic, and I'm strong in Excel. The role doesn't need coding, but I can read what a script does.\"","\"Why does it matter?\""], a:2, e:"Honest and relevant. Overclaiming will be tested and caught."},
+ {q:"\"Tell me about a data problem.\" Which detail from the Radar shows data integrity best?", o:["It has a nice video","It said \"cannot determine\" instead of guessing when the data was not enough","It runs on a Mac","It uses many colors"], a:1, e:"Refusing to report a false result is exactly what a data-validation role values."},
+ {q:"\"You have no healthcare background.\" Best opening?", o:["\"That's true, sorry.\"","\"The posting says it's not required, and I've worked years in a regulated audit role. I've also learned how PBJ and HPRD work.\"","\"Healthcare is easy.\"","\"I'll learn it later.\""], a:1, e:"Agree, then bridge with evidence."}
+]}
+];
+
+const KEY="mdq-stars-v1";
+let stars={}; try{stars=JSON.parse(localStorage.getItem(KEY)||"{}")||{}}catch(e){stars={}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(stars))}catch(e){}}
+const app=document.getElementById("app");
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const starStr=n=>"★".repeat(n)+"☆".repeat(3-n);
+function shuffle(a,seed){a=a.slice();let s=seed||7;for(let i=a.length-1;i>0;i--){s=(s*9301+49297)%233280;const j=Math.floor(s/233280*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+function home(){
+  const total=STATIONS.reduce((n,s)=>n+(stars[s.id]||0),0);
+  app.innerHTML=`
+  <div class="panel">
+    <span class="eyebrow">Interview prep · Implementation Specialist</span>
+    <h1>Megadata Interview Quest</h1>
+    <p>Six stations, then a mock interview. Each station teaches the terms with examples, then drills you on them.</p>
+    <p class="he">שש תחנות ואז ראיון מדומה. כל תחנה מלמדת מושגים עם דוגמאות ואז בוחנת.</p>
+    <p class="muted" style="font-family:var(--mono);font-size:.85rem">Stars: ${total} / ${STATIONS.length*3}</p>
+  </div>
+  <div class="track">
+   ${STATIONS.map((s,i)=>`${i?'<div class="pipe"></div>':''}
+    <button class="stop ${stars[s.id]?'done':''}" data-i="${i}">
+     <span class="node">${i+1}</span>
+     <span><strong>${esc(s.name)}</strong><small>${s.cards.length} cards · ${s.rec?'answer practice':'drill'}</small></span>
+     <span class="stars">${starStr(stars[s.id]||0)}</span>
+    </button>`).join("")}
+    <div class="pipe"></div>
+    <button class="stop final" id="final"><span class="node">★</span><span><strong>Mock interview</strong><small>All ${allQs().length} questions, mixed, with a score</small></span><span></span></button>
+  </div>`;
+  app.querySelectorAll(".stop[data-i]").forEach(b=>b.onclick=()=>cards(+b.dataset.i,0));
+  document.getElementById("final").onclick=()=>quiz(shuffle(allQs(),Date.now()%1000),"final");
+  scrollTo(0,0);
+}
+function allQs(){return STATIONS.flatMap(s=>s.qs.map(q=>({...q,st:s.name})))}
+
+function cards(i,k){
+  const s=STATIONS[i], c=s.cards[k];
+  app.innerHTML=`
+  <div class="row-btns"><button class="btn ghost" id="back">← Stations</button></div>
+  <div class="panel">
+    <span class="eyebrow">Station ${i+1} · ${esc(s.name)} · card ${k+1} of ${s.cards.length}</span>
+    <div class="progress"><i style="width:${(k+1)/s.cards.length*100}%"></i></div>
+    <div class="term">${esc(c.t)}</div>
+    <p>${esc(c.d)}</p>
+    <p class="he">${esc(c.he)}</p>
+    <p class="ex"><strong>Example: </strong>${esc(c.ex)}</p>
+    <p class="src">${/Recommendation/.test(c.src)?'<span class="tag rec">Recommendation</span> ':'<span class="tag">Fact</span> '}Source: ${esc(c.src)}</p>
+  </div>
+  <div class="row-btns">
+    ${k?'<button class="btn ghost" id="prev">Previous</button>':''}
+    <button class="btn" id="next">${k<s.cards.length-1?'Next card':(s.spot?'Start the detective game':'Start the drill')}</button>
+  </div>`;
+  document.getElementById("back").onclick=home;
+  if(k) document.getElementById("prev").onclick=()=>cards(i,k-1);
+  document.getElementById("next").onclick=()=>k<s.cards.length-1?cards(i,k+1):(s.spot?spot(i):quiz(s.qs,i));
+  scrollTo(0,0);
+}
+
+function spot(i){
+  const s=STATIONS[i], sp=s.spot; const flagged=new Set();
+  app.innerHTML=`
+  <div class="row-btns"><button class="btn ghost" id="back">← Stations</button></div>
+  <div class="panel">
+    <span class="eyebrow">Station ${i+1} · Detective game</span>
+    <h2>Find the bad rows</h2>
+    <p>${esc(sp.intro)}</p>
+    <p class="he">סמן כל שורה שיש בה בעיה ואז לחץ Check.</p>
+    <div class="tbl-wrap"><table>
+      <thead><tr>${sp.cols.map(c=>`<th>${c}</th>`).join("")}</tr></thead>
+      <tbody>${sp.rows.map((r,j)=>`<tr class="row" tabindex="0" data-j="${j}">${r.c.map(v=>`<td>${esc(v)}</td>`).join("")}</tr>`).join("")}</tbody>
+    </table></div>
+    <div id="spotfb"></div>
+    <button class="btn" id="check">Check</button>
+  </div>`;
+  document.getElementById("back").onclick=home;
+  app.querySelectorAll("tr.row").forEach(tr=>{
+    const t=()=>{const j=+tr.dataset.j; flagged.has(j)?flagged.delete(j):flagged.add(j); tr.classList.toggle("flag")};
+    tr.onclick=t; tr.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();t()}};
+  });
+  document.getElementById("check").onclick=()=>{
+    let errs=0;
+    app.querySelectorAll("tr.row").forEach(tr=>{const j=+tr.dataset.j,bad=sp.rows[j].bad,f=flagged.has(j);
+      tr.classList.remove("flag"); if(bad&&f)tr.classList.add("hit"); else if(bad!==f){tr.classList.add("miss");errs++} tr.onclick=null;});
+    document.getElementById("spotfb").innerHTML=`<div class="fb ${errs?'no':'ok'}"><strong>${errs?errs+' mistake(s).':'All correct.'}</strong>
+      <ul class="review" style="margin-top:8px">${sp.rows.filter(r=>r.bad).map(r=>`<li>${esc(r.why)}</li>`).join("")}</ul></div>`;
+    const b=document.getElementById("check"); b.textContent="Continue to the drill"; b.onclick=()=>quiz(s.qs,i,errs);
+  };
+  scrollTo(0,0);
+}
+
+function quiz(qs,tag,carry){
+  let n=0,right=0,errs=carry||0; const missed=[];
+  const draw=()=>{
+    const q=qs[n]; const order=shuffle(q.o.map((t,ix)=>({t,ix})),n*31+q.q.length);
+    app.innerHTML=`
+    <div class="row-btns"><button class="btn ghost" id="back">← Stations</button></div>
+    <div class="panel">
+      <span class="eyebrow">${tag==="final"?'Mock interview':'Station '+(tag+1)+' drill'} · question ${n+1} of ${qs.length}</span>
+      <div class="progress"><i style="width:${n/qs.length*100}%"></i></div>
+      <h3>${esc(q.q)}</h3>
+      <div class="opts">${order.map(o=>`<button class="opt" data-ix="${o.ix}">${esc(o.t)}</button>`).join("")}</div>
+      <div id="fb"></div>
+    </div>`;
+    document.getElementById("back").onclick=home;
+    app.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
+      const ok=+b.dataset.ix===q.a;
+      app.querySelectorAll(".opt").forEach(x=>{x.disabled=true; if(+x.dataset.ix===q.a)x.classList.add("right")});
+      if(ok)right++; else {b.classList.add("wrong");errs++;missed.push(q)}
+      document.getElementById("fb").innerHTML=`<div class="fb ${ok?'ok':'no'}"><strong>${ok?'Correct.':'Not quite.'}</strong> ${esc(q.e)}</div>
+        <button class="btn" id="go" style="margin-top:10px;width:100%">${n<qs.length-1?'Next':'See result'}</button>`;
+      document.getElementById("go").onclick=()=>{n++; n<qs.length?draw():done()};
+    });
+    scrollTo(0,0);
+  };
+  const done=()=>{
+    const pct=Math.round(right/qs.length*100);
+    if(tag!=="final"){const st=errs===0?3:errs<=2?2:1; const id=STATIONS[tag].id; stars[id]=Math.max(stars[id]||0,st); save();}
+    app.innerHTML=`
+    <div class="panel">
+      <span class="eyebrow">${tag==="final"?'Mock interview result':'Station '+(tag+1)+' complete'}</span>
+      <div class="score">${right} / ${qs.length}</div>
+      <p><strong>${pct}%</strong> ${tag!=="final"?'· '+starStr(stars[STATIONS[tag].id]):''}</p>
+      <p class="muted">${pct>=85?'Interview-ready on this material.':'Aim for 85% or more. Review the list below and try again.'}</p>
+      ${missed.length?`<h3>Review these</h3><ul class="review">${missed.map(q=>`<li><strong>${esc(q.q)}</strong><br>${esc(q.o[q.a])}. <span class="muted">${esc(q.e)}</span></li>`).join("")}</ul>`:''}
+    </div>
+    <div class="row-btns">
+      ${missed.length?'<button class="btn ghost" id="redo">Retry the missed ones</button>':''}
+      <button class="btn" id="home">Back to stations</button>
+    </div>`;
+    document.getElementById("home").onclick=home;
+    if(missed.length) document.getElementById("redo").onclick=()=>quiz(missed,tag);
+    scrollTo(0,0);
+  };
+  draw();
+}
+home();
+</script>
+
+</body></html>
