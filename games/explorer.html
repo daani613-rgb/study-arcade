@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}
+.lib-back{position:fixed;left:max(12px,env(safe-area-inset-left,0px));bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:50;font:700 14px system-ui,sans-serif;padding:8px 14px;border-radius:999px;background:rgba(20,20,40,.82);color:#fff;text-decoration:none}</style>
+</head><body>
+<a class="lib-back" href="../">&larr; All games</a>
+<title>Explorer Academy</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@600;700;800&display=swap">
+<style>
+/* Layout: an adventure map of 5 islands (levels). Each level = picture cards that explain, then a picture game. Final quiz at the end. */
+:root{
+  --bg:#dcf0fa; --card:#ffffff; --ink:#1d2b4f; --muted:#56658a; --line:#bcdcec;
+  --accent:#ff7f32; --accent-soft:#ffe3cf; --good:#23985a; --good-soft:#d6f3e2; --bad:#df3f45; --bad-soft:#fde0e1;
+  --sea:#4fb3e3; --ocean:#3a8fd1; --land:#58b85f; --sand:#f3d48b; --sand-d:#cfa64a; --sun:#ffc93c;
+  --paper:#fffdf6; --paper-ink:#1d2b4f;
+  --display:"Baloo 2","Trebuchet MS",system-ui,sans-serif; --body:"Nunito","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e1b2e; --card:#18294a; --ink:#e8f0ff; --muted:#a3b3d6; --line:#2b4270;
+  --accent:#ff9450; --accent-soft:#4a2c17; --good:#4fd18b; --good-soft:#173d2a; --bad:#ff6b70; --bad-soft:#4a1d22;
+  --sea:#2d78a8; --ocean:#245f96; --land:#3f9b4a; --sand:#d9b86a; --sand-d:#a8853a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e1b2e; --card:#18294a; --ink:#e8f0ff; --muted:#a3b3d6; --line:#2b4270;
+  --accent:#ff9450; --accent-soft:#4a2c17; --good:#4fd18b; --good-soft:#173d2a; --bad:#ff6b70; --bad-soft:#4a1d22;
+  --sea:#2d78a8; --ocean:#245f96; --land:#3f9b4a; --sand:#d9b86a; --sand-d:#a8853a; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:18px;line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 40px}
+.wrap{max-width:620px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1,h2,h3{font-family:var(--display);margin:0;line-height:1.1;text-wrap:balance}
+h1{font-size:2.1rem} h2{font-size:1.6rem} h3{font-size:1.25rem}
+button{font:inherit;color:inherit}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.owl{display:flex;gap:12px;align-items:flex-start}
+.owl .face{font-size:3rem;line-height:1;flex:none}
+.bubble{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:12px 14px;font-weight:700;position:relative;min-width:0}
+.panel{background:var(--card);border:2px solid var(--line);border-radius:22px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.btn{font-family:var(--display);font-weight:700;font-size:1.15rem;border:0;border-radius:16px;padding:12px 20px;cursor:pointer;background:var(--accent);color:#fff;box-shadow:0 4px 0 color-mix(in srgb,var(--accent) 60%,#000)}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 color-mix(in srgb,var(--accent) 60%,#000)}
+.btn.soft{background:var(--card);color:var(--ink);border:2px solid var(--line);box-shadow:none}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.pill{font-family:var(--display);font-weight:700;background:var(--accent-soft);border-radius:999px;padding:3px 12px;font-variant-numeric:tabular-nums}
+/* home islands */
+.islands{display:flex;flex-direction:column;gap:12px}
+.island{display:flex;align-items:center;gap:14px;background:var(--card);border:2px solid var(--line);border-radius:22px;padding:12px 16px;cursor:pointer;text-align:left;width:100%}
+.island:nth-child(even){margin-left:auto;width:calc(100% - 28px)}
+.island:nth-child(odd){width:calc(100% - 28px)}
+.island .ico{font-size:2.4rem;width:58px;height:58px;display:grid;place-items:center;background:var(--bg);border-radius:50%;flex:none}
+.island .txt{flex:1;min-width:0}
+.island small{display:block;color:var(--muted);font-weight:700;font-size:.9rem}
+.stars{font-size:1.1rem;letter-spacing:2px;white-space:nowrap}
+.island.final{background:var(--accent);border-color:var(--accent);color:#fff}
+.island.final small{color:#fff;opacity:.9}
+.island.final .ico{background:rgba(255,255,255,.25)}
+/* learn card */
+.learn{display:flex;flex-direction:column;gap:12px;align-items:stretch}
+.picbox{background:var(--bg);border-radius:18px;padding:12px;display:grid;place-items:center;min-height:150px}
+.emo{font-size:4.2rem;line-height:1.1;letter-spacing:8px;text-align:center}
+.word{font-family:var(--display);font-size:2.2rem;font-weight:800;color:var(--accent);line-height:1}
+.say{font-size:1.2rem;font-weight:800;margin:0}
+.ex{margin:0;background:var(--good-soft);border-radius:14px;padding:10px 12px;font-weight:700}
+.he{margin:0;color:var(--muted);font-weight:700;direction:rtl;text-align:right}
+.dots{display:flex;gap:6px;justify-content:center}
+.dots i{width:10px;height:10px;border-radius:50%;background:var(--line)}
+.dots i.on{background:var(--accent)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.chips span{background:var(--card);border:2px solid var(--land);border-radius:999px;padding:2px 10px;font-weight:800;font-size:.95rem}
+/* svgs */
+svg.pic{width:100%;max-width:440px;height:auto;display:block}
+svg .part{cursor:default;transition:opacity .2s}
+svg.dim .part:not(.hl){opacity:.3}
+svg.tap .part{cursor:pointer}
+svg .part.hl .ring{stroke:var(--accent);stroke-width:5}
+svg .part.ok .ring{stroke:var(--good);stroke-width:5}
+svg .part.no{animation:shake .35s}
+.half{fill:var(--sun);fill-opacity:0}
+.half.hl{fill-opacity:.55}
+.half.ok{fill:var(--good);fill-opacity:.5}
+svg.tap .half:hover{fill-opacity:.2}
+.hit{stroke:transparent;stroke-width:22}
+/* game */
+.q{font-size:1.3rem;font-weight:800;margin:0}
+.big-item{display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--bg);border-radius:18px;padding:16px}
+.big-item .emo{font-size:4.6rem}
+.big-item b{font-size:1.2rem}
+.bins{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.bin{border:3px solid var(--line);background:var(--card);border-radius:18px;padding:12px 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;font-family:var(--display);font-weight:700;font-size:1.15rem}
+.bin span{font-size:2.2rem}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{border:3px solid var(--line);background:var(--card);border-radius:16px;padding:12px 14px;text-align:left;font-weight:800;cursor:pointer;font-size:1.1rem}
+.opt.ok,.bin.ok{border-color:var(--good);background:var(--good-soft)}
+.opt.no,.bin.no{border-color:var(--bad);background:var(--bad-soft);animation:shake .35s}
+.tiles{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.tile{border:3px solid var(--line);background:var(--card);border-radius:16px;padding:8px 10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;min-width:88px;font-weight:800;font-size:.95rem}
+.tile span{font-size:2.6rem}
+.tile.used{opacity:.25;cursor:default}
+.tile.no{border-color:var(--bad);animation:shake .35s}
+.seq{display:flex;gap:8px;justify-content:center;min-height:70px;background:var(--bg);border-radius:16px;padding:8px;flex-wrap:wrap;align-items:center}
+.seq span{font-size:2.6rem}
+.seq .arrow{font-size:1.4rem;color:var(--muted)}
+.fb{font-weight:800;margin:0;min-height:1.4em;padding:10px 12px;border-radius:14px}
+.fb.ok{background:var(--good-soft);color:var(--ink)}
+.fb.no{background:var(--bad-soft);color:var(--ink)}
+.fb:empty{padding:0}
+.bar{height:12px;background:var(--bg);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--good);transition:width .3s}
+.huge{font-family:var(--display);font-size:3.6rem;font-weight:800;line-height:1;text-align:center;font-variant-numeric:tabular-nums}
+.bigstars{font-size:3rem;text-align:center;letter-spacing:6px}
+.miss{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+.miss li{background:var(--bad-soft);border-radius:14px;padding:10px 12px;font-weight:700}
+.miss b{font-family:var(--display);font-size:1.1rem}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@keyframes pop{0%{transform:scale(.6);opacity:0}100%{transform:scale(1);opacity:1}}
+.pop{animation:pop .35s ease-out}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (max-width:420px){.emo{font-size:3.4rem}.word{font-size:1.9rem}.island:nth-child(n){width:100%;margin-left:0}}
+</style>
+
+<div class="wrap" id="app"></div>
+
+<script>
+/* ---------- pictures ---------- */
+function mapSVG(hl,tap){
+  const cls=p=>`part${hl===p?" hl":""}`;
+  return `<svg class="pic${hl?" dim":""}${tap?" tap":""}" viewBox="0 0 320 220" role="img" aria-label="Treasure island map">
+  <rect width="320" height="220" rx="16" fill="var(--sea)"/>
+  <path d="M70 72C100 40 175 38 212 62C250 84 252 132 222 160C188 188 112 192 80 165C50 140 48 98 70 72Z" fill="var(--sand)" stroke="var(--sand-d)" stroke-width="3"/>
+  <text x="92" y="98" font-size="20">🌲</text><text x="112" y="114" font-size="20">🌲</text><text x="92" y="130" font-size="20">🌲</text>
+  <text x="158" y="92" font-size="20">🏠</text><text x="180" y="108" font-size="20">🏠</text>
+  <path d="M175 115 Q160 135 182 148" fill="none" stroke="#8a5a2b" stroke-width="2.5" stroke-dasharray="5 5"/>
+  <text x="178" y="163" font-size="22" fill="#d62828" font-weight="900">✖</text>
+  <g class="${cls("locator")}" data-part="locator"><rect class="ring" x="8" y="8" width="72" height="62" rx="10" fill="var(--paper)" stroke="var(--paper-ink)" stroke-width="2"/>
+    <circle cx="44" cy="35" r="20" fill="#7cc6ee" stroke="var(--paper-ink)" stroke-width="1.5"/>
+    <path d="M32 28c6-6 14-4 16 2s-6 8-10 6-8 0-6-8z" fill="#58b85f"/><circle cx="52" cy="40" r="4" fill="#d62828"/>
+    <text x="44" y="65" font-size="9" text-anchor="middle" fill="var(--paper-ink)" font-weight="800">LOCATOR</text></g>
+  <g class="${cls("compass")}" data-part="compass"><circle class="ring" cx="276" cy="46" r="32" fill="var(--paper)" stroke="var(--paper-ink)" stroke-width="2"/>
+    <polygon points="276,20 282,46 276,42 270,46" fill="#d62828"/><polygon points="276,72 270,46 276,50 282,46" fill="var(--paper-ink)"/>
+    <text x="276" y="19" font-size="11" text-anchor="middle" font-weight="900" fill="var(--paper-ink)" dy="-1">N</text>
+    <text x="276" y="84" font-size="11" text-anchor="middle" font-weight="900" fill="var(--paper-ink)" dy="-6">S</text>
+    <text x="301" y="50" font-size="11" text-anchor="middle" font-weight="900" fill="var(--paper-ink)">E</text>
+    <text x="251" y="50" font-size="11" text-anchor="middle" font-weight="900" fill="var(--paper-ink)">W</text></g>
+  <g class="${cls("scale")}" data-part="scale"><rect class="ring" x="10" y="176" width="112" height="36" rx="10" fill="var(--paper)" stroke="var(--paper-ink)" stroke-width="2"/>
+    <rect x="20" y="186" width="23" height="8" fill="var(--paper-ink)"/><rect x="43" y="186" width="23" height="8" fill="var(--paper)" stroke="var(--paper-ink)"/>
+    <rect x="66" y="186" width="23" height="8" fill="var(--paper-ink)"/><rect x="89" y="186" width="23" height="8" fill="var(--paper)" stroke="var(--paper-ink)"/>
+    <text x="20" y="206" font-size="9" fill="var(--paper-ink)" font-weight="800">0</text><text x="112" y="206" font-size="9" text-anchor="end" fill="var(--paper-ink)" font-weight="800">1 mile</text></g>
+  <g class="${cls("key")}" data-part="key"><rect class="ring" x="214" y="132" width="98" height="80" rx="10" fill="var(--paper)" stroke="var(--paper-ink)" stroke-width="2"/>
+    <text x="263" y="148" font-size="11" text-anchor="middle" font-weight="900" fill="var(--paper-ink)">MAP KEY</text>
+    <text x="222" y="166" font-size="12">🌲</text><text x="240" y="165" font-size="10" fill="var(--paper-ink)" font-weight="800">Forest</text>
+    <text x="222" y="184" font-size="12">🏠</text><text x="240" y="183" font-size="10" fill="var(--paper-ink)" font-weight="800">House</text>
+    <text x="223" y="203" font-size="13" fill="#d62828" font-weight="900">✖</text><text x="240" y="201" font-size="10" fill="var(--paper-ink)" font-weight="800">Treasure</text></g>
+  </svg>`;
+}
+function globeSVG(hl,tap){
+  hl=hl||[];tap=tap||[];
+  const show=p=>hl.includes(p)||tap.includes(p);
+  const c=p=>`${hl.includes(p)?" hl":""}`;
+  const half=(p,d)=>show(p)?`<path class="half part${c(p)}" data-part="${p}" d="${d}" clip-path="url(#gc)"/>`:"";
+  const lbl=(p,x,y,t)=>hl.includes(p)?`<text x="${x}" y="${y}" text-anchor="middle" font-size="13" font-weight="900" fill="#1d2b4f">${t}</text>`:"";
+  const line=(p,x1,y1,x2,y2,col)=>`<g class="part${c(p)}" data-part="${p}"><line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${col}" stroke-width="${hl.includes(p)?6:3.5}" stroke-dasharray="8 5"/>${tap.includes(p)?`<line class="hit" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`:""}</g>`;
+  return `<svg class="pic${tap.length?" tap":""}" viewBox="0 0 240 262" role="img" aria-label="Earth globe">
+  <defs><clipPath id="gc"><circle cx="120" cy="131" r="100"/></clipPath></defs>
+  <text x="120" y="20" text-anchor="middle" font-size="12" font-weight="800" fill="var(--ink)">North Pole</text>
+  <text x="120" y="254" text-anchor="middle" font-size="12" font-weight="800" fill="var(--ink)">South Pole</text>
+  <circle cx="120" cy="131" r="100" fill="#4aa6dd" stroke="#1d4e7a" stroke-width="3"/>
+  <g clip-path="url(#gc)" fill="#58b85f" stroke="#2f7d3a" stroke-width="1.5">
+    <path d="M40 70c20-25 55-30 62-10s-5 35-22 40-20 25-30 15-25-25-10-45z"/>
+    <path d="M78 140c14-4 24 8 22 28s-10 40-20 45-12-20-14-35 0-35 12-38z"/>
+    <path d="M128 62c18-10 50-8 70 6s22 34 5 40-35-5-50 2-30-2-30-18 0-26 5-30z"/>
+    <path d="M136 118c14-6 30 0 32 18s-6 40-18 48-20-10-22-28-6-32 8-38z"/>
+    <path d="M178 170c12-4 24 2 22 14s-16 14-24 8-8-18 2-22z"/>
+  </g>
+  ${half("north","M0 0H240V131H0Z")}${half("south","M0 131H240V262H0Z")}${half("west","M0 0H120V262H0Z")}${half("east","M120 0H240V262H120Z")}
+  ${lbl("north",120,80,"NORTHERN")}${lbl("south",120,195,"SOUTHERN")}${lbl("west",68,140,"WEST")}${lbl("east",172,140,"EAST")}
+  ${line("equator",20,131,220,131,"#d62828")}${line("meridian",120,31,120,231,"#ffd23f")}
+  ${hl.includes("equator")?`<text x="226" y="127" font-size="11" font-weight="900" text-anchor="end" fill="#fff">Equator</text>`:""}
+  ${hl.includes("meridian")?`<text x="125" y="60" font-size="11" font-weight="900" fill="#fff">Prime Meridian</text>`:""}
+  </svg>`;
+}
+const emo=s=>`<div class="emo">${s}</div>`;
+
+/* ---------- content ---------- */
+const LEVELS=[
+ {id:"map",name:"Map Tools",ico:"🗺️",sub:"Map Key, Compass, Map Scale, Locator",
+  intro:"Every good explorer needs a map! A map has 4 helpers. Let's meet them.",
+  cards:[
+   {w:"Map Key",pic:()=>mapSVG("key"),say:"The Map Key tells us what the little pictures (symbols) on a map mean.",ex:"On this map, 🌲 means forest and ✖ means treasure!",he:"מקרא: מסביר מה כל סמל במפה אומר"},
+   {w:"Compass",pic:()=>mapSVG("compass"),say:"The Compass shows us directions: North, South, East and West.",ex:"N points to North. Now you know which way to walk!",he:"שושנת רוחות: מראה צפון, דרום, מזרח ומערב"},
+   {w:"Map Scale",pic:()=>mapSVG("scale"),say:"The Map Scale tells us how big or how far things really are.",ex:"This short line on the map means 1 whole mile in real life!",he:"קנה מידה: כמה גדול או רחוק משהו באמת"},
+   {w:"Locator",pic:()=>mapSVG("locator"),say:"The Locator is a tiny map that shows where on Earth the big map is.",ex:"The red dot shows where our island is on the whole planet.",he:"מפת התמצאות: איפה המפה נמצאת על כדור הארץ"}],
+  acts:[{type:"tap",draw:t=>mapSVG(null,t),names:{key:"Map Key",compass:"Compass",scale:"Map Scale",locator:"Locator"},
+   qs:[{q:"Tap the part that shows North, South, East and West.",p:"compass"},
+       {q:"Tap the part that tells what the little pictures mean.",p:"key"},
+       {q:"Tap the part that shows where on Earth this island is.",p:"locator"},
+       {q:"Tap the part that tells how far things really are.",p:"scale"}]}]},
+ {id:"live",name:"Where People Live",ico:"🏘️",sub:"Urban, Suburbs, Rural",
+  intro:"People live in 3 kinds of places: the city, the neighborhoods around the city, and the country.",
+  cards:[
+   {w:"Urban",pic:()=>emo("🏙️🚕🚇"),say:"Urban means a CITY area.",ex:"Tall buildings, busy streets, and lots of people. Like downtown Cleveland!",he:"עירוני: אזור של עיר"},
+   {w:"Suburbs",pic:()=>emo("🏡🌳🚲"),say:"Suburbs are the neighborhoods AROUND a big city.",ex:"Houses with yards and quiet streets, close to the city. Like University Heights, near Cleveland!",he:"פרברים: שכונות מסביב לעיר גדולה"},
+   {w:"Rural",pic:()=>emo("🚜🐄🌾"),say:"Rural means a COUNTRY area.",ex:"Farms, fields, animals, and lots of open space. Houses are far apart.",he:"כפרי: אזור של כפר, שדות וחוות"}],
+  acts:[{type:"sort",q:"Where does this belong?",bins:[{id:"u",t:"Urban",e:"🏙️"},{id:"s",t:"Suburbs",e:"🏡"},{id:"r",t:"Rural",e:"🚜"}],
+   items:[{e:"🏢",t:"Skyscrapers",b:"u",why:"Tall buildings are in the city. That's Urban!"},
+          {e:"🐄",t:"Cows on a farm",b:"r",why:"Farms are in the country. That's Rural!"},
+          {e:"🏡",t:"A house with a big yard near the city",b:"s",why:"Houses with yards around a city are Suburbs!"},
+          {e:"🚕",t:"Lots of taxis and traffic",b:"u",why:"Busy traffic means a city. Urban!"},
+          {e:"🌾",t:"Huge fields of corn",b:"r",why:"Big fields are in the country. Rural!"},
+          {e:"🚲",t:"Kids biking on a quiet street, 15 minutes from the city",b:"s",why:"Quiet neighborhoods close to a city are Suburbs!"},
+          {e:"🚇",t:"A subway train under the ground",b:"u",why:"Subways run under big cities. Urban!"},
+          {e:"🚜",t:"A tractor",b:"r",why:"Tractors work on farms in the country. Rural!"},
+          {e:"🏘️",t:"Neighborhood just outside the city",b:"s",why:"Right outside the city means Suburbs!"}]}]},
+ {id:"earth",name:"Our Planet Earth",ico:"🌍",sub:"Continents, Equator, Prime Meridian, Hemisphere",
+  intro:"Let's zoom out and look at the whole Earth!",
+  cards:[
+   {w:"Continents",pic:()=>emo("🌎🌍🌏")+`<div class="chips"><span>North America</span><span>South America</span><span>Europe</span><span>Asia</span><span>Africa</span><span>Australia</span><span>Antarctica</span></div>`,say:"Continents are the 7 BIGGEST pieces of land on Earth.",ex:"We live on the continent of North America!",he:"יבשות: 7 שטחי היבשה הגדולים בעולם"},
+   {w:"Equator",pic:()=>globeSVG(["equator"]),say:"The Equator is a pretend line around the MIDDLE of the Earth, halfway between the North and South Poles.",ex:"It goes around Earth like a belt and cuts it in half!",he:"קו המשווה: קו דמיוני באמצע כדור הארץ"},
+   {w:"Prime Meridian",pic:()=>globeSVG(["meridian","west"]),say:"The Prime Meridian is a pretend line from the North Pole to the South Pole. It splits Earth into EAST and WEST.",ex:"Up and down = Prime Meridian. Side to side = Equator.",he:"קו האורך הראשי (גריניץ'): מחלק את העולם למזרח ולמערב"},
+   {w:"Hemisphere",pic:()=>globeSVG(["north","equator"]),say:"A Hemisphere is HALF of the Earth.",ex:"'Hemi' means half and 'sphere' means ball. Half a ball! The Equator makes a Northern and a Southern Hemisphere.",he:"חצי כדור: חצי מכדור הארץ"}],
+  acts:[{type:"tap",draw:t=>globeSVG([],t),tapSet:["north","south","equator","meridian"],names:{equator:"the Equator",meridian:"the Prime Meridian",north:"the Northern Hemisphere",south:"the Southern Hemisphere"},
+   qs:[{q:"Tap the Equator (the line around the middle).",p:"equator"},
+       {q:"Tap the Prime Meridian (the line from pole to pole).",p:"meridian"},
+       {q:"Tap the Northern Hemisphere (the top half).",p:"north"},
+       {q:"Tap the Southern Hemisphere (the bottom half).",p:"south"}]},
+   {type:"mcq",qs:[{q:"How many continents are there?",pic:"🌎🌍🌏",o:["5","7","10"],a:"7",why:"There are 7 continents!"},
+                   {q:"Which one is a continent?",pic:"🗺️",o:["Ohio","Africa","Cleveland"],a:"Africa",why:"Africa is one of the 7 continents. Ohio is a state and Cleveland is a city."}]}]},
+ {id:"nature",name:"Nature and Regions",ico:"🌳",sub:"Natural Resource, Region",
+  intro:"Nature gives us lots of useful things, and the Earth has many different kinds of places.",
+  cards:[
+   {w:"Natural Resource",pic:()=>emo("🌳💧🪨☀️"),say:"A Natural Resource is something from NATURE that people can use.",ex:"We use trees to make wood and paper, and we drink water. People didn't make them. Nature did!",he:"משאב טבע: משהו מהטבע שאנשים משתמשים בו"},
+   {w:"Region",pic:()=>emo("🌵🏔️🌲"),say:"A Region is an area of Earth that is DIFFERENT from other areas.",ex:"A hot sandy desert, snowy mountains, and a green forest are 3 different regions.",he:"אזור: שטח שיש לו תכונות מיוחדות משלו"}],
+  acts:[{type:"sort",q:"Is this a Natural Resource?",bins:[{id:"n",t:"From nature",e:"🌿"},{id:"m",t:"Made by people",e:"🏭"}],
+   items:[{e:"💧",t:"Water",b:"n",why:"Water comes from nature. It's a Natural Resource!"},
+          {e:"📱",t:"A phone",b:"m",why:"People build phones in factories. Not a natural resource."},
+          {e:"🌳",t:"Trees",b:"n",why:"Trees grow in nature, and we use them for wood. Natural Resource!"},
+          {e:"🚗",t:"A car",b:"m",why:"Cars are made by people."},
+          {e:"🐟",t:"Fish",b:"n",why:"Fish come from nature, and people eat them. Natural Resource!"},
+          {e:"🧸",t:"A teddy bear",b:"m",why:"People make teddy bears."},
+          {e:"☀️",t:"Sunlight",b:"n",why:"Sunlight is from nature and gives us light and energy!"},
+          {e:"🪨",t:"Rocks",b:"n",why:"Rocks come from the Earth. People use them to build."}]},
+   {type:"mcq",qs:[{q:"A desert is hot and sandy. A rainforest is wet and green. Each one is a different...",pic:"🌵 🌴",o:["Region","Compass","Suburb"],a:"Region",why:"Areas with their own special features are called regions."}]}]},
+ {id:"detective",name:"Detective Words",ico:"🔍",sub:"Evidence, Research, Chronology",
+  intro:"Social Studies explorers work like detectives! Here are 3 detective words.",
+  cards:[
+   {w:"Evidence",pic:()=>emo("🐶🍪🔎"),say:"Evidence means PROOF. Clues that show something is true.",ex:"Cookie crumbs on the dog's nose are evidence that the dog ate the cookie!",he:"ראיה / הוכחה"},
+   {w:"Research",pic:()=>emo("📚🔍💻"),say:"Research means to STUDY something carefully to learn about it.",ex:"Reading books and websites to learn all about sharks is research.",he:"מחקר: ללמוד משהו בעיון ובזהירות"},
+   {w:"Chronology",pic:()=>emo("🥚🐣🐔"),say:"Chronology means TIME ORDER: what happens first, next, and last.",ex:"First the egg, then the chick hatches, then it grows into a chicken.",he:"כרונולוגיה: סדר לפי זמן"}],
+  acts:[{type:"order",q:"Put these in chronology (time order). Tap what happens FIRST.",items:[{e:"🥚",t:"Egg"},{e:"🐣",t:"Hatching"},{e:"🐥",t:"Chick"},{e:"🐔",t:"Chicken"}]},
+   {type:"order",q:"One more! Tap what happens FIRST in a day.",items:[{e:"🌅",t:"Wake up"},{e:"🏫",t:"School"},{e:"🍽️",t:"Dinner"},{e:"🛏️",t:"Bedtime"}]},
+   {type:"mcq",qs:[{q:"The cookie jar is empty. There are crumbs on the dog's nose. The crumbs are...",pic:"🐶🍪",o:["Evidence","Chronology","a Region"],a:"Evidence",why:"The crumbs are proof, so they are evidence!"},
+                   {q:"Maya reads 3 books and a website to learn all about sharks. She is doing...",pic:"🦈📚",o:["Chronology","Research","Rural"],a:"Research",why:"Studying carefully to learn is research!"}]}]}
+];
+const FINAL=[
+ {q:"A place with tall buildings, busy streets, and lots of people is...",pic:"🏙️",o:["Rural","Urban","Suburbs"],a:"Urban"},
+ {q:"A place with farms, fields, and lots of open space is...",pic:"🚜🐄",o:["Rural","Urban","Suburbs"],a:"Rural"},
+ {q:"Neighborhoods around a large city are called...",pic:"🏡",o:["Continents","Suburbs","Urban"],a:"Suburbs"},
+ {q:"What part of a map shows the directions?",pic:"🧭",o:["Map Key","Compass","Locator"],a:"Compass"},
+ {q:"What part of a map tells what the symbols mean?",pic:"🌲🏠✖",o:["Map Key","Map Scale","Compass"],a:"Map Key"},
+ {q:"What part of a map tells how big or far something is?",pic:"📏",o:["Locator","Map Scale","Map Key"],a:"Map Scale"},
+ {q:"What part of a map shows where on Earth the map is?",pic:"🌍📍",o:["Compass","Locator","Map Scale"],a:"Locator"},
+ {q:"The line around the middle of the Earth, between the North and South Poles, is the...",pic:"🌐",o:["Equator","Prime Meridian","Map Scale"],a:"Equator"},
+ {q:"The line that divides Earth into East and West is the...",pic:"↕️🌍",o:["Equator","Prime Meridian","Compass"],a:"Prime Meridian"},
+ {q:"One of the two equal halves of the Earth is a...",pic:"🌓",o:["Hemisphere","Region","Continent"],a:"Hemisphere"},
+ {q:"How many continents are there?",pic:"🌎🌍🌏",o:["5","7","9"],a:"7"},
+ {q:"The seven largest land areas on Earth are called...",pic:"🗺️",o:["Regions","Continents","Suburbs"],a:"Continents"},
+ {q:"Which one is a Natural Resource?",pic:"🤔",o:["💧 Water","📱 Phone","🚗 Car"],a:"💧 Water"},
+ {q:"Something found in nature that people can use is a...",pic:"🌳",o:["Natural Resource","Map Key","Chronology"],a:"Natural Resource"},
+ {q:"An area of Earth with features different from other areas is a...",pic:"🌵🏔️",o:["Region","Hemisphere","Locator"],a:"Region"},
+ {q:"Proof that something is true is called...",pic:"🔎",o:["Research","Evidence","Chronology"],a:"Evidence"},
+ {q:"To carefully study something is called...",pic:"📚",o:["Research","Rural","Evidence"],a:"Research"},
+ {q:"Putting things in time order is called...",pic:"🥚🐣🐔",o:["Region","Chronology","Equator"],a:"Chronology"}
+];
+const DEF={"Urban":"City area","Rural":"Country area","Suburbs":"Areas surrounding large cities","Compass":"Shows the directions on the map","Map Key":"Tells what the symbols on a map mean","Map Scale":"Tells how big something on a map is","Locator":"Shows where on Earth the map is","Equator":"Line halfway between the North and South Poles that divides Earth in half","Prime Meridian":"Line that divides Earth into East and West","Hemisphere":"Half of the Earth","7":"There are 7 continents","Continents":"The 7 largest land areas on Earth","💧 Water":"A natural resource is from nature, like water","Natural Resource":"Something found in nature that people can use","Region":"An area of Earth with features different from other areas","Evidence":"Proof","Research":"To carefully study something","Chronology":"Time order"};
+
+/* ---------- engine ---------- */
+const app=document.getElementById("app");
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+const PRAISE=["Awesome!","Great job!","You got it!","Super!","Nice work, explorer!"];
+let stars={};try{stars=JSON.parse(localStorage.getItem("explorer-stars")||"{}")}catch(e){}
+const save=()=>{try{localStorage.setItem("explorer-stars",JSON.stringify(stars))}catch(e){}};
+const starStr=n=>"⭐".repeat(n)+"☆".repeat(3-n);
+const toTop=()=>window.scrollTo({top:0,behavior:"smooth"});
+
+function home(){
+  const done=LEVELS.filter(l=>stars[l.id]).length;
+  app.innerHTML=`<div class="owl"><div class="face">🦉</div><div class="bubble">Hi explorer! I'm Ollie. Visit each island to learn the words, play the game, and win stars. Then take the Big Quiz!</div></div>
+  <div class="row"><h1>Explorer Academy</h1><span class="pill">${done} / 5 islands</span></div>
+  <div class="islands">${LEVELS.map((l,i)=>`<button class="island" data-i="${i}"><div class="ico">${l.ico}</div><div class="txt"><h3>${i+1}. ${l.name}</h3><small>${l.sub}</small></div><span class="stars">${starStr(stars[l.id]||0)}</span></button>`).join("")}
+  <button class="island final" id="final"><div class="ico">🏆</div><div class="txt"><h3>The Big Quiz</h3><small>18 questions on all the words. How many can you get?</small></div></button></div>`;
+  app.querySelectorAll(".island[data-i]").forEach(b=>b.onclick=()=>learn(+b.dataset.i,0));
+  document.getElementById("final").onclick=()=>finalQuiz();
+}
+
+function learn(li,ci){
+  const L=LEVELS[li],C=L.cards[ci];toTop();
+  app.innerHTML=`<div class="row"><button class="btn soft" id="back">← Map</button><span class="pill">${L.ico} ${L.name}</span></div>
+  ${ci===0?`<div class="owl"><div class="face">🦉</div><div class="bubble">${L.intro}</div></div>`:""}
+  <div class="panel learn pop"><div class="picbox">${C.pic()}</div>
+   <div class="word">${C.w}</div><p class="say">${C.say}</p><p class="ex">💡 ${C.ex}</p><p class="he">${C.he}</p>
+   <div class="dots">${L.cards.map((c,i)=>`<i class="${i===ci?"on":""}"></i>`).join("")}</div>
+   <div class="row"><button class="btn soft" id="prev" ${ci===0?"style=\"visibility:hidden\"":""}>← Back</button>
+   <button class="btn" id="next">${ci===L.cards.length-1?"Let's play! 🎮":"Next word →"}</button></div></div>`;
+  document.getElementById("back").onclick=home;
+  document.getElementById("prev").onclick=()=>learn(li,ci-1);
+  document.getElementById("next").onclick=()=>ci<L.cards.length-1?learn(li,ci+1):play(li);
+}
+
+function play(li){
+  const L=LEVELS[li];let ai=0,mist=0;
+  const steps=[];L.acts.forEach(a=>{if(a.type==="tap")a.qs.forEach(q=>steps.push({a,q}));else if(a.type==="sort")shuffle(a.items).forEach(it=>steps.push({a,it}));else if(a.type==="order")steps.push({a});else a.qs.forEach(q=>steps.push({a,q}))});
+  const next=()=>{ai++;ai<steps.length?step():finish()};
+  function frame(inner){toTop();app.innerHTML=`<div class="row"><button class="btn soft" id="back">← Map</button><span class="pill">${L.ico} Game ${ai+1} / ${steps.length}</span></div>
+    <div class="bar"><i style="width:${ai/steps.length*100}%"></i></div><div class="panel pop">${inner}<p class="fb" id="fb"></p><button class="btn" id="go" hidden>Next →</button></div>`;
+    document.getElementById("back").onclick=home;document.getElementById("go").onclick=next}
+  const fb=(ok,t)=>{const f=document.getElementById("fb");f.className="fb "+(ok?"ok":"no");f.textContent=t};
+  const ready=()=>{document.getElementById("go").hidden=false};
+  function step(){const s=steps[ai],a=s.a;
+    if(a.type==="tap"){frame(`<p class="q">${s.q.q}</p><div class="picbox">${a.draw(a.tapSet||Object.keys(a.names))}</div>`);
+      let solved=false;
+      app.querySelectorAll("svg .part").forEach(g=>g.addEventListener("click",()=>{if(solved)return;const p=g.dataset.part;
+        if(p===s.q.p){solved=true;g.classList.add("ok","hl");fb(true,PRAISE[Math.random()*5|0]+" That's "+(a.names[p].startsWith("the")?a.names[p]:"the "+a.names[p])+".");ready()}
+        else{mist++;g.classList.add("no");setTimeout(()=>g.classList.remove("no"),400);fb(false,"Oops, that's "+(a.names[p].startsWith("the")?a.names[p]:"the "+a.names[p])+". Try again!")}}));}
+    else if(a.type==="sort"){const it=s.it;frame(`<p class="q">${a.q}</p><div class="big-item"><div class="emo">${it.e}</div><b>${it.t}</b></div>
+      <div class="bins">${a.bins.map(b=>`<button class="bin" data-b="${b.id}"><span>${b.e}</span>${b.t}</button>`).join("")}</div>`);
+      let solved=false;app.querySelectorAll(".bin").forEach(b=>b.onclick=()=>{if(solved)return;
+        if(b.dataset.b===it.b){solved=true;b.classList.add("ok");fb(true,"✅ "+it.why);ready()}
+        else{mist++;b.classList.add("no");setTimeout(()=>b.classList.remove("no"),400);fb(false,"Not quite. Think again!")}})}
+    else if(a.type==="order"){const order=a.items;let n=0;
+      frame(`<p class="q">${a.q}</p><div class="seq" id="seq"></div><div class="tiles">${shuffle(order.map((x,i)=>i)).map(i=>`<button class="tile" data-i="${i}"><span>${order[i].e}</span>${order[i].t}</button>`).join("")}</div>`);
+      app.querySelectorAll(".tile").forEach(t=>t.onclick=()=>{if(t.classList.contains("used")||n>=order.length)return;
+        if(+t.dataset.i===n){t.classList.add("used");const sq=document.getElementById("seq");sq.insertAdjacentHTML("beforeend",(n?'<b class="arrow">→</b>':"")+`<span class="pop">${order[n].e}</span>`);n++;
+          if(n===order.length){fb(true,"🎉 Perfect time order! That's chronology.");ready()}else fb(true,"Yes! What comes next?")}
+        else{mist++;t.classList.add("no");setTimeout(()=>t.classList.remove("no"),400);fb(false,"Hmm, does that happen "+(n?"next":"first")+"? Try another one.")}})}
+    else{const q=s.q;frame(`<div class="big-item"><div class="emo">${q.pic}</div></div><p class="q">${q.q}</p><div class="opts">${shuffle(q.o).map(o=>`<button class="opt">${o}</button>`).join("")}</div>`);
+      let solved=false;app.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{if(solved)return;
+        if(b.textContent===q.a){solved=true;b.classList.add("ok");fb(true,"✅ "+q.why);ready()}
+        else{mist++;b.classList.add("no");setTimeout(()=>b.classList.remove("no"),400);fb(false,"Not that one. Try again!")}})}
+  }
+  function finish(){const st=mist<=1?3:mist<=3?2:1;stars[L.id]=Math.max(stars[L.id]||0,st);save();toTop();
+    const nxt=li<LEVELS.length-1;
+    app.innerHTML=`<div class="panel pop" style="align-items:center;text-align:center"><div class="bigstars">${starStr(st)}</div>
+     <h2>${L.name} complete!</h2><p style="margin:0;font-weight:700">${mist===0?"No mistakes at all. Amazing!":"Mistakes: "+mist+(st<3?". Play again to get 3 stars!":"")}</p>
+     <div class="row" style="justify-content:center"><button class="btn soft" id="again">Play again</button>
+     <button class="btn" id="on">${nxt?"Next island →":"Take the Big Quiz 🏆"}</button></div>
+     <button class="btn soft" id="map">Back to the map</button></div>`;
+    document.getElementById("again").onclick=()=>play(li);
+    document.getElementById("map").onclick=home;
+    document.getElementById("on").onclick=()=>nxt?learn(li+1,0):finalQuiz();}
+  step();
+}
+
+function finalQuiz(){
+  const qs=shuffle(FINAL);let i=0,right=0;const missed=[];
+  function ask(){const q=qs[i];toTop();
+    app.innerHTML=`<div class="row"><button class="btn soft" id="back">← Map</button><span class="pill">🏆 ${i+1} / ${qs.length}</span><span class="pill">✅ ${right}</span></div>
+    <div class="bar"><i style="width:${i/qs.length*100}%"></i></div>
+    <div class="panel pop"><div class="big-item"><div class="emo">${q.pic}</div></div><p class="q">${q.q}</p>
+    <div class="opts">${shuffle(q.o).map(o=>`<button class="opt">${o}</button>`).join("")}</div><p class="fb" id="fb"></p><button class="btn" id="go" hidden>${i===qs.length-1?"See my score 🏆":"Next →"}</button></div>`;
+    document.getElementById("back").onclick=home;
+    let done=false;app.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{if(done)return;done=true;
+      const f=document.getElementById("fb");
+      if(b.textContent===q.a){right++;b.classList.add("ok");f.className="fb ok";f.textContent="✅ "+PRAISE[Math.random()*5|0]}
+      else{b.classList.add("no");app.querySelectorAll(".opt").forEach(x=>{if(x.textContent===q.a)x.classList.add("ok")});f.className="fb no";f.textContent="The answer is "+q.a+". "+(DEF[q.a]?DEF[q.a]+".":"");missed.push(q.a)}
+      document.getElementById("go").hidden=false});
+    document.getElementById("go").onclick=()=>{i++;i<qs.length?ask():end()};
+  }
+  function end(){toTop();const pct=Math.round(right/qs.length*100),st=pct>=90?3:pct>=70?2:1;
+    app.innerHTML=`<div class="panel pop" style="text-align:center"><div class="bigstars">${starStr(st)}</div>
+    <div class="huge">${right} / ${qs.length}</div><span class="pill" style="align-self:center">${pct}%</span>
+    <h2>${pct===100?"Perfect! You're ready for the quiz!":pct>=85?"Excellent, explorer!":pct>=65?"Good job! Almost there!":"Nice try! Let's practice a bit more."}</h2>
+    ${missed.length?`<div style="text-align:left"><h3 style="margin-bottom:8px">Words to practice:</h3><ul class="miss">${[...new Set(missed)].map(m=>`<li><b>${m}</b>: ${DEF[m]||""}</li>`).join("")}</ul></div>`:""}
+    <div class="row" style="justify-content:center"><button class="btn soft" id="map">Back to the map</button><button class="btn" id="again">Try the Big Quiz again</button></div></div>`;
+    document.getElementById("map").onclick=home;document.getElementById("again").onclick=finalQuiz;}
+  ask();
+}
+home();
+</script>
+
+</body></html>

@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}
+.lib-back{position:fixed;left:max(12px,env(safe-area-inset-left,0px));bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:50;font:700 14px system-ui,sans-serif;padding:8px 14px;border-radius:999px;background:rgba(20,20,40,.82);color:#fff;text-decoration:none}</style>
+</head><body>
+<a class="lib-back" href="../">&larr; All games</a>
+<title>The Ish-Boshet Files</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=DM+Sans:wght@500;700&family=Frank+Ruhl+Libre:wght@500;700&display=swap">
+<style>
+/* Layout: a 5-episode series (story slides + mini-games), then "The Final": MCQ + explain-it round, XP and streak */
+:root{
+  --bg:#f3eef9; --card:#ffffff; --ink:#24183a; --muted:#6d6283; --line:#e2d8f0;
+  --accent:#7a3cff; --accent-soft:#ece3ff; --gold:#c98a1b; --gold-soft:#fbefd8;
+  --good:#1c9a63; --good-soft:#d9f4e7; --bad:#d8395b; --bad-soft:#fde2e8;
+  --display:"Bricolage Grotesque","Avenir Next",system-ui,sans-serif; --body:"DM Sans","Segoe UI",system-ui,sans-serif; --heb:"Frank Ruhl Libre","Times New Roman",serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#150f22; --card:#211933; --ink:#f1eafc; --muted:#a99cc2; --line:#352a4d;
+  --accent:#a983ff; --accent-soft:#2e2350; --gold:#f0b54a; --gold-soft:#3a2c14;
+  --good:#4fd39a; --good-soft:#16382a; --bad:#ff6f8d; --bad-soft:#47202b; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#150f22; --card:#211933; --ink:#f1eafc; --muted:#a99cc2; --line:#352a4d;
+  --accent:#a983ff; --accent-soft:#2e2350; --gold:#f0b54a; --gold-soft:#3a2c14;
+  --good:#4fd39a; --good-soft:#16382a; --bad:#ff6f8d; --bad-soft:#47202b; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 40px}
+.wrap{max-width:600px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1,h2,h3{font-family:var(--display);margin:0;line-height:1.08;text-wrap:balance;letter-spacing:-.01em}
+h1{font-size:2.3rem;font-weight:800} h2{font-size:1.55rem;font-weight:800} h3{font-size:1.15rem;font-weight:800}
+button{font:inherit;color:inherit}
+button:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.hb{font-family:var(--heb);font-weight:700;font-size:1.12em;unicode-bidi:isolate;direction:rtl}
+.eyebrow{font-size:.78rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.panel{background:var(--card);border:1.5px solid var(--line);border-radius:22px;padding:20px;display:flex;flex-direction:column;gap:14px}
+.btn{font-family:var(--display);font-weight:800;font-size:1.05rem;border:0;border-radius:14px;padding:12px 20px;cursor:pointer;background:var(--accent);color:#fff}
+.btn:active{transform:scale(.97)}
+.btn.soft{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.btn:disabled{opacity:.4;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.pill{font-family:var(--display);font-weight:800;font-size:.9rem;background:var(--accent-soft);border-radius:999px;padding:4px 12px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pill.gold{background:var(--gold-soft);color:var(--ink)}
+/* home */
+.hero{display:flex;flex-direction:column;gap:6px}
+.hero p{margin:0;color:var(--muted);font-weight:500}
+.eps{display:flex;flex-direction:column;gap:10px}
+.ep{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;background:var(--card);border:1.5px solid var(--line);border-radius:18px;padding:14px 16px;cursor:pointer;text-align:left;width:100%}
+.ep .num{font-family:var(--display);font-weight:800;font-size:1.6rem;color:var(--accent);width:44px;text-align:center}
+.ep .txt{min-width:0}
+.ep small{display:block;color:var(--muted);font-weight:500;font-size:.88rem}
+.ep .st{font-size:.85rem;font-weight:700;color:var(--muted);white-space:nowrap}
+.ep .st.done{color:var(--good)}
+.ep.final{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.ep.final .num,.ep.final small{color:var(--bg)}
+.ep.final small{opacity:.8}
+.cast{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.who{flex:none;background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:8px 12px;font-size:.85rem;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:92px;text-align:center}
+.who span{font-size:1.6rem}
+/* story slides */
+.bars{display:flex;gap:4px}
+.bars i{flex:1;height:4px;border-radius:2px;background:var(--line)}
+.bars i.on{background:var(--accent)}
+.slide{display:flex;flex-direction:column;gap:12px;min-height:330px}
+.scene{background:var(--accent-soft);border-radius:16px;padding:16px;text-align:center;font-size:3rem;line-height:1.2}
+.scene small{display:block;font-size:.95rem;font-weight:700;color:var(--muted);margin-top:4px}
+.headline{font-family:var(--display);font-weight:800;font-size:1.45rem;line-height:1.15}
+.slide p{margin:0}
+.quote{border-inline-start:4px solid var(--gold);background:var(--gold-soft);border-radius:0 12px 12px 0;padding:10px 12px;font-weight:700}
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:.92rem}
+.vs div{background:var(--bg);border-radius:12px;padding:10px}
+.vs b{display:block;font-family:var(--display);margin-bottom:4px}
+.vs ul{margin:0;padding-left:18px}
+.tip{font-size:.9rem;color:var(--muted);font-weight:700}
+/* games */
+.q{font-size:1.15rem;font-weight:700;margin:0}
+.tag{align-self:flex-start;font-family:var(--display);font-weight:800;background:var(--gold);color:#241500;border-radius:999px;padding:2px 12px;font-size:.85rem}
+.opts{display:flex;flex-direction:column;gap:9px}
+.opt{border:1.5px solid var(--line);background:var(--card);border-radius:14px;padding:11px 14px;text-align:left;font-weight:700;cursor:pointer;display:flex;gap:10px;align-items:baseline}
+.opt .l{font-family:var(--display);color:var(--accent);flex:none}
+.opt.pick{border-color:var(--gold);background:var(--gold-soft)}
+.opt.ok,.bin.ok{border-color:var(--good);background:var(--good-soft)}
+.opt.no,.bin.no{border-color:var(--bad);background:var(--bad-soft)}
+.shake{animation:shake .35s}
+.card-item{background:var(--bg);border-radius:16px;padding:16px;text-align:center;font-weight:700;font-size:1.1rem}
+.bins{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bin{border:1.5px solid var(--line);background:var(--card);border-radius:16px;padding:12px 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;font-family:var(--display);font-weight:800;line-height:1.15}
+.bin span{font-size:1.8rem}
+.tiles{display:flex;flex-direction:column;gap:8px}
+.tile{border:1.5px solid var(--line);background:var(--card);border-radius:14px;padding:10px 12px;cursor:pointer;font-weight:700;text-align:left;display:flex;gap:10px;align-items:center}
+.tile span{font-size:1.4rem}
+.tile.used{opacity:.25;cursor:default}
+.tile.no{border-color:var(--bad)}
+.seq{display:flex;flex-direction:column;gap:6px;background:var(--bg);border-radius:14px;padding:10px;min-height:52px}
+.seq div{font-weight:700;font-size:.95rem}
+.seq div b{color:var(--accent);font-family:var(--display);margin-right:6px}
+.cols{display:grid;grid-template-columns:1fr 1.3fr;gap:10px}
+.col{display:flex;flex-direction:column;gap:8px;min-width:0}
+.mt{border:1.5px solid var(--line);background:var(--card);border-radius:12px;padding:10px;font-weight:700;cursor:pointer;min-height:52px;text-align:left}
+.mt.sel{border-color:var(--gold);background:var(--gold-soft)}
+.mt.done{border-color:var(--good);background:var(--good-soft);cursor:default}
+.mt.no{border-color:var(--bad);background:var(--bad-soft)}
+.flip{background:var(--bg);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.flip .ans{border-top:1.5px dashed var(--line);padding-top:10px;font-weight:700}
+.fb{font-weight:700;margin:0;padding:10px 12px;border-radius:12px}
+.fb.ok{background:var(--good-soft)}
+.fb.no{background:var(--bad-soft)}
+.fb:empty{display:none}
+.bar{height:6px;background:var(--line);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);transition:width .3s}
+.huge{font-family:var(--display);font-size:3.6rem;font-weight:800;line-height:1;font-variant-numeric:tabular-nums}
+.miss{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+.miss li{background:var(--bad-soft);border-radius:12px;padding:10px 12px;font-weight:500}
+.miss b{display:block;font-weight:700}
+.xpfly{position:fixed;right:max(20px,env(safe-area-inset-right,0px));top:calc(20px + env(safe-area-inset-top,0px));font-family:var(--display);font-weight:800;background:var(--gold);color:#241500;border-radius:999px;padding:4px 12px;animation:fly 1s ease-out forwards;pointer-events:none}
+@keyframes fly{0%{opacity:0;transform:translateY(10px)}20%{opacity:1}100%{opacity:0;transform:translateY(-24px)}}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@keyframes in{0%{opacity:.3;transform:translateY(6px)}100%{opacity:1;transform:none}}
+.in{animation:in .25s ease-out}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (max-width:420px){h1{font-size:1.9rem}.vs{grid-template-columns:1fr}.cols{grid-template-columns:1fr 1.2fr}}
+</style>
+
+<div class="wrap" id="app"></div>
+
+<script>
+const H=t=>`<span class="hb">${t}</span>`;
+const IB=H("אִישׁ בֹּשֶׁת"), AV=H("אַבְנֵר"), MF=H("מְפִיבֹשֶׁת"), DV=H("דָּוִד"), SH=H("שָׁאוּל"), RB=`${H("רֵכָב")} and ${H("בַּעֲנָה")}`;
+
+const CAST=[["👑","Ish-Boshet","Shaul's son, king"],["🛡️","Avner","his general"],["🦵","Mefiboshet","Yehonatan's son"],["🗡️","Rechav & Baana","the killers"],["⭐","David","king in Chevron"]];
+
+const EPS=[
+ {id:"e1",title:"The News",sub:"Pasuk א: Avner is dead",
+  slides:[
+   {scene:"🛡️💀<small>Chevron</small>",h:"Avner is dead.",p:`${AV} was the general holding ${IB}'s kingdom together. Now he's gone.`,q:`"${H("כִּי מֵת אַבְנֵר")}" = now that Avner died.`},
+   {scene:"👑😰",h:"Ish-Boshet's hands go weak",p:`${H("וַיִּרְפּוּ יָדָיו")}: his hands became weak. Why? There is no one left to support him in the kingdom.`,q:"Avner was his strength. Without him, Ish-Boshet has nobody."},
+   {scene:"😱👥",h:`All Israel ${H("נִבְהָלוּ")} (panicked)`,p:"Why were they scared? They thought David killed Avner, and they were scared David would betray them too.",tip:"Remember: they THOUGHT David did it. He didn't."}],
+  acts:[{type:"mcq",qs:[
+   {q:`When ${IB} heard Avner died, what happened?`,o:["His hands became weak","He declared war on David","He ran away to Chevron","He made Avner's brother general"],a:[0],why:"וירפו ידיו: his hands became weak."},
+   {q:"WHY did his hands become weak?",o:["He got injured in battle","No one was left to support him in the kingdom","He was very old","David attacked him"],a:[1],why:"Avner was his support. With Avner gone, no one was left to hold up his kingdom."},
+   {q:`Why was all Israel ${H("נִבְהָלוּ")}?`,o:["The Plishtim were attacking","They thought David killed Avner and were scared he'd betray them","Ish-Boshet was sick","There was a famine"],a:[1],why:"They thought David killed Avner, and were afraid he would betray them."}]}]},
+ {id:"e2",title:"Flashback",sub:"Pasuk ד: Mefiboshet",
+  slides:[
+   {scene:"🦵👦",h:"Wait, who is Mefiboshet?",p:`${H("יְהוֹנָתָן")} (Shaul's son) had a son, ${MF}. But his feet were crippled.`},
+   {scene:"📢🏃‍♀️💥",h:"Flashback: how it happened",p:"The rumor that Shaul died reached the palace. The nurse grabbed Mefiboshet and ran. She tripped, he fell, and his legs got crippled.",tip:"The navi suddenly jumps back in time. That's a flashback!"},
+   {scene:"🤔📜",h:"Why does the navi tell us this NOW?",p:"Two reasons:",q:"1) To show Ish-Boshet was the only descendant of Shaul fit to be king.<br>2) Shaul's lineage will continue through Mefiboshet."}],
+  acts:[{type:"order",q:"Put the flashback in order. Tap what happened FIRST.",items:[["📢","The rumor that Shaul died reaches the palace"],["🤱","The nurse grabs Mefiboshet"],["🏃‍♀️","She runs"],["💥","She trips and he falls"],["🦵","His legs are crippled"]]},
+   {type:"mcq",qs:[
+    {q:`Who was ${MF}?`,o:["Shaul's brother","Yehonatan's son","Ish-Boshet's son","David's son"],a:[1],why:"Mefiboshet was Yehonatan's son (Shaul's grandson)."},
+    {q:"What does pasuk ד (Mefiboshet) have to do with anything?",o:["It shows Ish-Boshet was the only descendant of Shaul fit to be king","It explains why David was angry","Shaul's lineage will continue through Mefiboshet","It shows the nurse was a spy"],a:[0,2],why:"Ish-Boshet was the only one of Shaul's descendants fit to be king, and Shaul's line continues through Mefiboshet."}]}]},
+ {id:"e3",title:"The Crime",sub:"Pesukim ו-ח: Rechav and Baana",
+  slides:[
+   {scene:"🗡️🗡️👑",h:"Plot twist",p:`${RB} killed ${IB}.`,tip:"Ish-Boshet was killed in his own house, on his bed, during peace time."},
+   {scene:"🔁📜",h:"Why does the navi say it twice?",p:"The killing is described two times. Why the repeat?",q:"1) They went back to remove his head.<br>2) The navi was probably just filling in details."},
+   {scene:"🏃‍♂️🏃‍♂️➡️⭐",h:"They run to David",p:`${RB} ran to ${DV} in Chevron and told him: we killed ${IB}!`,tip:"They're expecting a prize. Spoiler: they don't get one."}],
+  acts:[{type:"mcq",qs:[
+   {q:`Who killed ${IB}?`,o:["Yoav and Avishai","Rechav and Baana","Avner","The Plishtim"],a:[1],why:"Rechav and Baana killed him."},
+   {q:"Why is the killing told twice?",o:["They went back to remove his head","Two different people killed him","The navi was just filling in details","It happened on two different days"],a:[0,2],why:"They went back to remove his head, or the navi is filling in details."},
+   {q:"After the killing, where did they go?",o:["To the Plishtim","They ran to David and told him","They hid in the desert","Back home"],a:[1],why:"They ran to David to tell him they killed Ish-Boshet."}]}]},
+ {id:"e4",title:"Bad \"Good News\"",sub:"Pesukim ט-יא: the מבשר",
+  slides:[
+   {scene:"📣✨",h:`${H("מְבַשֵּׂר")} = bearer of good news`,p:"Rechav and Baana thought: if we kill Ish-Boshet and bring David the news, David will reward us.",tip:"They thought they were bringing GOOD news."},
+   {scene:"⭐⚖️",h:"David's reaction",p:"David did not reward them. He had them killed.",q:"David says: you killed him for no reason!"},
+   {scene:"🆚",h:"Why this was worse than Shaul's death",html:`<div class="vs"><div><b>Shaul's death</b><ul><li>About to die</li><li>Asked to be killed</li><li>About to be captured</li><li>During war</li></ul></div><div><b>Ish-Boshet's death</b><ul><li>Not during war</li><li>Didn't ask to die</li><li>During peace</li></ul></div></div>`,tip:"The man who said he killed Shaul was punished. How much more these two!"}],
+  acts:[{type:"sort",q:"Whose death does this describe?",bins:[["s","Shaul","⚔️"],["i","Ish-Boshet","🛏️"]],
+    items:[["About to die anyway","s"],["Asked to be killed","s"],["About to be captured","s"],["During war","s"],["Not during war","i"],["Didn't ask to die","i"],["During peace","i"]]},
+   {type:"mcq",qs:[
+    {q:`What is a ${H("מְבַשֵּׂר")}?`,o:["A judge","A bearer of good news","A soldier","A king's advisor"],a:[1],why:"A מבשר brings good news."},
+    {q:"Why did Rechav and Baana bring the news to David?",o:["They thought David would reward them","David asked them to","They wanted to confess","They were lost"],a:[0],why:"They thought David would reward them."},
+    {q:"What did David do to them?",o:["Gave them a reward","Made them generals","Had them killed","Sent them away"],a:[2],why:"David had them killed."},
+    {q:"David said they killed Ish-Boshet...",o:["by accident","for no reason","because he was evil","in a war"],a:[1],why:"For no reason: he was killed in peace, in his own house."}]}]},
+ {id:"e5",title:"The Verdict",sub:"Pasuk יב: hands, feet, and the public",
+  slides:[
+   {scene:"✋🦶",h:`${H("מִדָּה כְּנֶגֶד מִדָּה")}`,p:"David had their hands and feet cut off. Measure for measure:",q:"Feet: the feet they ran away with.<br>Hands: the hands they used to kill him."},
+   {scene:"👀🏙️",h:"Why hang them in public?",p:"Two reasons:",q:"1) To show David didn't do it.<br>2) To show you can't mess with a Jewish king."}],
+  acts:[{type:"match",q:"Measure for measure: match each punishment to the reason.",pairs:[["✋ Hands cut off","They used them to kill him"],["🦶 Feet cut off","They ran away with them"]]},
+   {type:"mcq",qs:[
+    {q:"Why did David have their hands and feet cut off?",o:["Measure for measure: feet ran away, hands killed","It was the normal punishment for stealing","So they couldn't run to the Plishtim","Avner asked him to"],a:[0],why:"Midah k'neged midah: feet they ran with, hands they killed with."},
+    {q:"Why were they hung in public?",o:["To show David didn't do it","To scare the Plishtim","To show you can't mess with a Jewish king","Because it was market day"],a:[0,2],why:"To show David wasn't behind it, and that you can't mess with a Jewish king."}]}]}
+];
+
+/* final: all MCQ from episodes + explain-it round (open questions from her notes) */
+const EXPLAIN=[
+ {q:"What does pasuk ד (Mefiboshet) have to do with anything? Give 2 answers.",a:"1) To show Ish-Boshet was the only descendant of Shaul fit to be king. 2) Shaul's lineage will continue through Mefiboshet."},
+ {q:"Why is the killing of Ish-Boshet repeated? Give 2 answers.",a:"1) They went back to remove his head. 2) The navi was probably just filling in details."},
+ {q:"Why did David have their hands and feet cut off?",a:"Midah k'neged midah. Feet: they ran away with them. Hands: they used them to kill him."},
+ {q:"Why hang them in public? Give 2 answers.",a:"1) To show David didn't do it. 2) To show you can't mess with a Jewish king."},
+ {q:"Compare Shaul's death to Ish-Boshet's death.",a:"Shaul: about to die, asked to be killed, about to be captured, during war. Ish-Boshet: not during war, didn't ask to die, during peace."},
+ {q:"Why was all Israel נבהלו when Avner died?",a:"They thought David killed Avner, and were scared David would betray them."}
+];
+
+/* engine */
+const app=document.getElementById("app");
+const $=id=>document.getElementById(id);
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+const shk=el=>{el.classList.add("shake");setTimeout(()=>el.classList.remove("shake"),400)};
+const toTop=()=>window.scrollTo({top:0,behavior:"smooth"});
+const NICE=["Correct.","Yes!","Nailed it.","Exactly.","Locked in."];
+let S={xp:0,done:{}};try{S=Object.assign(S,JSON.parse(localStorage.getItem("ib-files")||"{}"))}catch(e){}
+const save=()=>{try{localStorage.setItem("ib-files",JSON.stringify(S))}catch(e){}};
+let streak=0;
+function gain(n){S.xp+=n;save();const d=document.createElement("div");d.className="xpfly";d.textContent="+"+n+" XP"+(streak>=3?"  🔥"+streak:"");document.body.append(d);setTimeout(()=>d.remove(),1000)}
+
+function home(){
+  const n=EPS.filter(e=>S.done[e.id]).length;
+  app.innerHTML=`<div class="hero"><span class="eyebrow">Shmuel Bet · Perek ד</span><h1>The Ish-Boshet Files</h1><p>5 short episodes. Then the final. Every right answer = XP.</p></div>
+  <div class="row"><span class="pill">${n} / 5 episodes</span><span class="pill gold">${S.xp} XP</span></div>
+  <div><h3 style="margin-bottom:8px">The cast</h3><div class="cast">${CAST.map(c=>`<div class="who"><span>${c[0]}</span>${c[1]}<small style="color:var(--muted);font-weight:500">${c[2]}</small></div>`).join("")}</div></div>
+  <div class="eps">${EPS.map((e,i)=>`<button class="ep" data-i="${i}"><span class="num">${i+1}</span><span class="txt"><h3>${e.title}</h3><small>${e.sub}</small></span><span class="st${S.done[e.id]?" done":""}">${S.done[e.id]?"✓ watched":"play"}</span></button>`).join("")}
+  <button class="ep final" id="final"><span class="num">★</span><span class="txt"><h3>The Final</h3><small>${EPS.reduce((s,e)=>s+e.acts.filter(a=>a.type==="mcq").reduce((x,a)=>x+a.qs.length,0),0)} questions + explain-it round</small></span><span class="st" style="color:var(--bg)">go</span></button></div>`;
+  app.querySelectorAll(".ep[data-i]").forEach(b=>b.onclick=()=>slide(+b.dataset.i,0));
+  $("final").onclick=finalQuiz;
+}
+
+function slide(ei,si){
+  const E=EPS[ei],s=E.slides[si];toTop();
+  app.innerHTML=`<div class="row"><button class="btn soft" id="back">← Episodes</button><span class="pill">Ep ${ei+1}: ${E.title}</span></div>
+  <div class="panel in"><div class="bars">${E.slides.map((x,i)=>`<i class="${i<=si?"on":""}"></i>`).join("")}</div>
+  <div class="slide"><div class="scene">${s.scene}</div><div class="headline">${s.h}</div>${s.p?`<p>${s.p}</p>`:""}${s.html||""}${s.q?`<div class="quote">${s.q}</div>`:""}${s.tip?`<p class="tip">💡 ${s.tip}</p>`:""}</div>
+  <div class="row"><button class="btn soft" id="prev" ${si===0?'style="visibility:hidden"':""}>←</button><button class="btn" id="next">${si===E.slides.length-1?"Test yourself →":"Next →"}</button></div></div>`;
+  $("back").onclick=home;$("prev").onclick=()=>slide(ei,si-1);
+  $("next").onclick=()=>si<E.slides.length-1?slide(ei,si+1):play(ei);
+}
+
+function question(q,mode,onDone){
+  const multi=q.a.length>1,box=document.createElement("div");box.style.cssText="display:flex;flex-direction:column;gap:12px";
+  box.innerHTML=`${multi?`<span class="tag">Pick ${q.a.length}</span>`:""}<p class="q">${q.q}</p><div class="opts">${q.o.map((o,i)=>`<button class="opt" data-i="${i}"><span class="l">${"ABCD"[i]}</span><span>${o}</span></button>`).join("")}</div>${multi?`<button class="btn" data-check disabled>Check</button>`:""}`;
+  const opts=[...box.querySelectorAll(".opt")],chk=box.querySelector("[data-check]");let picked=new Set(),over=false;
+  const judge=()=>{const ok=picked.size===q.a.length&&q.a.every(i=>picked.has(i));
+    if(ok||mode==="test"){over=true;opts.forEach(o=>{const i=+o.dataset.i;if(q.a.includes(i))o.classList.add("ok");else if(picked.has(i))o.classList.add("no")});if(chk)chk.hidden=true;onDone(ok)}
+    else{onDone(null);opts.forEach(o=>{if(picked.has(+o.dataset.i)){o.classList.add("no");shk(o);setTimeout(()=>o.classList.remove("no","pick"),500)}});picked.clear();if(chk)chk.disabled=true}};
+  opts.forEach(o=>o.onclick=()=>{if(over)return;const i=+o.dataset.i;if(!multi){picked=new Set([i]);judge();return}
+    if(picked.has(i)){picked.delete(i);o.classList.remove("pick")}else if(picked.size<q.a.length){picked.add(i);o.classList.add("pick")}chk.disabled=picked.size!==q.a.length});
+  if(chk)chk.onclick=judge;return box;
+}
+
+function play(ei){
+  const E=EPS[ei];let k=0,mist=0;
+  const steps=[];E.acts.forEach(a=>{if(a.type==="mcq")a.qs.forEach(q=>steps.push({a,q}));else if(a.type==="sort")shuffle(a.items).forEach(it=>steps.push({a,it}));else steps.push({a})});
+  const next=()=>{k++;k<steps.length?step():finish()};
+  function frame(){toTop();app.innerHTML=`<div class="row"><button class="btn soft" id="back">← Episodes</button><span class="pill">Ep ${ei+1} · ${k+1}/${steps.length}</span><span class="pill gold">${S.xp} XP</span></div>
+    <div class="bar"><i style="width:${k/steps.length*100}%"></i></div><div class="panel in" id="pn"><p class="fb" id="fb"></p><button class="btn" id="go" hidden>Next →</button></div>`;
+    $("back").onclick=home;$("go").onclick=next;return $("pn")}
+  const put=(pn,el)=>pn.insertBefore(el,$("fb"));
+  const fb=(ok,t)=>{const f=$("fb");f.className="fb "+(ok?"ok":"no");f.innerHTML=t};
+  const win=t=>{streak++;gain(10);fb(true,t);$("go").hidden=false};
+  const miss=(t,el)=>{mist++;streak=0;if(el){el.classList.add("no");shk(el);setTimeout(()=>el.classList.remove("no"),450)}fb(false,t)};
+  const div=()=>{const d=document.createElement("div");d.style.cssText="display:flex;flex-direction:column;gap:12px";return d};
+  function step(){const s=steps[k],a=s.a,pn=frame();
+    if(a.type==="mcq")put(pn,question(s.q,"learn",ok=>ok===null?miss(s.q.a.length>1?"Not quite. You need both right ones.":"Not that one. Try again."):win("✅ "+s.q.why)));
+    else if(a.type==="sort"){const d=div();d.innerHTML=`<p class="q">${a.q}</p><div class="card-item">${s.it[0]}</div><div class="bins">${a.bins.map(b=>`<button class="bin" data-b="${b[0]}"><span>${b[2]}</span>${b[1]}</button>`).join("")}</div>`;put(pn,d);
+      let done=false;d.querySelectorAll(".bin").forEach(b=>b.onclick=()=>{if(done)return;if(b.dataset.b===s.it[1]){done=true;b.classList.add("ok");win("✅ "+(s.it[1]==="s"?"That was Shaul.":"That was Ish-Boshet."))}else miss("Other one. Think: war or peace?",b)})}
+    else if(a.type==="order"){const it=a.items;let n=0;const d=div();d.innerHTML=`<p class="q">${a.q}</p><div class="seq" id="seq"></div><div class="tiles">${shuffle(it.map((x,i)=>i)).map(i=>`<button class="tile" data-i="${i}"><span>${it[i][0]}</span>${it[i][1]}</button>`).join("")}</div>`;put(pn,d);
+      d.querySelectorAll(".tile").forEach(t=>t.onclick=()=>{if(t.classList.contains("used")||n>=it.length)return;
+        if(+t.dataset.i===n){t.classList.add("used");$("seq").insertAdjacentHTML("beforeend",`<div class="in"><b>${n+1}</b>${it[n][1]}</div>`);n++;if(n===it.length)win("🎬 Perfect order. That's the whole flashback.");else fb(true,"Yes. What's next?")}
+        else{mist++;streak=0;t.classList.add("no");shk(t);setTimeout(()=>t.classList.remove("no"),450);fb(false,"Not yet. What happened "+(n?"next":"first")+"?")}})}
+    else if(a.type==="match"){let sel=null,left=a.pairs.length;const d=div();d.innerHTML=`<p class="q">${a.q}</p><div class="cols"><div class="col" id="cl"></div><div class="col" id="cr"></div></div>`;put(pn,d);
+      a.pairs.forEach((p,i)=>{const b=document.createElement("button");b.className="mt";b.textContent=p[0];b.dataset.i=i;b.onclick=()=>{if(b.classList.contains("done"))return;d.querySelectorAll("#cl .mt").forEach(x=>x.classList.remove("sel"));b.classList.add("sel");sel=b};$("cl").append(b)});
+      shuffle(a.pairs.map((p,i)=>i)).forEach(i=>{const b=document.createElement("button");b.className="mt";b.textContent=a.pairs[i][1];b.dataset.i=i;
+        b.onclick=()=>{if(b.classList.contains("done"))return;if(!sel){fb(false,"Tap a punishment on the left first.");return}
+          if(sel.dataset.i===b.dataset.i){[sel,b].forEach(x=>{x.classList.remove("sel");x.classList.add("done")});sel=null;left--;if(!left)win("✅ Midah k'neged midah.");else fb(true,"Yes!")}else miss("Not that one.",b)};$("cr").append(b)})}
+  }
+  function finish(){S.done[E.id]=true;save();toTop();const nxt=ei<EPS.length-1;
+    app.innerHTML=`<div class="panel in" style="text-align:center;align-items:center"><span class="eyebrow">Episode ${ei+1} complete</span><h2>${E.title}</h2>
+    <p style="margin:0;font-weight:700">${mist===0?"Zero mistakes. Clean.":mist+" mistake"+(mist>1?"s":"")+". Replay it to make it perfect."}</p><span class="pill gold">${S.xp} XP total</span>
+    <div class="row" style="justify-content:center"><button class="btn soft" id="again">Replay</button><button class="btn" id="on">${nxt?"Next episode →":"The Final →"}</button></div></div>`;
+    $("again").onclick=()=>slide(ei,0);$("on").onclick=()=>nxt?slide(ei+1,0):finalQuiz()}
+  step();
+}
+
+function finalQuiz(){
+  const Q=shuffle(EPS.flatMap(e=>e.acts.filter(a=>a.type==="mcq").flatMap(a=>a.qs)));let i=0,right=0;const missed=[];streak=0;
+  function frame(label){toTop();app.innerHTML=`<div class="row"><button class="btn soft" id="back">← Episodes</button><span class="pill">${label}</span><span class="pill gold">✅ ${right}</span></div>
+    <div class="bar"><i style="width:${i/(Q.length+EXPLAIN.length)*100}%"></i></div><div class="panel in" id="pn"><p class="fb" id="fb"></p><button class="btn" id="go" hidden>Next →</button></div>`;$("back").onclick=home}
+  function ask(){const q=Q[i];frame(`Final · ${i+1}/${Q.length}`);
+    $("pn").insertBefore(question(q,"test",ok=>{const f=$("fb");if(ok){right++;streak++;gain(15);f.className="fb ok";f.innerHTML="✅ "+NICE[Math.random()*5|0]}else{streak=0;missed.push([q.q,q.why]);f.className="fb no";f.innerHTML="Answer: "+q.why}$("go").hidden=false}),$("fb"));
+    $("go").onclick=()=>{i++;i<Q.length?ask():explain(0)}}
+  function explain(j){const e=EXPLAIN[j];i=Q.length+j;frame(`Explain it · ${j+1}/${EXPLAIN.length}`);
+    const d=document.createElement("div");d.className="flip";d.innerHTML=`<span class="eyebrow">Say it out loud or write it down, then reveal</span><p class="q">${e.q}</p><button class="btn soft" id="rev">Reveal answer</button>`;
+    $("pn").insertBefore(d,$("fb"));
+    $("rev").onclick=()=>{$("rev").remove();d.insertAdjacentHTML("beforeend",`<div class="ans in">${e.a}</div><div class="row"><button class="btn soft" id="nope">I missed part of it</button><button class="btn" id="yes">I got it all</button></div>`);
+      const go=ok=>{if(ok){right++;gain(20)}else missed.push([e.q,e.a]);j<EXPLAIN.length-1?explain(j+1):end()};$("yes").onclick=()=>go(true);$("nope").onclick=()=>go(false)}}
+  function end(){toTop();const tot=Q.length+EXPLAIN.length,pct=Math.round(right/tot*100);
+    app.innerHTML=`<div class="panel in"><span class="eyebrow">Final results</span><div class="row" style="justify-content:flex-start;gap:14px;align-items:flex-end"><span class="huge">${right}/${tot}</span><span class="pill">${pct}%</span></div>
+    <h2>${pct===100?"Perfect. You're so ready.":pct>=85?"Really strong. Review the few below.":pct>=65?"Getting there. Go over these and retake.":"Replay the episodes, then try again."}</h2>
+    ${missed.length?`<div><h3 style="margin-bottom:8px">Review these</h3><ul class="miss">${missed.map(m=>`<li><b>${m[0]}</b>${m[1]}</li>`).join("")}</ul></div>`:""}
+    <div class="row"><button class="btn soft" id="map">Episodes</button><button class="btn" id="again">Retake the final</button></div></div>`;
+    $("map").onclick=home;$("again").onclick=finalQuiz}
+  ask();
+}
+home();
+</script>
+
+</body></html>

@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}
+.lib-back{position:fixed;left:max(12px,env(safe-area-inset-left,0px));bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:50;font:700 14px system-ui,sans-serif;padding:8px 14px;border-radius:999px;background:rgba(20,20,40,.82);color:#fff;text-decoration:none}</style>
+</head><body>
+<title>Study Arcade</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Nunito:wght@600;700;800&display=swap">
+<style>
+/* Layout: a shelf of game cartridges, newest first, filter chips by kid level, progress read from each game's saved stars/XP */
+:root{
+  --bg:#eef2f7; --card:#ffffff; --ink:#1b2236; --muted:#5f6a83; --line:#d9e0ec; --accent:#2f5bd3; --accent-soft:#e2e9fb; --good:#1f9a5b;
+  --display:"Bricolage Grotesque","Avenir Next",system-ui,sans-serif; --body:"Nunito","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121726;--card:#1c2336;--ink:#eef2fb;--muted:#a3adc6;--line:#2c3550;--accent:#86a6ff;--accent-soft:#25304f;--good:#4fd39a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#121726;--card:#1c2336;--ink:#eef2fb;--muted:#a3adc6;--line:#2c3550;--accent:#86a6ff;--accent-soft:#25304f;--good:#4fd39a;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.45;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px}
+.wrap{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+h1,h2{font-family:var(--display);margin:0;line-height:1.05;letter-spacing:-.01em;text-wrap:balance}
+h1{font-size:2.5rem;font-weight:800}
+.sub{margin:4px 0 0;color:var(--muted);font-weight:700}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{font:inherit;font-weight:800;font-size:.95rem;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 14px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.chip:focus-visible,.game:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.game{display:grid;grid-template-columns:64px 1fr;gap:14px;align-items:start;background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:14px;text-decoration:none;color:inherit;position:relative;overflow:hidden;min-width:0}
+.game::before{content:"";position:absolute;inset:0 auto 0 0;width:6px;background:var(--c)}
+.ico{width:64px;height:64px;border-radius:16px;display:grid;place-items:center;font-size:2.1rem;background:color-mix(in srgb,var(--c) 16%,var(--card))}
+.meta{min-width:0;display:flex;flex-direction:column;gap:4px}
+.top{display:flex;gap:6px;flex-wrap:wrap}
+.tag{font-size:.75rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:999px;background:var(--accent-soft)}
+.tag.age{background:color-mix(in srgb,var(--c) 18%,var(--card))}
+.game h2{font-size:1.3rem}
+.topic{margin:0;color:var(--muted);font-weight:700;font-size:.92rem}
+.prog{display:flex;align-items:center;gap:8px;font-size:.85rem;font-weight:800;color:var(--muted);font-variant-numeric:tabular-nums}
+.bar{flex:1;height:6px;border-radius:99px;background:var(--line);overflow:hidden;max-width:140px}
+.bar i{display:block;height:100%;background:var(--good)}
+.new{position:absolute;top:12px;right:12px;font-size:.72rem;font-weight:800;background:var(--accent);color:#fff;border-radius:999px;padding:2px 8px}
+.empty{color:var(--muted);font-weight:700}
+footer{color:var(--muted);font-size:.9rem;font-weight:700;border-top:1.5px solid var(--line);padding-top:14px}
+@media (max-width:420px){h1{font-size:2.1rem}.grid{grid-template-columns:1fr}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Study Arcade</h1>
+    <p class="sub">Every study game in one place. Tap a game to play.</p>
+  </header>
+  <div class="chips" role="group" aria-label="Filter games" id="chips"></div>
+  <div class="grid" id="grid"></div>
+  <footer>Got a new test coming up? Send the worksheet to Claude and the new game will show up here.</footer>
+</div>
+
+<script>
+/* newest first. kind: "stars" = {levelId:stars}, "xp" = {xp, done:{}} */
+const GAMES=[
+ {file:"games/kingdavid.html",title:"The King David Files",subject:"Navi",topic:"Shmuel Bet, perek ה: David crowned, Yerushalayim, the Plishtim",age:"Age 13",icon:"⭐",c:"#7a3cff",added:"2026-11-11",key:"kd-files",kind:"xp",total:5},
+ {file:"games/ishboshet.html",title:"The Ish-Boshet Files",subject:"Navi",topic:"Shmuel Bet, perek ד: Avner, Mefiboshet, Rechav and Baana",age:"Age 13",icon:"👑",c:"#a8329a",added:"2026-11-10",key:"ib-files",kind:"xp",total:5},
+ {file:"games/vaera.html",title:"Vaera Makkos Quest",subject:"Chumash",topic:"Parshas Vaera, Test 9: dever, shechin, barad",age:"Age 9",icon:"🐫",c:"#d98a1c",added:"2026-11-10",key:"vaera-stars",kind:"stars",total:5},
+ {file:"games/workshop.html",title:"Word Workshop",subject:"Vocabulary",topic:"Undertaking, Enterprise, Funds and 5 more words",age:"Age 9",icon:"🤖",c:"#1f9a7a",added:"2026-11-10",key:"workshop-stars",kind:"stars",total:5},
+ {file:"games/explorer.html",title:"Explorer Academy",subject:"Social Studies",topic:"Maps, continents, regions, where people live",age:"Age 9",icon:"🗺️",c:"#2f8fd6",added:"2026-11-09",key:"explorer-stars",kind:"stars",total:5}
+];
+const read=k=>{try{return JSON.parse(localStorage.getItem(k)||"null")}catch(e){return null}};
+function progress(g){const d=read(g.key);if(!d)return null;
+  if(g.kind==="xp"){const n=Object.keys(d.done||{}).length;return{n,label:`${n}/${g.total} episodes · ${d.xp||0} XP`}}
+  const n=Object.values(d).filter(v=>v>0).length,st=Object.values(d).reduce((a,b)=>a+(+b||0),0);return{n,label:`${n}/${g.total} done · ${st}⭐`}}
+const ages=["All",...new Set(GAMES.map(g=>g.age))];let filt="All";
+try{const f=localStorage.getItem("arcade-filter");if(f&&ages.includes(f))filt=f}catch(e){}
+function render(){
+  document.getElementById("chips").innerHTML=ages.map(a=>`<button class="chip" aria-pressed="${a===filt}" data-a="${a}">${a}</button>`).join("");
+  document.querySelectorAll(".chip").forEach(b=>b.onclick=()=>{filt=b.dataset.a;try{localStorage.setItem("arcade-filter",filt)}catch(e){}render()});
+  const list=GAMES.filter(g=>filt==="All"||g.age===filt),newest=GAMES[0].added;
+  document.getElementById("grid").innerHTML=list.length?list.map(g=>{const p=progress(g);
+    return `<a class="game" href="${g.file}" style="--c:${g.c}">${g.added===newest?'<span class="new">NEW</span>':""}<div class="ico">${g.icon}</div>
+    <div class="meta"><div class="top"><span class="tag">${g.subject}</span><span class="tag age">${g.age}</span></div><h2>${g.title}</h2><p class="topic">${g.topic}</p>
+    <div class="prog">${p?`<span class="bar"><i style="width:${Math.min(100,p.n/g.total*100)}%"></i></span>${p.label}`:"Not started yet"}</div></div></a>`}).join(""):`<p class="empty">No games here yet.</p>`;
+}
+render();
+</script>
+
+</body></html>

@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}
+.lib-back{position:fixed;left:max(12px,env(safe-area-inset-left,0px));bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:50;font:700 14px system-ui,sans-serif;padding:8px 14px;border-radius:999px;background:rgba(20,20,40,.82);color:#fff;text-decoration:none}</style>
+</head><body>
+<a class="lib-back" href="../">&larr; All games</a>
+<title>Word Workshop</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@600;700;800&display=swap">
+<style>
+/* Layout: an inventor's workshop with 4 machines (levels), a worksheet practice station, then the Big Quiz */
+:root{
+  --bg:#e5f4ec; --card:#ffffff; --ink:#22224a; --muted:#5d6185; --line:#c4e0d2;
+  --accent:#6a4cf0; --accent-soft:#e6e0ff; --good:#1f9a5b; --good-soft:#d5f3e3; --bad:#df3f45; --bad-soft:#fde0e1; --sun:#ffc93c;
+  --display:"Baloo 2","Trebuchet MS",system-ui,sans-serif; --body:"Nunito","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#10201a; --card:#1b2f28; --ink:#eaf2ff; --muted:#a6b5c9; --line:#2d4a3f;
+  --accent:#9a84ff; --accent-soft:#2f2860; --good:#4fd18b; --good-soft:#173d2a; --bad:#ff6b70; --bad-soft:#4a1d22; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#10201a; --card:#1b2f28; --ink:#eaf2ff; --muted:#a6b5c9; --line:#2d4a3f;
+  --accent:#9a84ff; --accent-soft:#2f2860; --good:#4fd18b; --good-soft:#173d2a; --bad:#ff6b70; --bad-soft:#4a1d22; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:18px;line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 40px}
+.wrap{max-width:620px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1,h2,h3{font-family:var(--display);margin:0;line-height:1.1;text-wrap:balance}
+h1{font-size:2.1rem} h2{font-size:1.6rem} h3{font-size:1.25rem}
+button{font:inherit;color:inherit}
+button:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
+.guide{display:flex;gap:12px;align-items:flex-start}
+.guide .face{font-size:3rem;line-height:1;flex:none}
+.bubble{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:12px 14px;font-weight:700;min-width:0}
+.panel{background:var(--card);border:2px solid var(--line);border-radius:22px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.btn{font-family:var(--display);font-weight:700;font-size:1.15rem;border:0;border-radius:16px;padding:12px 20px;cursor:pointer;background:var(--accent);color:#fff;box-shadow:0 4px 0 color-mix(in srgb,var(--accent) 55%,#000)}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 color-mix(in srgb,var(--accent) 55%,#000)}
+.btn.soft{background:var(--card);color:var(--ink);border:2px solid var(--line);box-shadow:none}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.pill{font-family:var(--display);font-weight:700;background:var(--accent-soft);border-radius:999px;padding:3px 12px;font-variant-numeric:tabular-nums}
+.stations{display:flex;flex-direction:column;gap:12px}
+.station{display:flex;align-items:center;gap:14px;background:var(--card);border:2px solid var(--line);border-radius:22px;padding:12px 16px;cursor:pointer;text-align:left;width:100%}
+.station .ico{font-size:2.3rem;width:58px;height:58px;display:grid;place-items:center;background:var(--bg);border-radius:16px;flex:none}
+.station .txt{flex:1;min-width:0}
+.station small{display:block;color:var(--muted);font-weight:700;font-size:.9rem}
+.stars{font-size:1.1rem;letter-spacing:2px;white-space:nowrap}
+.station.final{background:var(--accent);border-color:var(--accent);color:#fff}
+.station.final small{color:#fff;opacity:.9}
+.station.final .ico{background:rgba(255,255,255,.22)}
+.station.sheet{border-style:dashed;border-color:var(--accent)}
+.learn{display:flex;flex-direction:column;gap:12px}
+.picbox{background:var(--bg);border-radius:18px;padding:14px;display:grid;place-items:center;min-height:130px}
+.emo{font-size:4.2rem;line-height:1.1;letter-spacing:8px;text-align:center}
+.word{font-family:var(--display);font-size:2.2rem;font-weight:800;color:var(--accent);line-height:1}
+.say{font-size:1.2rem;font-weight:800;margin:0}
+.ex{margin:0;background:var(--good-soft);border-radius:14px;padding:10px 12px;font-weight:700}
+.he{margin:0;color:var(--muted);font-weight:700;direction:rtl;text-align:right}
+.dots{display:flex;gap:6px;justify-content:center}
+.dots i{width:10px;height:10px;border-radius:50%;background:var(--line)}
+.dots i.on{background:var(--accent)}
+.q{font-size:1.3rem;font-weight:800;margin:0}
+.big-item{display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--bg);border-radius:18px;padding:16px;text-align:center}
+.big-item .emo{font-size:4.4rem}
+.big-item b{font-size:1.2rem}
+.bins{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.bin{border:3px solid var(--line);background:var(--card);border-radius:18px;padding:12px 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;font-family:var(--display);font-weight:700;font-size:1.15rem;line-height:1.15}
+.bin span{font-size:2.2rem}
+.bin small{font-family:var(--body);font-size:.85rem;color:var(--muted)}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{border:3px solid var(--line);background:var(--card);border-radius:16px;padding:12px 14px;text-align:left;font-weight:800;cursor:pointer;font-size:1.1rem}
+.opt.ok,.bin.ok{border-color:var(--good);background:var(--good-soft)}
+.opt.no,.bin.no{border-color:var(--bad);background:var(--bad-soft);animation:shake .35s}
+.tiles{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.tile{border:3px solid var(--line);background:var(--card);border-radius:16px;padding:8px 10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;min-width:96px;max-width:140px;font-weight:800;font-size:.95rem;text-align:center}
+.tile span{font-size:2.6rem}
+.tile.used{opacity:.25;cursor:default}
+.tile.no{border-color:var(--bad);animation:shake .35s}
+.seq{display:flex;gap:8px;justify-content:center;min-height:70px;background:var(--bg);border-radius:16px;padding:8px;flex-wrap:wrap;align-items:center}
+.seq span{font-size:2.6rem}
+.seq .arrow{font-size:1.4rem;color:var(--muted)}
+.cols{display:grid;grid-template-columns:1fr 1.5fr;gap:10px}
+.col{display:flex;flex-direction:column;gap:8px;min-width:0}
+.mt{border:3px solid var(--line);background:var(--card);border-radius:14px;padding:10px;text-align:left;font-weight:800;cursor:pointer;min-height:52px;font-size:1rem}
+.mt.term{font-family:var(--display);font-size:1.1rem}
+.mt .ltr{display:inline-block;width:1.6em;color:var(--accent);font-family:var(--display)}
+.mt.sel{border-color:var(--sun);background:color-mix(in srgb,var(--sun) 25%,var(--card))}
+.mt.done{border-color:var(--good);background:var(--good-soft);cursor:default}
+.mt.no{border-color:var(--bad);background:var(--bad-soft);animation:shake .35s}
+.fb{font-weight:800;margin:0;min-height:1.4em;padding:10px 12px;border-radius:14px}
+.fb.ok{background:var(--good-soft)}
+.fb.no{background:var(--bad-soft)}
+.fb:empty{padding:0}
+.bar{height:12px;background:var(--bg);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--good);transition:width .3s}
+.huge{font-family:var(--display);font-size:3.6rem;font-weight:800;line-height:1;text-align:center;font-variant-numeric:tabular-nums}
+.bigstars{font-size:3rem;text-align:center;letter-spacing:6px}
+.miss{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+.miss li{background:var(--bad-soft);border-radius:14px;padding:10px 12px;font-weight:700}
+.miss b{font-family:var(--display);font-size:1.1rem}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@keyframes pop{0%{transform:scale(.6);opacity:0}100%{transform:scale(1);opacity:1}}
+.pop{animation:pop .35s ease-out}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (max-width:420px){.emo{font-size:3.4rem}.word{font-size:1.9rem}.cols{grid-template-columns:1fr 1.35fr}.mt{font-size:.92rem;padding:8px}}
+</style>
+
+<div class="wrap" id="app"></div>
+
+<script>
+const emo=s=>`<div class="emo">${s}</div>`;
+/* exact worksheet definitions */
+const SHEET=[["Undertaking","c","A task you have to complete"],["Enterprise","d","A difficult but important project"],["Funds","h","Money that is to be used for one thing"],["Exceptional","a","Something great"],["Compassionate","b","Feeling sympathetic towards someone"],["Routine","g","A fixed way to do something"],["Process","e","The steps to do something"],["Innovative","f","New and creative"]];
+const DEF=Object.fromEntries(SHEET.map(s=>[s[0],s[2]]));
+
+const LEVELS=[
+ {id:"jobs",name:"Big Jobs",ico:"🏗️",sub:"Undertaking, Enterprise",
+  intro:"Some jobs are tasks you just have to finish. Some are BIG, HARD projects. Let's learn the words for them!",
+  cards:[
+   {w:"Undertaking",pic:()=>emo("📋✅"),say:"An Undertaking is a TASK you have to complete (finish).",ex:"Your teacher says: \"Please clean up the class library.\" That's your undertaking. You have to finish it!",he:"משימה שצריך להשלים"},
+   {w:"Enterprise",pic:()=>emo("🏗️🚀"),say:"An Enterprise is a DIFFICULT but IMPORTANT project.",ex:"Building a big treehouse with your whole family takes weeks. It's hard work, but it matters. That's an enterprise!",he:"מיזם: פרויקט קשה אבל חשוב"},
+   {w:"How to tell them apart",pic:()=>emo("📋 🆚 🏗️"),say:"Undertaking = a task to finish. Enterprise = a BIG, HARD, IMPORTANT project.",ex:"Trick: Enterprise sounds big, like a giant spaceship! 🚀",he:"משימה רגילה מול פרויקט גדול וקשה"}],
+  acts:[{type:"sort",q:"Is this a task to finish, or a big, hard, important project?",
+   bins:[{id:"u",t:"Undertaking",e:"📋",s:"a task to finish"},{id:"e",t:"Enterprise",e:"🏗️",s:"big, hard, important project"}],
+   items:[{e:"📝",t:"Finish your math homework",b:"u",why:"A task you have to complete. Undertaking!"},
+          {e:"🏥",t:"Build a new hospital for the city",b:"e",why:"Very hard and very important. Enterprise!"},
+          {e:"🧸",t:"Put away your toys",b:"u",why:"A task to finish. Undertaking!"},
+          {e:"🌕",t:"Send a rocket to the Moon",b:"e",why:"Super difficult and important. Enterprise!"},
+          {e:"🐕",t:"Feed the dog tonight",b:"u",why:"A task you have to do. Undertaking!"},
+          {e:"🌉",t:"Build a giant bridge over a river",b:"e",why:"Hard, big and important. Enterprise!"}]}]},
+ {id:"money",name:"Money and Kindness",ico:"💗",sub:"Funds, Compassionate",
+  intro:"One word is about money, and one is about having a kind heart.",
+  cards:[
+   {w:"Funds",pic:()=>emo("🫙💵🚲"),say:"Funds are MONEY that is saved to be used for ONE thing.",ex:"Leo puts $5 every week in a jar that says BIKE. That's his bike funds. He can't spend it on candy!",he:"כספים: כסף שמיועד לדבר אחד"},
+   {w:"Compassionate",pic:()=>emo("🤕🤗❤️"),say:"Compassionate means you feel SORRY for someone and want to help.",ex:"Your friend falls and hurts his knee. You feel bad for him and help him up. You are compassionate!",he:"רחמן, בעל חמלה: מרגיש צער כלפי מישהו ורוצה לעזור"}],
+  acts:[{type:"sort",q:"Is this compassionate?",bins:[{id:"c",t:"Compassionate",e:"🤗",s:"kind and caring"},{id:"n",t:"Not compassionate",e:"😐",s:"doesn't care"}],
+   items:[{e:"🥪",t:"Sharing your lunch with a kid who forgot his",b:"c",why:"You cared about him. Compassionate!"},
+          {e:"📚",t:"Laughing when someone drops their books",b:"n",why:"That's not kind. Compassionate means caring how others feel."},
+          {e:"💌",t:"Making a card for a sick friend",b:"c",why:"You felt sorry he was sick. Compassionate!"},
+          {e:"🪑",t:"Ignoring a new kid who sits alone",b:"n",why:"A compassionate kid would go say hi."},
+          {e:"😢",t:"Hugging your little sister when she is sad",b:"c",why:"You cared about her feelings. Compassionate!"}]},
+   {type:"mcq",qs:[{q:"Dad puts money in a jar ONLY for the family vacation. That money is the vacation...",pic:"🫙✈️",o:["Funds","Routine","Process"],a:"Funds",why:"Money saved for one thing is called funds."},
+                   {q:"The class collects $50 to buy one new class pet. The $50 is the pet...",pic:"💵🐹",o:["Enterprise","Funds","Innovative"],a:"Funds",why:"Money for one thing = funds!"}]}]},
+ {id:"how",name:"How We Do Things",ico:"🔁",sub:"Routine, Process",
+  intro:"These two words are about HOW we do things.",
+  cards:[
+   {w:"Routine",pic:()=>emo("⏰🪥👕🥣"),say:"A Routine is a FIXED way you do something, the same way every time.",ex:"Every morning: wake up, brush teeth, get dressed, eat breakfast. Same order every day. That's your morning routine!",he:"שגרה: דרך קבועה לעשות משהו"},
+   {w:"Process",pic:()=>emo("🍋➡️💧➡️🥤"),say:"A Process is the STEPS to do something.",ex:"To make lemonade: squeeze lemons, add water, add sugar, stir. Those steps are the process!",he:"תהליך: השלבים לעשות משהו"},
+   {w:"How to tell them apart",pic:()=>emo("🔁 🆚 🪜"),say:"Routine = the SAME thing again and again, every day. Process = the STEPS to get something done.",ex:"Going to bed at 8 every night = routine. The steps to bake a cake = process.",he:"שגרה חוזרת כל יום, תהליך הוא שלבים"}],
+  acts:[{type:"order",q:"Process time! Put the steps of making a sandwich in order. Tap the FIRST step.",items:[{e:"🍞",t:"Take bread"},{e:"🥜",t:"Spread peanut butter"},{e:"🍓",t:"Add jelly"},{e:"🥪",t:"Close the sandwich"}]},
+   {type:"order",q:"Another process! How do you grow a plant? Tap the FIRST step.",items:[{e:"🕳️",t:"Dig a hole"},{e:"🌰",t:"Put in a seed"},{e:"💧",t:"Water it"},{e:"🌱",t:"It grows!"}]},
+   {type:"mcq",qs:[{q:"Every night Ben takes a bath, reads a book, and goes to sleep. Same way every night. That's his...",pic:"🛁📖😴",o:["Routine","Funds","Enterprise"],a:"Routine",why:"Doing the same thing the same way every time is a routine."},
+                   {q:"Mom shows you how to bake a cake: mix, pour, bake, cool. These steps are the...",pic:"🥣🎂",o:["Undertaking","Process","Exceptional"],a:"Process",why:"The steps to do something are the process."}]}]},
+ {id:"great",name:"Great and New",ico:"💡",sub:"Exceptional, Innovative",
+  intro:"Last machine! Two words for amazing things.",
+  cards:[
+   {w:"Exceptional",pic:()=>emo("🏆🌟💯"),say:"Exceptional means something GREAT, much better than usual.",ex:"You got 100 on the hardest test, and the teacher wrote: \"Exceptional work!\"",he:"יוצא מן הכלל: משהו נהדר"},
+   {w:"Innovative",pic:()=>emo("💡🤖🛠️"),say:"Innovative means NEW and CREATIVE, an idea nobody had before.",ex:"A kid invents shoes that light up so cars can see him at night. What a new idea! That's innovative.",he:"חדשני: חדש ויצירתי"}],
+  acts:[{type:"sort",q:"Is this a NEW idea, or just really GREAT?",bins:[{id:"i",t:"Innovative",e:"💡",s:"new and creative"},{id:"x",t:"Exceptional",e:"🏆",s:"something great"}],
+   items:[{e:"🤖",t:"A brand-new robot that folds laundry",b:"i",why:"Nobody had that idea before. Innovative!"},
+          {e:"⚽",t:"Scoring 10 goals in one game",b:"x",why:"That's amazing! Exceptional!"},
+          {e:"🎒",t:"A new backpack that turns into a chair",b:"i",why:"New and creative. Innovative!"},
+          {e:"🥇",t:"A drawing so good it wins first prize",b:"x",why:"Really great. Exceptional!"},
+          {e:"📚",t:"Reading 50 books in one summer",b:"x",why:"Much better than usual. Exceptional!"}]}]}
+];
+const FINAL=[
+ ...SHEET.map(s=>({q:`Which word means: "${s[2]}"?`,pic:"📝",a:s[0]})),
+ {q:"Sara has to clean her room before dinner. Cleaning her room is an...",pic:"🧹",a:"Undertaking"},
+ {q:"A team works for 5 years to build the first school in a village. It's hard but very important. It's an...",pic:"🏫",a:"Enterprise"},
+ {q:"Money saved only for a new computer is computer...",pic:"💻💵",a:"Funds"},
+ {q:"Maya ran faster than anyone in the whole school. Her race was...",pic:"🏃‍♀️🏆",a:"Exceptional"},
+ {q:"Eli saw a kid crying and gave him a hug. Eli was...",pic:"😢🤗",a:"Compassionate"},
+ {q:"Every Sunday the family eats pancakes. Every single Sunday! That's a...",pic:"🥞",a:"Routine"},
+ {q:"First you mix, then you pour, then you bake. These are the steps of the...",pic:"🥣🍪",a:"Process"},
+ {q:"Someone invents a new kind of pencil that never breaks. That idea is...",pic:"✏️💡",a:"Innovative"}
+];
+const ALL=SHEET.map(s=>s[0]);
+FINAL.forEach(q=>{const others=shuffle0(ALL.filter(w=>w!==q.a)).slice(0,2);q.o=[q.a,...others]});
+function shuffle0(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a}
+
+const app=document.getElementById("app");
+const shuffle=shuffle0;
+const PRAISE=["Awesome!","Great job!","You got it!","Super!","Nice work, inventor!"];
+let stars={};try{stars=JSON.parse(localStorage.getItem("workshop-stars")||"{}")}catch(e){}
+const save=()=>{try{localStorage.setItem("workshop-stars",JSON.stringify(stars))}catch(e){}};
+const starStr=n=>"⭐".repeat(n)+"☆".repeat(3-n);
+const toTop=()=>window.scrollTo({top:0,behavior:"smooth"});
+
+function home(){
+  const done=LEVELS.filter(l=>stars[l.id]).length;
+  app.innerHTML=`<div class="guide"><div class="face">🤖</div><div class="bubble">Beep boop! I'm Bolt, the workshop robot. Turn on each machine to learn 2 new words, play the game, and win stars. Then try the worksheet and the Big Quiz!</div></div>
+  <div class="row"><h1>Word Workshop</h1><span class="pill">${done} / 4 machines</span></div>
+  <div class="stations">${LEVELS.map((l,i)=>`<button class="station" data-i="${i}"><div class="ico">${l.ico}</div><div class="txt"><h3>${i+1}. ${l.name}</h3><small>${l.sub}</small></div><span class="stars">${starStr(stars[l.id]||0)}</span></button>`).join("")}
+  <button class="station sheet" id="sheet"><div class="ico">📝</div><div class="txt"><h3>5. Worksheet Practice</h3><small>Match all 8 words, just like on the real paper</small></div><span class="stars">${starStr(stars.sheet||0)}</span></button>
+  <button class="station final" id="final"><div class="ico">🏆</div><div class="txt"><h3>The Big Quiz</h3><small>16 questions. How many can you get?</small></div></button></div>`;
+  app.querySelectorAll(".station[data-i]").forEach(b=>b.onclick=()=>learn(+b.dataset.i,0));
+  document.getElementById("sheet").onclick=sheet;
+  document.getElementById("final").onclick=finalQuiz;
+}
+
+function learn(li,ci){
+  const L=LEVELS[li],C=L.cards[ci];toTop();
+  app.innerHTML=`<div class="row"><button class="btn soft" id="back">← Workshop</button><span class="pill">${L.ico} ${L.name}</span></div>
+  ${ci===0?`<div class="guide"><div class="face">🤖</div><div class="bubble">${L.intro}</div></div>`:""}
+  <div class="panel learn pop"><div class="picbox">${C.pic()}</div>
+   <div class="word">${C.w}</div><p class="say">${C.say}</p><p class="ex">💡 ${C.ex}</p><p class="he">${C.he}</p>
+   <div class="dots">${L.cards.map((c,i)=>`<i class="${i===ci?"on":""}"></i>`).join("")}</div>
+   <div class="row"><button class="btn soft" id="prev" ${ci===0?'style="visibility:hidden"':""}>← Back</button>
+   <button class="btn" id="next">${ci===L.cards.length-1?"Let's play! 🎮":"Next →"}</button></div></div>`;
+  document.getElementById("back").onclick=home;
+  document.getElementById("prev").onclick=()=>learn(li,ci-1);
+  document.getElementById("next").onclick=()=>ci<L.cards.length-1?learn(li,ci+1):play(li);
+}
+
+function play(li){
+  const L=LEVELS[li];let ai=0,mist=0;
+  const steps=[];L.acts.forEach(a=>{if(a.type==="sort")shuffle(a.items).forEach(it=>steps.push({a,it}));else if(a.type==="order")steps.push({a});else a.qs.forEach(q=>steps.push({a,q}))});
+  const next=()=>{ai++;ai<steps.length?step():finish()};
+  function frame(inner){toTop();app.innerHTML=`<div class="row"><button class="btn soft" id="back">← Workshop</button><span class="pill">${L.ico} Game ${ai+1} / ${steps.length}</span></div>
+    <div class="bar"><i style="width:${ai/steps.length*100}%"></i></div><div class="panel pop">${inner}<p class="fb" id="fb"></p><button class="btn" id="go" hidden>Next →</button></div>`;
+    document.getElementById("back").onclick=home;document.getElementById("go").onclick=next}
+  const fb=(ok,t)=>{const f=document.getElementById("fb");f.className="fb "+(ok?"ok":"no");f.textContent=t};
+  const ready=()=>{document.getElementById("go").hidden=false};
+  const wrong=(el,t)=>{mist++;el.classList.add("no");setTimeout(()=>el.classList.remove("no"),400);fb(false,t)};
+  function step(){const s=steps[ai],a=s.a;
+    if(a.type==="sort"){const it=s.it;frame(`<p class="q">${a.q}</p><div class="big-item"><div class="emo">${it.e}</div><b>${it.t}</b></div>
+      <div class="bins">${a.bins.map(b=>`<button class="bin" data-b="${b.id}"><span>${b.e}</span>${b.t}<small>${b.s}</small></button>`).join("")}</div>`);
+      let solved=false;app.querySelectorAll(".bin").forEach(b=>b.onclick=()=>{if(solved)return;
+        if(b.dataset.b===it.b){solved=true;b.classList.add("ok");fb(true,"✅ "+it.why);ready()}else wrong(b,"Not quite. Think again!")})}
+    else if(a.type==="order"){const order=a.items;let n=0;
+      frame(`<p class="q">${a.q}</p><div class="seq" id="seq"></div><div class="tiles">${shuffle(order.map((x,i)=>i)).map(i=>`<button class="tile" data-i="${i}"><span>${order[i].e}</span>${order[i].t}</button>`).join("")}</div>`);
+      app.querySelectorAll(".tile").forEach(t=>t.onclick=()=>{if(t.classList.contains("used")||n>=order.length)return;
+        if(+t.dataset.i===n){t.classList.add("used");document.getElementById("seq").insertAdjacentHTML("beforeend",(n?'<b class="arrow">→</b>':"")+`<span class="pop">${order[n].e}</span>`);n++;
+          if(n===order.length){fb(true,"🎉 You did every step in order. That's a process!");ready()}else fb(true,"Yes! What's the next step?")}
+        else wrong(t,"Hmm, is that the "+(n?"next":"first")+" step? Try another one.")})}
+    else{const q=s.q;frame(`<div class="big-item"><div class="emo">${q.pic}</div></div><p class="q">${q.q}</p><div class="opts">${shuffle(q.o).map(o=>`<button class="opt">${o}</button>`).join("")}</div>`);
+      let solved=false;app.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{if(solved)return;
+        if(b.textContent===q.a){solved=true;b.classList.add("ok");fb(true,"✅ "+q.why);ready()}else wrong(b,"Not that one. Try again!")})}
+  }
+  function finish(){const st=mist<=1?3:mist<=3?2:1;stars[L.id]=Math.max(stars[L.id]||0,st);save();toTop();
+    const nxt=li<LEVELS.length-1;
+    app.innerHTML=`<div class="panel pop" style="align-items:center;text-align:center"><div class="bigstars">${starStr(st)}</div>
+     <h2>${L.name} machine is ON!</h2><p style="margin:0;font-weight:700">${mist===0?"No mistakes at all. Amazing!":"Mistakes: "+mist+(st<3?". Play again to get 3 stars!":"")}</p>
+     <div class="row" style="justify-content:center"><button class="btn soft" id="again">Play again</button>
+     <button class="btn" id="on">${nxt?"Next machine →":"Worksheet practice 📝"}</button></div>
+     <button class="btn soft" id="map">Back to the workshop</button></div>`;
+    document.getElementById("again").onclick=()=>play(li);
+    document.getElementById("map").onclick=home;
+    document.getElementById("on").onclick=()=>nxt?learn(li+1,0):sheet();}
+  step();
+}
+
+/* worksheet-style matching: words on the left, lettered definitions on the right */
+function sheet(){
+  toTop();let sel=null,left=8,mist=0;
+  const defs=SHEET.slice().sort((x,y)=>x[1].localeCompare(y[1]));
+  app.innerHTML=`<div class="row"><button class="btn soft" id="back">← Workshop</button><span class="pill">📝 Worksheet</span></div>
+  <div class="guide"><div class="face">🤖</div><div class="bubble">This is just like the paper! Tap a word, then tap the letter of its meaning.</div></div>
+  <div class="panel pop"><div class="cols"><div class="col" id="w"></div><div class="col" id="d"></div></div>
+  <p class="fb" id="fb"></p><div class="row"><span class="pill" id="ms">Mistakes: 0</span><button class="btn" id="done" hidden>Finish</button></div></div>`;
+  document.getElementById("back").onclick=home;
+  const W=document.getElementById("w"),D=document.getElementById("d"),F=document.getElementById("fb");
+  SHEET.forEach(s=>{const b=document.createElement("button");b.className="mt term";b.dataset.w=s[0];b.textContent=s[0];
+    b.onclick=()=>{if(b.classList.contains("done"))return;W.querySelectorAll(".mt").forEach(x=>x.classList.remove("sel"));b.classList.add("sel");sel=b};W.append(b)});
+  defs.forEach(s=>{const b=document.createElement("button");b.className="mt";b.dataset.w=s[0];b.innerHTML=`<span class="ltr">${s[1]}.</span>`;b.append(s[2]);
+    b.onclick=()=>{if(b.classList.contains("done"))return;if(!sel){F.className="fb no";F.textContent="First tap a word on the left.";return}
+      if(sel.dataset.w===b.dataset.w){sel.classList.remove("sel");sel.classList.add("done");sel.textContent=s[1]+" = "+s[0];b.classList.add("done");sel=null;left--;
+        F.className="fb ok";F.textContent=PRAISE[Math.random()*5|0];
+        if(!left){F.textContent=mist?"All matched! Mistakes: "+mist+". Try again for zero!":"Perfect! You matched the whole worksheet with no mistakes!";const st=mist<=1?3:mist<=3?2:1;stars.sheet=Math.max(stars.sheet||0,st);save();
+          const d=document.getElementById("done");d.hidden=false;d.textContent="Take the Big Quiz 🏆";d.onclick=finalQuiz}}
+      else{mist++;document.getElementById("ms").textContent="Mistakes: "+mist;b.classList.add("no");setTimeout(()=>b.classList.remove("no"),400);F.className="fb no";F.textContent="Not that one. Try again!"}};D.append(b)});
+}
+
+function finalQuiz(){
+  const qs=shuffle(FINAL);let i=0,right=0;const missed=[];
+  function ask(){const q=qs[i];toTop();
+    app.innerHTML=`<div class="row"><button class="btn soft" id="back">← Workshop</button><span class="pill">🏆 ${i+1} / ${qs.length}</span><span class="pill">✅ ${right}</span></div>
+    <div class="bar"><i style="width:${i/qs.length*100}%"></i></div>
+    <div class="panel pop"><div class="big-item"><div class="emo">${q.pic}</div></div><p class="q">${q.q}</p>
+    <div class="opts">${shuffle(q.o).map(o=>`<button class="opt">${o}</button>`).join("")}</div><p class="fb" id="fb"></p><button class="btn" id="go" hidden>${i===qs.length-1?"See my score 🏆":"Next →"}</button></div>`;
+    document.getElementById("back").onclick=home;
+    let done=false;app.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{if(done)return;done=true;const f=document.getElementById("fb");
+      if(b.textContent===q.a){right++;b.classList.add("ok");f.className="fb ok";f.textContent="✅ "+PRAISE[Math.random()*5|0]}
+      else{b.classList.add("no");app.querySelectorAll(".opt").forEach(x=>{if(x.textContent===q.a)x.classList.add("ok")});f.className="fb no";f.textContent="The answer is "+q.a+": "+DEF[q.a]+".";missed.push(q.a)}
+      document.getElementById("go").hidden=false});
+    document.getElementById("go").onclick=()=>{i++;i<qs.length?ask():end()};
+  }
+  function end(){toTop();const pct=Math.round(right/qs.length*100),st=pct>=90?3:pct>=70?2:1;
+    app.innerHTML=`<div class="panel pop" style="text-align:center"><div class="bigstars">${starStr(st)}</div>
+    <div class="huge">${right} / ${qs.length}</div><span class="pill" style="align-self:center">${pct}%</span>
+    <h2>${pct===100?"Perfect! You're ready for the quiz!":pct>=85?"Exceptional work, inventor!":pct>=65?"Good job! Almost there!":"Nice try! Let's practice a bit more."}</h2>
+    ${missed.length?`<div style="text-align:left"><h3 style="margin-bottom:8px">Words to practice:</h3><ul class="miss">${[...new Set(missed)].map(m=>`<li><b>${m}</b>: ${DEF[m]}</li>`).join("")}</ul></div>`:""}
+    <div class="row" style="justify-content:center"><button class="btn soft" id="map">Back to the workshop</button><button class="btn" id="again">Try the Big Quiz again</button></div></div>`;
+    document.getElementById("map").onclick=home;document.getElementById("again").onclick=finalQuiz;}
+  ask();
+}
+home();
+</script>
+
+</body></html>
