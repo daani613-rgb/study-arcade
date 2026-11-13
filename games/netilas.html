@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}
+.lib-back{position:fixed;left:max(12px,env(safe-area-inset-left,0px));bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:50;font:700 14px system-ui,sans-serif;padding:8px 14px;border-radius:999px;background:rgba(20,20,40,.82);color:#fff;text-decoration:none}</style>
+</head><body>
+<a class="lib-back" href="../">&larr; All games</a>
+<title>The Netilas Yadayim Files</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=DM+Sans:wght@500;700&family=Frank+Ruhl+Libre:wght@500;700&display=swap">
+<style>
+/* Layout: a 5-episode series (story slides + mini-games), then "The Final": MCQ + explain-it round, XP and streak */
+:root{
+  --bg:#f3eef9; --card:#ffffff; --ink:#24183a; --muted:#6d6283; --line:#e2d8f0;
+  --accent:#7a3cff; --accent-soft:#ece3ff; --gold:#c98a1b; --gold-soft:#fbefd8;
+  --good:#1c9a63; --good-soft:#d9f4e7; --bad:#d8395b; --bad-soft:#fde2e8;
+  --display:"Bricolage Grotesque","Avenir Next",system-ui,sans-serif; --body:"DM Sans","Segoe UI",system-ui,sans-serif; --heb:"Frank Ruhl Libre","Times New Roman",serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#150f22; --card:#211933; --ink:#f1eafc; --muted:#a99cc2; --line:#352a4d;
+  --accent:#a983ff; --accent-soft:#2e2350; --gold:#f0b54a; --gold-soft:#3a2c14;
+  --good:#4fd39a; --good-soft:#16382a; --bad:#ff6f8d; --bad-soft:#47202b; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#150f22; --card:#211933; --ink:#f1eafc; --muted:#a99cc2; --line:#352a4d;
+  --accent:#a983ff; --accent-soft:#2e2350; --gold:#f0b54a; --gold-soft:#3a2c14;
+  --good:#4fd39a; --good-soft:#16382a; --bad:#ff6f8d; --bad-soft:#47202b; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 40px}
+.wrap{max-width:600px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1,h2,h3{font-family:var(--display);margin:0;line-height:1.08;text-wrap:balance;letter-spacing:-.01em}
+h1{font-size:2.3rem;font-weight:800} h2{font-size:1.55rem;font-weight:800} h3{font-size:1.15rem;font-weight:800}
+button{font:inherit;color:inherit}
+button:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.hb{font-family:var(--heb);font-weight:700;font-size:1.12em;unicode-bidi:isolate;direction:rtl}
+.eyebrow{font-size:.78rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.panel{background:var(--card);border:1.5px solid var(--line);border-radius:22px;padding:20px;display:flex;flex-direction:column;gap:14px}
+.btn{font-family:var(--display);font-weight:800;font-size:1.05rem;border:0;border-radius:14px;padding:12px 20px;cursor:pointer;background:var(--accent);color:#fff}
+.btn:active{transform:scale(.97)}
+.btn.soft{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.btn:disabled{opacity:.4;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.pill{font-family:var(--display);font-weight:800;font-size:.9rem;background:var(--accent-soft);border-radius:999px;padding:4px 12px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pill.gold{background:var(--gold-soft);color:var(--ink)}
+/* home */
+.hero{display:flex;flex-direction:column;gap:6px}
+.hero p{margin:0;color:var(--muted);font-weight:500}
+.eps{display:flex;flex-direction:column;gap:10px}
+.ep{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;background:var(--card);border:1.5px solid var(--line);border-radius:18px;padding:14px 16px;cursor:pointer;text-align:left;width:100%}
+.ep .num{font-family:var(--display);font-weight:800;font-size:1.6rem;color:var(--accent);width:44px;text-align:center}
+.ep .txt{min-width:0}
+.ep small{display:block;color:var(--muted);font-weight:500;font-size:.88rem}
+.ep .st{font-size:.85rem;font-weight:700;color:var(--muted);white-space:nowrap}
+.ep .st.done{color:var(--good)}
+.ep.final{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.ep.final .num,.ep.final small{color:var(--bg)}
+.ep.final small{opacity:.8}
+.cast{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.who{flex:none;background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:8px 12px;font-size:.85rem;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:92px;text-align:center}
+.who span{font-size:1.6rem}
+/* story slides */
+.bars{display:flex;gap:4px}
+.bars i{flex:1;height:4px;border-radius:2px;background:var(--line)}
+.bars i.on{background:var(--accent)}
+.slide{display:flex;flex-direction:column;gap:12px;min-height:330px}
+.scene{background:var(--accent-soft);border-radius:16px;padding:16px;text-align:center;font-size:3rem;line-height:1.2}
+.scene small{display:block;font-size:.95rem;font-weight:700;color:var(--muted);margin-top:4px}
+.headline{font-family:var(--display);font-weight:800;font-size:1.45rem;line-height:1.15}
+.slide p{margin:0}
+.quote{border-inline-start:4px solid var(--gold);background:var(--gold-soft);border-radius:0 12px 12px 0;padding:10px 12px;font-weight:700}
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:.92rem}
+.vs div{background:var(--bg);border-radius:12px;padding:10px}
+.vs b{display:block;font-family:var(--display);margin-bottom:4px}
+.vs ul{margin:0;padding-left:18px}
+.tip{font-size:.9rem;color:var(--muted);font-weight:700}
+/* games */
+.q{font-size:1.15rem;font-weight:700;margin:0}
+.tag{align-self:flex-start;font-family:var(--display);font-weight:800;background:var(--gold);color:#241500;border-radius:999px;padding:2px 12px;font-size:.85rem}
+.opts{display:flex;flex-direction:column;gap:9px}
+.opt{border:1.5px solid var(--line);background:var(--card);border-radius:14px;padding:11px 14px;text-align:left;font-weight:700;cursor:pointer;display:flex;gap:10px;align-items:baseline}
+.opt .l{font-family:var(--display);color:var(--accent);flex:none}
+.opt.pick{border-color:var(--gold);background:var(--gold-soft)}
+.opt.ok,.bin.ok{border-color:var(--good);background:var(--good-soft)}
+.opt.no,.bin.no{border-color:var(--bad);background:var(--bad-soft)}
+.shake{animation:shake .35s}
+.card-item{background:var(--bg);border-radius:16px;padding:16px;text-align:center;font-weight:700;font-size:1.1rem}
+.bins{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bin{border:1.5px solid var(--line);background:var(--card);border-radius:16px;padding:12px 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;font-family:var(--display);font-weight:800;line-height:1.15}
+.bin span{font-size:1.8rem}
+.tiles{display:flex;flex-direction:column;gap:8px}
+.tile{border:1.5px solid var(--line);background:var(--card);border-radius:14px;padding:10px 12px;cursor:pointer;font-weight:700;text-align:left;display:flex;gap:10px;align-items:center}
+.tile span{font-size:1.4rem}
+.tile.used{opacity:.25;cursor:default}
+.tile.no{border-color:var(--bad)}
+.seq{display:flex;flex-direction:column;gap:6px;background:var(--bg);border-radius:14px;padding:10px;min-height:52px}
+.seq div{font-weight:700;font-size:.95rem}
+.seq div b{color:var(--accent);font-family:var(--display);margin-right:6px}
+.cols{display:grid;grid-template-columns:1fr 1.3fr;gap:10px}
+.col{display:flex;flex-direction:column;gap:8px;min-width:0}
+.mt{border:1.5px solid var(--line);background:var(--card);border-radius:12px;padding:10px;font-weight:700;cursor:pointer;min-height:52px;text-align:left}
+.mt.sel{border-color:var(--gold);background:var(--gold-soft)}
+.mt.done{border-color:var(--good);background:var(--good-soft);cursor:default}
+.mt.no{border-color:var(--bad);background:var(--bad-soft)}
+.flip{background:var(--bg);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.flip .ans{border-top:1.5px dashed var(--line);padding-top:10px;font-weight:700}
+.fb{font-weight:700;margin:0;padding:10px 12px;border-radius:12px}
+.fb.ok{background:var(--good-soft)}
+.fb.no{background:var(--bad-soft)}
+.fb:empty{display:none}
+.bar{height:6px;background:var(--line);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);transition:width .3s}
+.huge{font-family:var(--display);font-size:3.6rem;font-weight:800;line-height:1;font-variant-numeric:tabular-nums}
+.miss{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+.miss li{background:var(--bad-soft);border-radius:12px;padding:10px 12px;font-weight:500}
+.miss b{display:block;font-weight:700}
+.xpfly{position:fixed;right:max(20px,env(safe-area-inset-right,0px));top:calc(20px + env(safe-area-inset-top,0px));font-family:var(--display);font-weight:800;background:var(--gold);color:#241500;border-radius:999px;padding:4px 12px;animation:fly 1s ease-out forwards;pointer-events:none}
+@keyframes fly{0%{opacity:0;transform:translateY(10px)}20%{opacity:1}100%{opacity:0;transform:translateY(-24px)}}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@keyframes in{0%{opacity:.3;transform:translateY(6px)}100%{opacity:1;transform:none}}
+.in{animation:in .25s ease-out}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (max-width:420px){h1{font-size:1.9rem}.vs{grid-template-columns:1fr}.cols{grid-template-columns:1fr 1.2fr}}
+</style>
+
+<div class="wrap" id="app"></div>
+
+<script>
+const H=t=>`<span class="hb">${t}</span>`;
+
+const CAST=[["🙌","Netilas Yadayim","washing before bread"],["🍞","Hamotzi","the bracha on bread"],["🥤","The cup","what you wash with"],["💍","Chatzitza","something in the way"],["⏱️","72 / 18","minutes to find water"]];
+
+const EPS=[
+ {id:"n1",title:"Why We Wash",sub:"Questions 1, 4, 5: the reasons and the bracha",
+  slides:[
+   {scene:"🙌🍞",h:"Why do we wash before Hamotzi?",p:"There are 2 reasons:",q:"1) The Kohanim had to wash their hands before eating truma.<br>2) So that we will be pure and holy before saying Hamotzi."},
+   {scene:"🔄🤔",h:"Wait, the bracha comes AFTER?",p:`With most mitzvos, we make the bracha BEFORE we do the mitzva. With ${H("נְטִילַת יָדַיִם")}, our minhag is to wash first, and then say the bracha.`,q:"Why? Because our hands are unclean. You don't want to say a bracha with unclean hands."},
+   {scene:"💧➡️🙏➡️🧻",h:"So when exactly is the bracha?",p:"After our hands are clean, but BEFORE we dry them.",q:"Why then? Because drying is part of the obligation. So we're still \"before\" finishing the mitzva."}],
+  acts:[{type:"order",q:"Put washing in order. Tap what comes FIRST.",done:"🎬 Perfect order.",items:[["💧","Wash your hands"],["🙏","Say the bracha (hands clean, still wet)"],["🧻","Dry your hands"],["🍞","Say Hamotzi and eat"]]},
+   {type:"mcq",qs:[
+    {q:"What are the 2 reasons we wash before Hamotzi?",o:["The Kohanim washed before eating truma","Our hands might be cold","To be pure and holy before saying Hamotzi","Bread is messy"],a:[0,2],why:"The Kohanim washed before eating truma, and we want to be pure and holy before Hamotzi."},
+    {q:"Why do we wash FIRST and say the bracha after?",o:["Because our hands are unclean","Because the water is cold","Because the bracha is short","No reason"],a:[0],why:"Our hands are unclean before washing."},
+    {q:"When exactly do we say the bracha?",o:["Before touching the water","After hands are clean, but before drying them","After eating the bread","After drying"],a:[1],why:"After the hands are clean but before drying, since drying is part of the obligation."}]}]},
+ {id:"n2",title:"How Much Bread?",sub:"Questions 2-3: the amounts, and feeding someone",
+  slides:[
+   {scene:"🍞🍞",h:"The magic number: 2 kezaysim",p:"To wash WITH a bracha, you need to eat 2 kezaysim of bread.",tip:"A kezayis is a halachic size of food (\"like an olive\")."},
+   {scene:"⚖️",h:"The in-between rule",html:`<div class="vs"><div><b>Less than 1 kezayis</b>Wash WITHOUT a bracha</div><div><b>More than 1, less than 2</b>It's a question (a safek)</div><div><b>2 kezaysim</b>Wash WITH a bracha</div></div>`},
+   {scene:"🥄👶",h:"Feeding someone else",p:"If someone is feeding another person:",q:"The one who is FEEDING doesn't have to wash.<br>The one who is EATING (even without touching the food) DOES have to wash."}],
+  acts:[{type:"sort",q:"Wash with a bracha, or without?",bins:[["b","With a bracha","🙏"],["n","Without a bracha","🤫"]],
+    items:[["Eating 2 kezaysim of bread","b"],["Eating less than 1 kezayis of bread","n"]]},
+   {type:"mcq",qs:[
+    {q:"How much bread do you need to eat to wash WITH a bracha?",o:["1 kezayis","2 kezaysim","A whole loaf","Any amount"],a:[1],why:"2 kezaysim."},
+    {q:"If you eat LESS than 1 kezayis, you...",o:["Don't wash at all","Wash with a bracha","Wash without a bracha","Wash twice"],a:[2],why:"Wash without a bracha."},
+    {q:"More than 1 kezayis but less than 2 is...",o:["Always a bracha","A question","Not bread","Forbidden"],a:[1],why:"It's a question."},
+    {q:"Mommy is feeding the baby, and the baby doesn't touch the food. Who has to wash?",o:["Only the person feeding","Only the person eating","Both","Nobody"],a:[1],why:"The one feeding doesn't have to wash. The one eating does, even without touching the food."}]}]},
+ {id:"n3",title:"Shh, and No Water?",sub:"Questions 6-10: talking, and when there's no water",
+  slides:[
+   {scene:"🤫",h:"No talking!",p:"No talking is permitted between the mitzva (washing) and its bracha.",q:"If you DO talk then, you must wash your hands again."},
+   {scene:"🧃",h:"No water at all?",p:"If there's no water, you can wash with fruit juice.",q:"But you do NOT make a bracha in that case."},
+   {scene:"🧭⏱️",h:"How far do you have to go for water?",html:`<div class="vs"><div><b>72 minutes</b>in the direction you're already traveling</div><div><b>18 minutes</b>in the opposite direction (going back)</div></div>`,tip:"If there's water that close, you have to wait and get it."},
+   {scene:"🧤🍞",h:"Still no water?",p:"If there's no water within those times, you may eat the bread while completely covering your hands and not touching the bread (like with gloves).",q:"Some poskim really don't like this heter. Only rely on it if you're extremely hungry and there's nothing else to eat."},
+   {scene:"🎒💧",h:"The best plan",p:"Plan ahead: bring water bottles along!"}],
+  acts:[{type:"match",q:"Match the number to the rule.",done:"✅ 72 forward, 18 back.",pairs:[["72 minutes","Water ahead, in the direction you're traveling"],["18 minutes","Water behind you, in the opposite direction"]]},
+   {type:"mcq",qs:[
+    {q:"When is talking NOT allowed?",o:["Between the washing and its bracha","During the whole meal","Before you wash","After Birkas Hamazon"],a:[0],why:"No talking between the mitzva and its bracha."},
+    {q:"What's the halacha if you talk at that time?",o:["Nothing happens","You must wash your hands again","You can't eat bread today","Say the bracha twice"],a:[1],why:"You must wash your hands again."},
+    {q:"No water at all. What can you use instead?",o:["Milk","Fruit juice","Sand","Nothing"],a:[1],why:"You can wash with fruit juice."},
+    {q:"Do you make a bracha when washing with fruit juice?",o:["Yes","No"],a:[1],why:"No bracha."},
+    {q:"You're driving and the water is AHEAD of you. You have to wait for it if it's within...",o:["18 minutes","72 minutes","5 minutes","2 hours"],a:[1],why:"72 minutes in the direction you're traveling."},
+    {q:"The water is BEHIND you. You have to go back if it's within...",o:["18 minutes","72 minutes","1 hour","No need to go back"],a:[0],why:"18 minutes in the opposite direction."},
+    {q:"No water within those times. What can you do?",o:["Eat while completely covering your hands, like gloves, without touching the bread","Just eat normally","Never eat bread","Wash with soap"],a:[0],why:"Cover your hands completely and don't touch the bread, but only if extremely hungry. Best: bring water bottles!"}]}]},
+ {id:"n4",title:"The Cup and the Hands",sub:"Questions 11-15",
+  slides:[
+   {scene:"✋",h:"How much of the hand?",p:"The stricter and accepted opinion: wash until the wrist."},
+   {scene:"🥤",h:"Which cup?",p:"A regular cup is best for netilas yadayim."},
+   {scene:"🥤💔",h:"Only a cup with a broken rim?",p:"It could be used."},
+   {scene:"🚻",h:"Washing in the bathroom?",p:"It's better not to wash for Hamotzi in the bathroom.",q:"But if there's no other way, you could."},
+   {scene:"✋🌵",h:"Dry hands first",p:"It's better to have your hands dry before you wash.",q:"Why? The other water on your hands may be tamei."}],
+  acts:[{type:"mcq",qs:[
+   {q:"How much of the hand do you wash (the stricter, accepted opinion)?",o:["Just the fingers","Until the knuckles","Until the wrist","Up to the elbow"],a:[2],why:"Until the wrist."},
+   {q:"What kind of cup is best for netilas yadayim?",o:["A regular cup","A paper plate","A bottle with a tiny hole","Your hands"],a:[0],why:"A regular cup."},
+   {q:"You only have a cup with a broken rim. What do you do?",o:["It could be used","Don't wash at all","Wait until tomorrow","Break it more"],a:[0],why:"It could be used."},
+   {q:"May you wash for Hamotzi in the bathroom?",o:["Always, no problem","Better not, but if there's no other way you could","Never, even if there's no other way","Only on Shabbos"],a:[1],why:"Better not to, but if there's no other way, you could."},
+   {q:"Why is it better for your hands to be dry before washing?",o:["The other water on your hands may be tamei","Wet hands are slippery","It saves water","No reason"],a:[0],why:"The other water may be tamei."}]}]},
+ {id:"n5",title:"Chatzitza and Extras",sub:"Questions 16-21",
+  slides:[
+   {scene:"💍✋",h:`What is a ${H("חֲצִיצָה")}?`,p:"An object between 2 things. Here: something between your hand and the water."},
+   {scene:"💍",h:"Rings",p:"When does a lady NOT need to remove her rings for washing?",q:"If she's scared it will be stolen or lost."},
+   {scene:"🦴🩹",h:"A cast",p:"If someone has a cast and can't wash that hand:",q:"The cast doesn't have to be removed."},
+   {scene:"💅",h:"Nail polish",p:"Is nail polish a chatzitza? No."},
+   {scene:"💧🤝",h:"Careful with wet hands",p:"If your hands are still wet from washing, be careful not to touch the hand of another person."},
+   {scene:"🚻🔁",h:"Washing a second time",p:"Sometimes you have to wash again during the meal: when you go to the bathroom.",q:"Do you make a bracha? No."}],
+  acts:[{type:"sort",q:"Is it a chatzitza?",bins:[["y","Chatzitza","🚫"],["n","Not a chatzitza","✅"]],
+    items:[["Nail polish","n"],["An object between your hand and the water","y"]]},
+   {type:"mcq",qs:[
+    {q:`What is a ${H("חֲצִיצָה")}?`,o:["An object between 2 things","A kind of cup","A bracha","A kind of bread"],a:[0],why:"An object between two things, like between your hand and the water."},
+    {q:"When would a lady not need to remove her rings for washing?",o:["If she's scared it will be stolen or lost","Never","On Shabbos only","If the ring is gold"],a:[0],why:"If she's scared it will be stolen or lost."},
+    {q:"Someone has a cast and can't wash that hand. What should they do?",o:["The cast doesn't have to be removed","Take the cast off","Not eat bread for 6 weeks","Wash the cast with juice"],a:[0],why:"The cast doesn't have to be removed."},
+    {q:"Is nail polish a chatzitza?",o:["Yes","No"],a:[1],why:"No."},
+    {q:"Your hands are still wet from washing. What do you have to be careful about?",o:["Not to touch the hand of another person","Not to look at the bread","Not to sit down","Nothing"],a:[0],why:"Don't touch another person's hand."},
+    {q:"When do you have to wash a second time during the meal?",o:["When you go to the bathroom","Every 10 minutes","When you drink","Before dessert"],a:[0],why:"When you go to the bathroom."},
+    {q:"When you wash that second time, do you make a bracha?",o:["Yes","No"],a:[1],why:"No."}]}]}
+];
+
+const EXPLAIN=[
+ {q:"Why is there an obligation to wash before Hamotzi? Give 2 reasons.",a:"1) The Kohanim were required to wash their hands before eating truma. 2) So that we will be pure and holy before saying Hamotzi."},
+ {q:"Fill in: If one eats less than ___, wash without a bracha. More than ___ but less than ___, it's a question.",a:"Less than 1 kezayis: wash without a bracha. More than 1 kezayis but less than 2: it's a question. (2 kezaysim = wash with a bracha.)"},
+ {q:"Why do we wash first and only then say the bracha?",a:"Because our hands are unclean."},
+ {q:"When exactly do we say the bracha, and why then?",a:"After our hands are clean but before we dry them, since drying is part of the obligation."},
+ {q:"No water. What are the options, in order?",a:"Wash with fruit juice (no bracha). Go for water if it's within 72 minutes ahead or 18 minutes back. If not, eat with hands completely covered (like gloves), only if extremely hungry. Best: bring water bottles!"},
+ {q:"May you wash for Hamotzi in the bathroom? Explain.",a:"Better not to, but if there's no other way, you could."},
+ {q:"Why is it better for your hands to be dry before washing?",a:"The other water on your hands may be tamei."}
+];
+
+/* engine */
+const app=document.getElementById("app");
+const $=id=>document.getElementById(id);
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+const shk=el=>{el.classList.add("shake");setTimeout(()=>el.classList.remove("shake"),400)};
+const toTop=()=>window.scrollTo({top:0,behavior:"smooth"});
+const NICE=["Correct.","Yes!","Nailed it.","Exactly.","Locked in."];
+let S={xp:0,done:{}};try{S=Object.assign(S,JSON.parse(localStorage.getItem("ny-files")||"{}"))}catch(e){}
+const save=()=>{try{localStorage.setItem("ny-files",JSON.stringify(S))}catch(e){}};
+let streak=0;
+function gain(n){S.xp+=n;save();const d=document.createElement("div");d.className="xpfly";d.textContent="+"+n+" XP"+(streak>=3?"  🔥"+streak:"");document.body.append(d);setTimeout(()=>d.remove(),1000)}
+
+function home(){
+  const n=EPS.filter(e=>S.done[e.id]).length;
+  app.innerHTML=`<div class="hero"><span class="eyebrow">Halacha · Pages 57-64</span><h1>The Netilas Yadayim Files</h1><p>5 short episodes. Then the final. Every right answer = XP.</p></div>
+  <div class="row"><span class="pill">${n} / 5 episodes</span><span class="pill gold">${S.xp} XP</span></div>
+  <div><h3 style="margin-bottom:8px">The cast</h3><div class="cast">${CAST.map(c=>`<div class="who"><span>${c[0]}</span>${c[1]}<small style="color:var(--muted);font-weight:500">${c[2]}</small></div>`).join("")}</div></div>
+  <div class="eps">${EPS.map((e,i)=>`<button class="ep" data-i="${i}"><span class="num">${i+1}</span><span class="txt"><h3>${e.title}</h3><small>${e.sub}</small></span><span class="st${S.done[e.id]?" done":""}">${S.done[e.id]?"✓ watched":"play"}</span></button>`).join("")}
+  <button class="ep final" id="final"><span class="num">★</span><span class="txt"><h3>The Final</h3><small>${EPS.reduce((s,e)=>s+e.acts.filter(a=>a.type==="mcq").reduce((x,a)=>x+a.qs.length,0),0)} questions + explain-it round</small></span><span class="st" style="color:var(--bg)">go</span></button></div>`;
+  app.querySelectorAll(".ep[data-i]").forEach(b=>b.onclick=()=>slide(+b.dataset.i,0));
+  $("final").onclick=finalQuiz;
+}
+
+function slide(ei,si){
+  const E=EPS[ei],s=E.slides[si];toTop();
+  app.innerHTML=`<div class="row"><button class="btn soft" id="back">← Episodes</button><span class="pill">Ep ${ei+1}: ${E.title}</span></div>
+  <div class="panel in"><div class="bars">${E.slides.map((x,i)=>`<i class="${i<=si?"on":""}"></i>`).join("")}</div>
+  <div class="slide"><div class="scene">${s.scene}</div><div class="headline">${s.h}</div>${s.p?`<p>${s.p}</p>`:""}${s.html||""}${s.q?`<div class="quote">${s.q}</div>`:""}${s.tip?`<p class="tip">💡 ${s.tip}</p>`:""}</div>
+  <div class="row"><button class="btn soft" id="prev" ${si===0?'style="visibility:hidden"':""}>←</button><button class="btn" id="next">${si===E.slides.length-1?"Test yourself →":"Next →"}</button></div></div>`;
+  $("back").onclick=home;$("prev").onclick=()=>slide(ei,si-1);
+  $("next").onclick=()=>si<E.slides.length-1?slide(ei,si+1):play(ei);
+}
+
+function question(q,mode,onDone){
+  const multi=q.a.length>1,box=document.createElement("div");box.style.cssText="display:flex;flex-direction:column;gap:12px";
+  box.innerHTML=`${multi?`<span class="tag">Pick ${q.a.length}</span>`:""}<p class="q">${q.q}</p><div class="opts">${q.o.map((o,i)=>`<button class="opt" data-i="${i}"><span class="l">${"ABCD"[i]}</span><span>${o}</span></button>`).join("")}</div>${multi?`<button class="btn" data-check disabled>Check</button>`:""}`;
+  const opts=[...box.querySelectorAll(".opt")],chk=box.querySelector("[data-check]");let picked=new Set(),over=false;
+  const judge=()=>{const ok=picked.size===q.a.length&&q.a.every(i=>picked.has(i));
+    if(ok||mode==="test"){over=true;opts.forEach(o=>{const i=+o.dataset.i;if(q.a.includes(i))o.classList.add("ok");else if(picked.has(i))o.classList.add("no")});if(chk)chk.hidden=true;onDone(ok)}
+    else{onDone(null);opts.forEach(o=>{if(picked.has(+o.dataset.i)){o.classList.add("no");shk(o);setTimeout(()=>o.classList.remove("no","pick"),500)}});picked.clear();if(chk)chk.disabled=true}};
+  opts.forEach(o=>o.onclick=()=>{if(over)return;const i=+o.dataset.i;if(!multi){picked=new Set([i]);judge();return}
+    if(picked.has(i)){picked.delete(i);o.classList.remove("pick")}else if(picked.size<q.a.length){picked.add(i);o.classList.add("pick")}chk.disabled=picked.size!==q.a.length});
+  if(chk)chk.onclick=judge;return box;
+}
+
+function play(ei){
+  const E=EPS[ei];let k=0,mist=0;
+  const steps=[];E.acts.forEach(a=>{if(a.type==="mcq")a.qs.forEach(q=>steps.push({a,q}));else if(a.type==="sort")shuffle(a.items).forEach(it=>steps.push({a,it}));else steps.push({a})});
+  const next=()=>{k++;k<steps.length?step():finish()};
+  function frame(){toTop();app.innerHTML=`<div class="row"><button class="btn soft" id="back">← Episodes</button><span class="pill">Ep ${ei+1} · ${k+1}/${steps.length}</span><span class="pill gold">${S.xp} XP</span></div>
+    <div class="bar"><i style="width:${k/steps.length*100}%"></i></div><div class="panel in" id="pn"><p class="fb" id="fb"></p><button class="btn" id="go" hidden>Next →</button></div>`;
+    $("back").onclick=home;$("go").onclick=next;return $("pn")}
+  const put=(pn,el)=>pn.insertBefore(el,$("fb"));
+  const fb=(ok,t)=>{const f=$("fb");f.className="fb "+(ok?"ok":"no");f.innerHTML=t};
+  const win=t=>{streak++;gain(10);fb(true,t);$("go").hidden=false};
+  const miss=(t,el)=>{mist++;streak=0;if(el){el.classList.add("no");shk(el);setTimeout(()=>el.classList.remove("no"),450)}fb(false,t)};
+  const div=()=>{const d=document.createElement("div");d.style.cssText="display:flex;flex-direction:column;gap:12px";return d};
+  function step(){const s=steps[k],a=s.a,pn=frame();
+    if(a.type==="mcq")put(pn,question(s.q,"learn",ok=>ok===null?miss(s.q.a.length>1?"Not quite. You need both right ones.":"Not that one. Try again."):win("✅ "+s.q.why)));
+    else if(a.type==="sort"){const d=div();d.innerHTML=`<p class="q">${a.q}</p><div class="card-item">${s.it[0]}</div><div class="bins">${a.bins.map(b=>`<button class="bin" data-b="${b[0]}"><span>${b[2]}</span>${b[1]}</button>`).join("")}</div>`;put(pn,d);
+      let done=false;d.querySelectorAll(".bin").forEach(b=>b.onclick=()=>{if(done)return;if(b.dataset.b===s.it[1]){done=true;b.classList.add("ok");win("✅ Right.")}else miss("Other one.",b)})}
+    else if(a.type==="order"){const it=a.items;let n=0;const d=div();d.innerHTML=`<p class="q">${a.q}</p><div class="seq" id="seq"></div><div class="tiles">${shuffle(it.map((x,i)=>i)).map(i=>`<button class="tile" data-i="${i}"><span>${it[i][0]}</span>${it[i][1]}</button>`).join("")}</div>`;put(pn,d);
+      d.querySelectorAll(".tile").forEach(t=>t.onclick=()=>{if(t.classList.contains("used")||n>=it.length)return;
+        if(+t.dataset.i===n){t.classList.add("used");$("seq").insertAdjacentHTML("beforeend",`<div class="in"><b>${n+1}</b>${it[n][1]}</div>`);n++;if(n===it.length)win(a.done||"🎬 Perfect order.");else fb(true,"Yes. What's next?")}
+        else{mist++;streak=0;t.classList.add("no");shk(t);setTimeout(()=>t.classList.remove("no"),450);fb(false,"Not yet. What happened "+(n?"next":"first")+"?")}})}
+    else if(a.type==="match"){let sel=null,left=a.pairs.length;const d=div();d.innerHTML=`<p class="q">${a.q}</p><div class="cols"><div class="col" id="cl"></div><div class="col" id="cr"></div></div>`;put(pn,d);
+      a.pairs.forEach((p,i)=>{const b=document.createElement("button");b.className="mt";b.textContent=p[0];b.dataset.i=i;b.onclick=()=>{if(b.classList.contains("done"))return;d.querySelectorAll("#cl .mt").forEach(x=>x.classList.remove("sel"));b.classList.add("sel");sel=b};$("cl").append(b)});
+      shuffle(a.pairs.map((p,i)=>i)).forEach(i=>{const b=document.createElement("button");b.className="mt";b.textContent=a.pairs[i][1];b.dataset.i=i;
+        b.onclick=()=>{if(b.classList.contains("done"))return;if(!sel){fb(false,"Tap something on the left first.");return}
+          if(sel.dataset.i===b.dataset.i){[sel,b].forEach(x=>{x.classList.remove("sel");x.classList.add("done")});sel=null;left--;if(!left)win(a.done||"✅ All matched.");else fb(true,"Yes!")}else miss("Not that one.",b)};$("cr").append(b)})}
+  }
+  function finish(){S.done[E.id]=true;save();toTop();const nxt=ei<EPS.length-1;
+    app.innerHTML=`<div class="panel in" style="text-align:center;align-items:center"><span class="eyebrow">Episode ${ei+1} complete</span><h2>${E.title}</h2>
+    <p style="margin:0;font-weight:700">${mist===0?"Zero mistakes. Clean.":mist+" mistake"+(mist>1?"s":"")+". Replay it to make it perfect."}</p><span class="pill gold">${S.xp} XP total</span>
+    <div class="row" style="justify-content:center"><button class="btn soft" id="again">Replay</button><button class="btn" id="on">${nxt?"Next episode →":"The Final →"}</button></div></div>`;
+    $("again").onclick=()=>slide(ei,0);$("on").onclick=()=>nxt?slide(ei+1,0):finalQuiz()}
+  step();
+}
+
+function finalQuiz(){
+  const Q=shuffle(EPS.flatMap(e=>e.acts.filter(a=>a.type==="mcq").flatMap(a=>a.qs)));let i=0,right=0;const missed=[];streak=0;
+  function frame(label){toTop();app.innerHTML=`<div class="row"><button class="btn soft" id="back">← Episodes</button><span class="pill">${label}</span><span class="pill gold">✅ ${right}</span></div>
+    <div class="bar"><i style="width:${i/(Q.length+EXPLAIN.length)*100}%"></i></div><div class="panel in" id="pn"><p class="fb" id="fb"></p><button class="btn" id="go" hidden>Next →</button></div>`;$("back").onclick=home}
+  function ask(){const q=Q[i];frame(`Final · ${i+1}/${Q.length}`);
+    $("pn").insertBefore(question(q,"test",ok=>{const f=$("fb");if(ok){right++;streak++;gain(15);f.className="fb ok";f.innerHTML="✅ "+NICE[Math.random()*5|0]}else{streak=0;missed.push([q.q,q.why]);f.className="fb no";f.innerHTML="Answer: "+q.why}$("go").hidden=false}),$("fb"));
+    $("go").onclick=()=>{i++;i<Q.length?ask():explain(0)}}
+  function explain(j){const e=EXPLAIN[j];i=Q.length+j;frame(`Explain it · ${j+1}/${EXPLAIN.length}`);
+    const d=document.createElement("div");d.className="flip";d.innerHTML=`<span class="eyebrow">Say it out loud or write it down, then reveal</span><p class="q">${e.q}</p><button class="btn soft" id="rev">Reveal answer</button>`;
+    $("pn").insertBefore(d,$("fb"));
+    $("rev").onclick=()=>{$("rev").remove();d.insertAdjacentHTML("beforeend",`<div class="ans in">${e.a}</div><div class="row"><button class="btn soft" id="nope">I missed part of it</button><button class="btn" id="yes">I got it all</button></div>`);
+      const go=ok=>{if(ok){right++;gain(20)}else missed.push([e.q,e.a]);j<EXPLAIN.length-1?explain(j+1):end()};$("yes").onclick=()=>go(true);$("nope").onclick=()=>go(false)}}
+  function end(){toTop();const tot=Q.length+EXPLAIN.length,pct=Math.round(right/tot*100);
+    app.innerHTML=`<div class="panel in"><span class="eyebrow">Final results</span><div class="row" style="justify-content:flex-start;gap:14px;align-items:flex-end"><span class="huge">${right}/${tot}</span><span class="pill">${pct}%</span></div>
+    <h2>${pct===100?"Perfect. You're so ready.":pct>=85?"Really strong. Review the few below.":pct>=65?"Getting there. Go over these and retake.":"Replay the episodes, then try again."}</h2>
+    ${missed.length?`<div><h3 style="margin-bottom:8px">Review these</h3><ul class="miss">${missed.map(m=>`<li><b>${m[0]}</b>${m[1]}</li>`).join("")}</ul></div>`:""}
+    <div class="row"><button class="btn soft" id="map">Episodes</button><button class="btn" id="again">Retake the final</button></div></div>`;
+    $("map").onclick=home;$("again").onclick=finalQuiz}
+  ask();
+}
+home();
+</script>
+
+</body></html>
