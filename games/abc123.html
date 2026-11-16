@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>Little Stars ABC 123</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&display=swap">
+<style>
+:root{--pink:#ff5fa2;--blue:#3d8bff;--yellow:#ffc928;--green:#2ec27e;--purple:#9b5cff;--orange:#ff8a3d;--ink:#2b2350;--bg1:#fff6d9;--bg2:#ffe3f0}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+html,body{margin:0;height:100%;overflow:hidden;touch-action:manipulation}
+body{font-family:"Baloo 2",system-ui,sans-serif;color:var(--ink);background:radial-gradient(circle at 20% 10%,var(--bg1),var(--bg2) 70%);padding:env(safe-area-inset-top,0) env(safe-area-inset-right,0) env(safe-area-inset-bottom,0) env(safe-area-inset-left,0)}
+[hidden]{display:none!important}
+.lib-back{position:fixed;right:max(10px,env(safe-area-inset-right,0px));bottom:calc(8px + env(safe-area-inset-bottom,0px));z-index:50;font:700 12px system-ui,sans-serif;padding:6px 10px;border-radius:999px;background:rgba(40,35,80,.55);color:#fff;text-decoration:none}
+#app{position:relative;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:70px 14px 40px}
+.top{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:12px;right:12px;display:flex;justify-content:space-between;align-items:center;z-index:20;pointer-events:none}
+.top>*{pointer-events:auto}
+.iconbtn{width:62px;height:62px;border-radius:22px;border:0;background:#fff;box-shadow:0 5px 0 rgba(0,0,0,.12);font-size:34px;display:grid;place-items:center;cursor:pointer}
+.iconbtn:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(0,0,0,.12)}
+.jar{background:#fff;border-radius:22px;padding:6px 14px;font-size:28px;font-weight:800;box-shadow:0 5px 0 rgba(0,0,0,.12);display:flex;align-items:center;gap:6px}
+/* start + home */
+.big-play{width:min(62vw,260px);height:min(62vw,260px);border-radius:50%;border:0;background:var(--green);color:#fff;font-size:min(30vw,130px);box-shadow:0 12px 0 #1d8f5b;cursor:pointer;animation:pulse 1.6s ease-in-out infinite}
+.big-play:active{transform:translateY(8px);box-shadow:0 4px 0 #1d8f5b}
+@keyframes pulse{50%{transform:scale(1.06)}}
+.homegrid{display:flex;gap:min(5vw,28px);flex-wrap:wrap;justify-content:center}
+.tile{width:min(42vw,250px);height:min(42vw,250px);border-radius:40px;border:0;color:#fff;font-size:min(17vw,96px);font-weight:800;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;letter-spacing:2px}
+.tile small{font-size:min(9vw,48px);margin-top:6px}
+.tile.abc{background:var(--pink);box-shadow:0 12px 0 #c93b7c}
+.tile.num{background:var(--blue);box-shadow:0 12px 0 #2463c4}
+.tile:active{transform:translateY(8px);box-shadow:0 4px 0 rgba(0,0,0,.2)}
+.parent{position:fixed;left:12px;bottom:calc(8px + env(safe-area-inset-bottom,0px));font:600 12px system-ui,sans-serif;color:#6b5f8f;max-width:62vw;direction:rtl;text-align:right;opacity:.85}
+/* learn card */
+.card{position:relative;width:min(88vw,460px);aspect-ratio:1/1.05;background:#fff;border-radius:44px;box-shadow:0 14px 0 rgba(0,0,0,.08);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer}
+.glyph{font-size:min(46vw,250px);font-weight:800;line-height:.9}
+.pic{font-size:min(24vw,130px);line-height:1;margin-top:4px}
+.word{font-size:min(9vw,46px);font-weight:800;margin-top:4px}
+.word b{font-size:1.15em}
+.bounce{animation:bounce .55s}
+@keyframes bounce{30%{transform:scale(1.15) rotate(-4deg)}60%{transform:scale(.95) rotate(3deg)}}
+.next{margin-top:22px;width:min(40vw,170px);height:92px;border-radius:46px;border:0;background:var(--green);color:#fff;font-size:60px;box-shadow:0 9px 0 #1d8f5b;cursor:pointer}
+.next:active{transform:translateY(6px);box-shadow:0 3px 0 #1d8f5b}
+.dots{display:flex;gap:8px;margin-bottom:14px}
+.dots i{width:16px;height:16px;border-radius:50%;background:rgba(43,35,80,.15)}
+.dots i.on{background:var(--yellow)}
+/* counting */
+.field{width:min(92vw,520px);min-height:min(70vw,330px);background:#fff;border-radius:44px;box-shadow:0 14px 0 rgba(0,0,0,.08);display:flex;flex-wrap:wrap;align-items:center;justify-content:center;align-content:center;gap:8px;padding:18px}
+.obj{position:relative;font-size:min(15vw,78px);width:min(19vw,104px);height:min(19vw,104px);display:grid;place-items:center;border:0;background:none;cursor:pointer;border-radius:50%;transition:transform .2s}
+.obj.done{transform:scale(1.08)}
+.obj .badge{position:absolute;top:-4px;right:-4px;min-width:40px;height:40px;border-radius:20px;background:var(--purple);color:#fff;font-size:28px;font-weight:800;display:grid;place-items:center;padding:0 6px}
+.obj.hint{animation:wig 1s infinite}
+@keyframes wig{50%{transform:scale(1.18)}}
+.bignum{font-size:min(40vw,210px);font-weight:800;line-height:1;margin-top:8px}
+/* find */
+.prompt{width:min(88vw,460px);display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:20px}
+.ear{width:84px;height:84px;border-radius:50%;border:0;background:var(--yellow);font-size:46px;box-shadow:0 7px 0 #d9a400;cursor:pointer}
+.ear:active{transform:translateY(5px);box-shadow:0 2px 0 #d9a400}
+.ask{font-size:min(8vw,40px);font-weight:800}
+.choices{display:flex;gap:min(5vw,26px);flex-wrap:wrap;justify-content:center}
+.choice{width:min(40vw,200px);height:min(40vw,200px);border-radius:40px;border:0;background:#fff;box-shadow:0 11px 0 rgba(0,0,0,.1);font-size:min(28vw,150px);font-weight:800;cursor:pointer;line-height:1;display:grid;place-items:center}
+.choices.three .choice{width:min(28vw,170px);height:min(28vw,170px);font-size:min(20vw,120px)}
+.choice:active{transform:translateY(6px);box-shadow:0 4px 0 rgba(0,0,0,.1)}
+.choice.no{animation:shake .45s}
+@keyframes shake{20%,60%{transform:translateX(-12px)}40%,80%{transform:translateX(12px)}}
+.choice.glow{animation:glow 1s infinite}
+@keyframes glow{50%{box-shadow:0 0 0 12px var(--yellow),0 11px 0 rgba(0,0,0,.1)}}
+.choice.yes{background:var(--green)!important;color:#fff!important}
+.counted{display:flex;flex-wrap:wrap;justify-content:center;gap:4px;font-size:min(11vw,56px);max-width:min(88vw,460px);margin-bottom:16px}
+/* party */
+#party{position:fixed;inset:0;pointer-events:none;z-index:40;overflow:hidden}
+.conf{position:absolute;top:-40px;font-size:36px;animation:fall 1.6s ease-in forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
+.starpop{position:fixed;left:50%;top:45%;font-size:160px;transform:translate(-50%,-50%) scale(0);animation:pop 1s forwards;z-index:41;pointer-events:none}
+@keyframes pop{40%{transform:translate(-50%,-50%) scale(1.2)}70%{transform:translate(-50%,-50%) scale(1)}100%{transform:translate(-50%,-160%) scale(.3);opacity:0}}
+/* sticker jar */
+.jarbig{font-size:min(20vw,110px)}
+.stars{display:flex;flex-wrap:wrap;justify-content:center;gap:2px;font-size:min(9vw,44px);max-width:min(90vw,520px);max-height:50vh;overflow:auto}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important}}
+</style>
+</head><body>
+<a class="lib-back" href="../">&larr; All games</a>
+<div class="top" id="top" hidden><button class="iconbtn" id="homeBtn" aria-label="Home">🏠</button><div class="jar" id="jar">⭐ <span id="starCount">0</span></div></div>
+<div id="app"></div>
+<div id="party"></div>
+<script>
+/* Little Stars ABC 123: for age 3. Voice-led (child does not need to read), big targets,
+   2 choices at first, adapts difficulty, no penalty for mistakes (models the right answer). */
+const LETTERS=[["A","apple","🍎"],["B","ball","🏀"],["C","cat","🐱"],["D","dog","🐶"],["E","elephant","🐘"],["F","fish","🐟"],["G","grapes","🍇"],["H","house","🏠"],["I","ice cream","🍦"],["J","juice","🧃"],["K","kite","🪁"],["L","lion","🦁"],["M","moon","🌙"],["N","nose","👃"],["O","orange","🍊"],["P","pig","🐷"],["Q","queen","👸"],["R","rainbow","🌈"],["S","sun","☀️"],["T","tree","🌳"],["U","umbrella","☂️"],["V","violin","🎻"],["W","whale","🐳"],["X","x-ray","🩻"],["Y","yo-yo","🪀"],["Z","zebra","🦓"]];
+const NUMWORDS=["zero","one","two","three","four","five","six","seven","eight","nine","ten"];
+const THINGS=[["🦆","duck","ducks"],["🎈","balloon","balloons"],["🍓","strawberry","strawberries"],["🐞","ladybug","ladybugs"],["⭐","star","stars"],["🐟","fish","fish"],["🍪","cookie","cookies"],["🌸","flower","flowers"],["🚗","car","cars"],["🐣","chick","chicks"]];
+const COLORS=["#ff5fa2","#3d8bff","#ff8a3d","#2ec27e","#9b5cff","#e94b4b","#00a6c7","#f2a900"];
+const KEY="abc123-stars", SEEN_KEY="abc123-seen";   // stars: {abc,num} (read by the library); seen: progress
+let S={abc:0,num:0,abcSeen:0,numSeen:0};
+try{const st=JSON.parse(localStorage.getItem(KEY)||"{}"),sn=JSON.parse(localStorage.getItem(SEEN_KEY)||"{}");
+  S.abc=+st.abc||0;S.num=+st.num||0;S.abcSeen=+sn.abcSeen||0;S.numSeen=+sn.numSeen||0}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify({abc:S.abc,num:S.num}));localStorage.setItem(SEEN_KEY,JSON.stringify({abcSeen:S.abcSeen,numSeen:S.numSeen}))}catch(e){}};
+const app=document.getElementById("app"),$=id=>document.getElementById(id);
+const rnd=n=>Math.floor(Math.random()*n);
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]]}return a};
+const col=i=>COLORS[i%COLORS.length];
+
+/* ---------- voice ---------- */
+let voice=null;
+function pickVoice(){try{const vs=speechSynthesis.getVoices();voice=vs.find(v=>/en-US/i.test(v.lang)&&/Samantha|Google US|Female|Aria|Jenny/i.test(v.name))||vs.find(v=>/en-US/i.test(v.lang))||vs.find(v=>/^en/i.test(v.lang))||null}catch(e){}}
+try{pickVoice();speechSynthesis.onvoiceschanged=pickVoice}catch(e){}
+function say(text,cb){
+  try{
+    if(!("speechSynthesis" in window)){cb&&setTimeout(cb,700);return}
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(text);
+    if(voice)u.voice=voice;u.lang="en-US";u.rate=0.82;u.pitch=1.25;
+    let done=false;const fin=()=>{if(!done){done=true;cb&&cb()}};
+    u.onend=fin;u.onerror=fin;setTimeout(fin,Math.max(1800,text.length*110));
+    speechSynthesis.speak(u);
+  }catch(e){cb&&setTimeout(cb,700)}
+}
+/* ---------- sounds (no files) ---------- */
+let ac=null;
+function tone(freqs,dur=0.12,type="sine",vol=0.18){
+  try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();
+    freqs.forEach((f,i)=>{const o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.value=f;
+      const t=ac.currentTime+i*dur;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+0.02);g.gain.exponentialRampToValueAtTime(0.001,t+dur*1.6);
+      o.connect(g).connect(ac.destination);o.start(t);o.stop(t+dur*1.8)})}catch(e){}
+}
+const yay=()=>tone([523,659,784,1047],0.11,"triangle");
+const boop=()=>tone([300,240],0.13,"sine",0.12);
+const tick=n=>tone([440+n*40],0.09,"triangle",0.14);
+
+function party(){
+  const p=$("party");const em=["⭐","🎉","💖","🌟","🎈","✨"];
+  for(let i=0;i<22;i++){const s=document.createElement("div");s.className="conf";s.textContent=em[rnd(em.length)];
+    s.style.left=rnd(100)+"vw";s.style.animationDelay=(Math.random()*0.4)+"s";s.style.fontSize=(26+rnd(26))+"px";p.appendChild(s);setTimeout(()=>s.remove(),2300)}
+  const st=document.createElement("div");st.className="starpop";st.textContent="⭐";document.body.appendChild(st);setTimeout(()=>st.remove(),1100);
+}
+function addStar(track){S[track]++;save();$("starCount").textContent=S.abc+S.num}
+
+/* ---------- screens ---------- */
+function start(){
+  $("top").hidden=true;
+  app.innerHTML=`<button class="big-play" id="go" aria-label="Start">▶</button>`;
+  $("go").onclick=()=>{tone([392,523],0.1);say("Hi! Let's play!");home()};
+}
+function home(){
+  $("top").hidden=false;$("homeBtn").hidden=true;$("starCount").textContent=S.abc+S.num;
+  app.innerHTML=`<div class="homegrid">
+    <button class="tile abc" id="abc" aria-label="Letters">ABC<small>🍎🐱</small></button>
+    <button class="tile num" id="num" aria-label="Numbers">123<small>🦆🎈</small></button></div>
+    <p class="parent">להורים: לשבת יחד, לחזור בקול על מה שהמשחק אומר, ולשחק כמה דקות בכל פעם. המשחק מדבר באנגלית, אז כדאי שהשמע יהיה פתוח.</p>`;
+  $("abc").onclick=()=>{say("Letters!");letters()};
+  $("num").onclick=()=>{say("Numbers!");numbers()};
+  $("jar").onclick=jar;
+}
+$("homeBtn").onclick=()=>{try{speechSynthesis.cancel()}catch(e){}home()};
+
+/* Session plan: learn 3 items, then a short "find" game on items learned so far. Repeat. */
+const level={abc:2,num:2};            // number of choices (2 or 3)
+const streak={abc:0,num:0};
+function adapt(track,ok){
+  if(ok){streak[track]++;if(streak[track]>=5&&level[track]<3){level[track]=3;streak[track]=0}}
+  else{streak[track]=Math.min(streak[track],0)-1;if(streak[track]<=-2&&level[track]>2){level[track]=2;streak[track]=0}}
+}
+
+/* ---------- LETTERS ---------- */
+let li=0;
+function letters(){$("homeBtn").hidden=false;li=S.abcSeen%26;learnLetter(0)}
+function learnLetter(k){
+  const [L,w,e]=LETTERS[li];const c=col(li);
+  app.innerHTML=`<div class="dots">${[0,1,2].map(i=>`<i class="${i<=k?"on":""}"></i>`).join("")}</div>
+   <div class="card" id="card"><div class="glyph" style="color:${c}">${L}</div><div class="pic">${e}</div><div class="word"><b style="color:${c}">${w[0].toUpperCase()}</b>${w.slice(1)}</div></div>
+   <button class="next" id="nx" aria-label="Next">➜</button>`;
+  const talk=()=>{const cd=$("card");cd.classList.remove("bounce");void cd.offsetWidth;cd.classList.add("bounce");say(`${L}. ${L} is for ${w}!`)};
+  talk();$("card").onclick=talk;
+  $("nx").onclick=()=>{tick(k);S.abcSeen=Math.max(S.abcSeen,li+1);save();li=(li+1)%26;
+    if(k<2)learnLetter(k+1);else findLetters(3)};
+}
+function poolLetters(){const n=Math.max(3,Math.min(26,S.abcSeen||li));return LETTERS.slice(0,n).map((x,i)=>i)}
+function findLetters(left){
+  if(left<=0){learnLetter(0);return}
+  const pool=poolLetters();const n=Math.min(level.abc,pool.length);
+  const target=pool[rnd(pool.length)];
+  const others=shuffle(pool.filter(i=>i!==target)).slice(0,n-1);
+  const opts=shuffle([target,...others]);
+  const T=LETTERS[target][0];
+  app.innerHTML=`<div class="prompt"><button class="ear" id="ear" aria-label="Hear again">🔊</button><div class="ask">Find <span style="color:${col(target)}">?</span></div></div>
+   <div class="choices ${n===3?"three":""}">${opts.map(i=>`<button class="choice" data-i="${i}" style="color:${col(i)}">${LETTERS[i][0]}</button>`).join("")}</div>`;
+  const ask=()=>say(`Can you find the letter ${T}?`);ask();$("ear").onclick=ask;
+  let miss=0,done=false;
+  app.querySelectorAll(".choice").forEach(b=>b.onclick=()=>{
+    if(done)return;const i=+b.dataset.i;
+    if(i===target){done=true;b.classList.add("yes");yay();party();addStar("abc");adapt("abc",miss===0);
+      say(`Yay! That's ${T}! ${T} is for ${LETTERS[target][1]}!`,()=>findLetters(left-1))}
+    else{miss++;boop();b.classList.remove("no");void b.offsetWidth;b.classList.add("no");
+      say(`That's ${LETTERS[i][0]}. Find ${T}!`);
+      if(miss>=2){adapt("abc",false);app.querySelector(`.choice[data-i="${target}"]`).classList.add("glow")}}
+  });
+}
+
+/* ---------- NUMBERS ---------- */
+let ni=1;
+function numbers(){$("homeBtn").hidden=false;ni=(S.numSeen%10)+1;learnNumber(0)}
+function learnNumber(k){
+  const th=THINGS[(ni-1)%THINGS.length];let count=0;
+  app.innerHTML=`<div class="dots">${[0,1,2].map(i=>`<i class="${i<=k?"on":""}"></i>`).join("")}</div>
+   <div class="field" id="field">${Array.from({length:ni},(_,i)=>`<button class="obj hint" data-i="${i}" aria-label="${th[1]}">${th[0]}</button>`).join("")}</div>
+   <div id="after"></div>`;
+  say(ni===1?`Let's count! Tap the ${th[1]}.`:`Let's count the ${th[2]}! Tap each one.`);
+  app.querySelectorAll(".obj").forEach(b=>b.onclick=()=>{
+    if(b.classList.contains("done"))return;
+    count++;b.classList.add("done");b.classList.remove("hint");b.insertAdjacentHTML("beforeend",`<span class="badge">${count}</span>`);
+    tick(count);say(NUMWORDS[count]);
+    if(count===ni){setTimeout(()=>{
+      $("after").innerHTML=`<div class="bignum" style="color:${col(ni)}">${ni}</div><button class="next" id="nx" aria-label="Next">➜</button>`;
+      yay();say(`${NUMWORDS[ni]}! ${NUMWORDS[ni]} ${ni===1?th[1]:th[2]}!`);
+      $("nx").onclick=()=>{S.numSeen=Math.max(S.numSeen,ni);save();ni=ni%10+1;
+        if(k<2)learnNumber(k+1);else findNumbers(3)};
+    },650)}
+  });
+}
+function findNumbers(left){
+  if(left<=0){learnNumber(0);return}
+  const max=Math.max(3,Math.min(10,S.numSeen||ni));const pool=Array.from({length:max},(_,i)=>i+1);
+  const n=Math.min(level.num,pool.length);
+  const target=pool[rnd(pool.length)];
+  const others=shuffle(pool.filter(x=>x!==target)).slice(0,n-1);
+  const opts=shuffle([target,...others]);
+  const howMany=Math.random()<0.5; const th=THINGS[rnd(THINGS.length)];
+  app.innerHTML=`${howMany?`<div class="counted">${Array.from({length:target},()=>th[0]).join("")}</div>`:""}
+   <div class="prompt"><button class="ear" id="ear" aria-label="Hear again">🔊</button><div class="ask">${howMany?"How many?":"Find <span>?</span>"}</div></div>
+   <div class="choices ${n===3?"three":""}">${opts.map(x=>`<button class="choice" data-x="${x}" style="color:${col(x)}">${x}</button>`).join("")}</div>`;
+  const ask=()=>say(howMany?`How many ${th[2]}?`:`Can you find the number ${NUMWORDS[target]}?`);ask();$("ear").onclick=ask;
+  let miss=0,done=false;
+  app.querySelectorAll(".choice").forEach(b=>b.onclick=()=>{
+    if(done)return;const x=+b.dataset.x;
+    if(x===target){done=true;b.classList.add("yes");yay();party();addStar("num");adapt("num",miss===0);
+      say(howMany?`Yay! ${NUMWORDS[target]} ${target===1?th[1]:th[2]}!`:`Yay! That's ${NUMWORDS[target]}!`,()=>findNumbers(left-1))}
+    else{miss++;boop();b.classList.remove("no");void b.offsetWidth;b.classList.add("no");
+      say(howMany?`Let's count again. Find ${NUMWORDS[target]}!`:`That's ${NUMWORDS[x]}. Find ${NUMWORDS[target]}!`);
+      if(miss>=2){adapt("num",false);app.querySelector(`.choice[data-x="${target}"]`).classList.add("glow")}}
+  });
+}
+
+/* ---------- star jar ---------- */
+function jar(){
+  $("homeBtn").hidden=false;const t=S.abc+S.num;
+  app.innerHTML=`<div class="jarbig">🫙</div><div class="stars">${"⭐".repeat(Math.min(t,300))}</div>`;
+  say(t?`You have ${t} stars! Great job!`:"Let's win some stars!");
+}
+start();
+</script>
+</body></html>
