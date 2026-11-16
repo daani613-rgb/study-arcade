@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Little Stars responsive review</title>
+<style>body{font:16px system-ui;margin:24px;background:#e3e6eb;color:#243345}header{display:flex;gap:20px;align-items:center;flex-wrap:wrap;margin-bottom:20px}h1{font-size:22px}select{font:inherit;padding:12px}iframe{display:block;border:0;background:white;box-shadow:0 4px 20px #0002}p{max-width:800px}</style>
+<header><h1>Little Stars · viewport review</h1><label>Viewport <select id="size"><option>320 × 568</option><option>390 × 844</option><option>667 × 375</option><option>844 × 390</option><option>768 × 1024</option><option>1366 × 768</option></select></label><strong id="dimensions"></strong></header>
+<p>Manual browser layout checks. Resizing keeps the current game state. These frames simulate layout dimensions, not iOS or Android audio, touch input, browser chrome, zoom or safe-area behavior. Test those on real devices.</p>
+<iframe id="game" title="Little Stars game under test"></iframe>
+<script>
+const frame=document.querySelector('#game'),size=document.querySelector('#size');
+frame.src=location.hostname==='htmlpreview.github.io'?'https://htmlpreview.github.io/?https://github.com/daani613-rgb/study-arcade/blob/improve/little-stars-child-friendly/games/abc123.html':'../games/abc123.html';
+function resize(){const [w,h]=size.value.split(' × ').map(Number);frame.style.width=w+'px';frame.style.height=h+'px';document.querySelector('#dimensions').textContent=w+' × '+h+' CSS pixels'}size.onchange=resize;resize();
+</script></html>

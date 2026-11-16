@@ -1,247 +1,1455 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
-<title>Little Stars ABC 123</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&display=swap">
-<style>
-:root{--pink:#ff5fa2;--blue:#3d8bff;--yellow:#ffc928;--green:#2ec27e;--purple:#9b5cff;--orange:#ff8a3d;--ink:#2b2350;--bg1:#fff6d9;--bg2:#ffe3f0}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
-html,body{margin:0;height:100%;overflow:hidden;touch-action:manipulation}
-body{font-family:"Baloo 2",system-ui,sans-serif;color:var(--ink);background:radial-gradient(circle at 20% 10%,var(--bg1),var(--bg2) 70%);padding:env(safe-area-inset-top,0) env(safe-area-inset-right,0) env(safe-area-inset-bottom,0) env(safe-area-inset-left,0)}
-[hidden]{display:none!important}
-.lib-back{position:fixed;right:max(10px,env(safe-area-inset-right,0px));bottom:calc(8px + env(safe-area-inset-bottom,0px));z-index:50;font:700 12px system-ui,sans-serif;padding:6px 10px;border-radius:999px;background:rgba(40,35,80,.55);color:#fff;text-decoration:none}
-#app{position:relative;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:70px 14px 40px}
-.top{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:12px;right:12px;display:flex;justify-content:space-between;align-items:center;z-index:20;pointer-events:none}
-.top>*{pointer-events:auto}
-.iconbtn{width:62px;height:62px;border-radius:22px;border:0;background:#fff;box-shadow:0 5px 0 rgba(0,0,0,.12);font-size:34px;display:grid;place-items:center;cursor:pointer}
-.iconbtn:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(0,0,0,.12)}
-.jar{background:#fff;border-radius:22px;padding:6px 14px;font-size:28px;font-weight:800;box-shadow:0 5px 0 rgba(0,0,0,.12);display:flex;align-items:center;gap:6px}
-/* start + home */
-.big-play{width:min(62vw,260px);height:min(62vw,260px);border-radius:50%;border:0;background:var(--green);color:#fff;font-size:min(30vw,130px);box-shadow:0 12px 0 #1d8f5b;cursor:pointer;animation:pulse 1.6s ease-in-out infinite}
-.big-play:active{transform:translateY(8px);box-shadow:0 4px 0 #1d8f5b}
-@keyframes pulse{50%{transform:scale(1.06)}}
-.homegrid{display:flex;gap:min(5vw,28px);flex-wrap:wrap;justify-content:center}
-.tile{width:min(42vw,250px);height:min(42vw,250px);border-radius:40px;border:0;color:#fff;font-size:min(17vw,96px);font-weight:800;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;letter-spacing:2px}
-.tile small{font-size:min(9vw,48px);margin-top:6px}
-.tile.abc{background:var(--pink);box-shadow:0 12px 0 #c93b7c}
-.tile.num{background:var(--blue);box-shadow:0 12px 0 #2463c4}
-.tile:active{transform:translateY(8px);box-shadow:0 4px 0 rgba(0,0,0,.2)}
-.parent{position:fixed;left:12px;bottom:calc(8px + env(safe-area-inset-bottom,0px));font:600 12px system-ui,sans-serif;color:#6b5f8f;max-width:62vw;direction:rtl;text-align:right;opacity:.85}
-/* learn card */
-.card{position:relative;width:min(88vw,460px);aspect-ratio:1/1.05;background:#fff;border-radius:44px;box-shadow:0 14px 0 rgba(0,0,0,.08);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer}
-.glyph{font-size:min(46vw,250px);font-weight:800;line-height:.9}
-.pic{font-size:min(24vw,130px);line-height:1;margin-top:4px}
-.word{font-size:min(9vw,46px);font-weight:800;margin-top:4px}
-.word b{font-size:1.15em}
-.bounce{animation:bounce .55s}
-@keyframes bounce{30%{transform:scale(1.15) rotate(-4deg)}60%{transform:scale(.95) rotate(3deg)}}
-.next{margin-top:22px;width:min(40vw,170px);height:92px;border-radius:46px;border:0;background:var(--green);color:#fff;font-size:60px;box-shadow:0 9px 0 #1d8f5b;cursor:pointer}
-.next:active{transform:translateY(6px);box-shadow:0 3px 0 #1d8f5b}
-.dots{display:flex;gap:8px;margin-bottom:14px}
-.dots i{width:16px;height:16px;border-radius:50%;background:rgba(43,35,80,.15)}
-.dots i.on{background:var(--yellow)}
-/* counting */
-.field{width:min(92vw,520px);min-height:min(70vw,330px);background:#fff;border-radius:44px;box-shadow:0 14px 0 rgba(0,0,0,.08);display:flex;flex-wrap:wrap;align-items:center;justify-content:center;align-content:center;gap:8px;padding:18px}
-.obj{position:relative;font-size:min(15vw,78px);width:min(19vw,104px);height:min(19vw,104px);display:grid;place-items:center;border:0;background:none;cursor:pointer;border-radius:50%;transition:transform .2s}
-.obj.done{transform:scale(1.08)}
-.obj .badge{position:absolute;top:-4px;right:-4px;min-width:40px;height:40px;border-radius:20px;background:var(--purple);color:#fff;font-size:28px;font-weight:800;display:grid;place-items:center;padding:0 6px}
-.obj.hint{animation:wig 1s infinite}
-@keyframes wig{50%{transform:scale(1.18)}}
-.bignum{font-size:min(40vw,210px);font-weight:800;line-height:1;margin-top:8px}
-/* find */
-.prompt{width:min(88vw,460px);display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:20px}
-.ear{width:84px;height:84px;border-radius:50%;border:0;background:var(--yellow);font-size:46px;box-shadow:0 7px 0 #d9a400;cursor:pointer}
-.ear:active{transform:translateY(5px);box-shadow:0 2px 0 #d9a400}
-.ask{font-size:min(8vw,40px);font-weight:800}
-.choices{display:flex;gap:min(5vw,26px);flex-wrap:wrap;justify-content:center}
-.choice{width:min(40vw,200px);height:min(40vw,200px);border-radius:40px;border:0;background:#fff;box-shadow:0 11px 0 rgba(0,0,0,.1);font-size:min(28vw,150px);font-weight:800;cursor:pointer;line-height:1;display:grid;place-items:center}
-.choices.three .choice{width:min(28vw,170px);height:min(28vw,170px);font-size:min(20vw,120px)}
-.choice:active{transform:translateY(6px);box-shadow:0 4px 0 rgba(0,0,0,.1)}
-.choice.no{animation:shake .45s}
-@keyframes shake{20%,60%{transform:translateX(-12px)}40%,80%{transform:translateX(12px)}}
-.choice.glow{animation:glow 1s infinite}
-@keyframes glow{50%{box-shadow:0 0 0 12px var(--yellow),0 11px 0 rgba(0,0,0,.1)}}
-.choice.yes{background:var(--green)!important;color:#fff!important}
-.counted{display:flex;flex-wrap:wrap;justify-content:center;gap:4px;font-size:min(11vw,56px);max-width:min(88vw,460px);margin-bottom:16px}
-/* party */
-#party{position:fixed;inset:0;pointer-events:none;z-index:40;overflow:hidden}
-.conf{position:absolute;top:-40px;font-size:36px;animation:fall 1.6s ease-in forwards}
-@keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
-.starpop{position:fixed;left:50%;top:45%;font-size:160px;transform:translate(-50%,-50%) scale(0);animation:pop 1s forwards;z-index:41;pointer-events:none}
-@keyframes pop{40%{transform:translate(-50%,-50%) scale(1.2)}70%{transform:translate(-50%,-50%) scale(1)}100%{transform:translate(-50%,-160%) scale(.3);opacity:0}}
-/* sticker jar */
-.jarbig{font-size:min(20vw,110px)}
-.stars{display:flex;flex-wrap:wrap;justify-content:center;gap:2px;font-size:min(9vw,44px);max-width:min(90vw,520px);max-height:50vh;overflow:auto}
-@media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important}}
-</style>
-</head><body>
-<a class="lib-back" href="../">&larr; All games</a>
-<div class="top" id="top" hidden><button class="iconbtn" id="homeBtn" aria-label="Home">🏠</button><div class="jar" id="jar">⭐ <span id="starCount">0</span></div></div>
-<div id="app"></div>
-<div id="party"></div>
-<script>
-/* Little Stars ABC 123: for age 3. Voice-led (child does not need to read), big targets,
-   2 choices at first, adapts difficulty, no penalty for mistakes (models the right answer). */
-const LETTERS=[["A","apple","🍎"],["B","ball","🏀"],["C","cat","🐱"],["D","dog","🐶"],["E","elephant","🐘"],["F","fish","🐟"],["G","grapes","🍇"],["H","house","🏠"],["I","ice cream","🍦"],["J","juice","🧃"],["K","kite","🪁"],["L","lion","🦁"],["M","moon","🌙"],["N","nose","👃"],["O","orange","🍊"],["P","pig","🐷"],["Q","queen","👸"],["R","rainbow","🌈"],["S","sun","☀️"],["T","tree","🌳"],["U","umbrella","☂️"],["V","violin","🎻"],["W","whale","🐳"],["X","x-ray","🩻"],["Y","yo-yo","🪀"],["Z","zebra","🦓"]];
-const NUMWORDS=["zero","one","two","three","four","five","six","seven","eight","nine","ten"];
-const THINGS=[["🦆","duck","ducks"],["🎈","balloon","balloons"],["🍓","strawberry","strawberries"],["🐞","ladybug","ladybugs"],["⭐","star","stars"],["🐟","fish","fish"],["🍪","cookie","cookies"],["🌸","flower","flowers"],["🚗","car","cars"],["🐣","chick","chicks"]];
-const COLORS=["#ff5fa2","#3d8bff","#ff8a3d","#2ec27e","#9b5cff","#e94b4b","#00a6c7","#f2a900"];
-const KEY="abc123-stars", SEEN_KEY="abc123-seen";   // stars: {abc,num} (read by the library); seen: progress
-let S={abc:0,num:0,abcSeen:0,numSeen:0};
-try{const st=JSON.parse(localStorage.getItem(KEY)||"{}"),sn=JSON.parse(localStorage.getItem(SEEN_KEY)||"{}");
-  S.abc=+st.abc||0;S.num=+st.num||0;S.abcSeen=+sn.abcSeen||0;S.numSeen=+sn.numSeen||0}catch(e){}
-const save=()=>{try{localStorage.setItem(KEY,JSON.stringify({abc:S.abc,num:S.num}));localStorage.setItem(SEEN_KEY,JSON.stringify({abcSeen:S.abcSeen,numSeen:S.numSeen}))}catch(e){}};
-const app=document.getElementById("app"),$=id=>document.getElementById(id);
-const rnd=n=>Math.floor(Math.random()*n);
-const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]]}return a};
-const col=i=>COLORS[i%COLORS.length];
-
-/* ---------- voice ---------- */
-let voice=null;
-function pickVoice(){try{const vs=speechSynthesis.getVoices();voice=vs.find(v=>/en-US/i.test(v.lang)&&/Samantha|Google US|Female|Aria|Jenny/i.test(v.name))||vs.find(v=>/en-US/i.test(v.lang))||vs.find(v=>/^en/i.test(v.lang))||null}catch(e){}}
-try{pickVoice();speechSynthesis.onvoiceschanged=pickVoice}catch(e){}
-function say(text,cb){
-  try{
-    if(!("speechSynthesis" in window)){cb&&setTimeout(cb,700);return}
-    speechSynthesis.cancel();
-    const u=new SpeechSynthesisUtterance(text);
-    if(voice)u.voice=voice;u.lang="en-US";u.rate=0.82;u.pitch=1.25;
-    let done=false;const fin=()=>{if(!done){done=true;cb&&cb()}};
-    u.onend=fin;u.onerror=fin;setTimeout(fin,Math.max(1800,text.length*110));
-    speechSynthesis.speak(u);
-  }catch(e){cb&&setTimeout(cb,700)}
-}
-/* ---------- sounds (no files) ---------- */
-let ac=null;
-function tone(freqs,dur=0.12,type="sine",vol=0.18){
-  try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();
-    freqs.forEach((f,i)=>{const o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.value=f;
-      const t=ac.currentTime+i*dur;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+0.02);g.gain.exponentialRampToValueAtTime(0.001,t+dur*1.6);
-      o.connect(g).connect(ac.destination);o.start(t);o.stop(t+dur*1.8)})}catch(e){}
-}
-const yay=()=>tone([523,659,784,1047],0.11,"triangle");
-const boop=()=>tone([300,240],0.13,"sine",0.12);
-const tick=n=>tone([440+n*40],0.09,"triangle",0.14);
-
-function party(){
-  const p=$("party");const em=["⭐","🎉","💖","🌟","🎈","✨"];
-  for(let i=0;i<22;i++){const s=document.createElement("div");s.className="conf";s.textContent=em[rnd(em.length)];
-    s.style.left=rnd(100)+"vw";s.style.animationDelay=(Math.random()*0.4)+"s";s.style.fontSize=(26+rnd(26))+"px";p.appendChild(s);setTimeout(()=>s.remove(),2300)}
-  const st=document.createElement("div");st.className="starpop";st.textContent="⭐";document.body.appendChild(st);setTimeout(()=>st.remove(),1100);
-}
-function addStar(track){S[track]++;save();$("starCount").textContent=S.abc+S.num}
-
-/* ---------- screens ---------- */
-function start(){
-  $("top").hidden=true;
-  app.innerHTML=`<button class="big-play" id="go" aria-label="Start">▶</button>`;
-  $("go").onclick=()=>{tone([392,523],0.1);say("Hi! Let's play!");home()};
-}
-function home(){
-  $("top").hidden=false;$("homeBtn").hidden=true;$("starCount").textContent=S.abc+S.num;
-  app.innerHTML=`<div class="homegrid">
-    <button class="tile abc" id="abc" aria-label="Letters">ABC<small>🍎🐱</small></button>
-    <button class="tile num" id="num" aria-label="Numbers">123<small>🦆🎈</small></button></div>
-    <p class="parent">להורים: לשבת יחד, לחזור בקול על מה שהמשחק אומר, ולשחק כמה דקות בכל פעם. המשחק מדבר באנגלית, אז כדאי שהשמע יהיה פתוח.</p>`;
-  $("abc").onclick=()=>{say("Letters!");letters()};
-  $("num").onclick=()=>{say("Numbers!");numbers()};
-  $("jar").onclick=jar;
-}
-$("homeBtn").onclick=()=>{try{speechSynthesis.cancel()}catch(e){}home()};
-
-/* Session plan: learn 3 items, then a short "find" game on items learned so far. Repeat. */
-const level={abc:2,num:2};            // number of choices (2 or 3)
-const streak={abc:0,num:0};
-function adapt(track,ok){
-  if(ok){streak[track]++;if(streak[track]>=5&&level[track]<3){level[track]=3;streak[track]=0}}
-  else{streak[track]=Math.min(streak[track],0)-1;if(streak[track]<=-2&&level[track]>2){level[track]=2;streak[track]=0}}
-}
-
-/* ---------- LETTERS ---------- */
-let li=0;
-function letters(){$("homeBtn").hidden=false;li=S.abcSeen%26;learnLetter(0)}
-function learnLetter(k){
-  const [L,w,e]=LETTERS[li];const c=col(li);
-  app.innerHTML=`<div class="dots">${[0,1,2].map(i=>`<i class="${i<=k?"on":""}"></i>`).join("")}</div>
-   <div class="card" id="card"><div class="glyph" style="color:${c}">${L}</div><div class="pic">${e}</div><div class="word"><b style="color:${c}">${w[0].toUpperCase()}</b>${w.slice(1)}</div></div>
-   <button class="next" id="nx" aria-label="Next">➜</button>`;
-  const talk=()=>{const cd=$("card");cd.classList.remove("bounce");void cd.offsetWidth;cd.classList.add("bounce");say(`${L}. ${L} is for ${w}!`)};
-  talk();$("card").onclick=talk;
-  $("nx").onclick=()=>{tick(k);S.abcSeen=Math.max(S.abcSeen,li+1);save();li=(li+1)%26;
-    if(k<2)learnLetter(k+1);else findLetters(3)};
-}
-function poolLetters(){const n=Math.max(3,Math.min(26,S.abcSeen||li));return LETTERS.slice(0,n).map((x,i)=>i)}
-function findLetters(left){
-  if(left<=0){learnLetter(0);return}
-  const pool=poolLetters();const n=Math.min(level.abc,pool.length);
-  const target=pool[rnd(pool.length)];
-  const others=shuffle(pool.filter(i=>i!==target)).slice(0,n-1);
-  const opts=shuffle([target,...others]);
-  const T=LETTERS[target][0];
-  app.innerHTML=`<div class="prompt"><button class="ear" id="ear" aria-label="Hear again">🔊</button><div class="ask">Find <span style="color:${col(target)}">?</span></div></div>
-   <div class="choices ${n===3?"three":""}">${opts.map(i=>`<button class="choice" data-i="${i}" style="color:${col(i)}">${LETTERS[i][0]}</button>`).join("")}</div>`;
-  const ask=()=>say(`Can you find the letter ${T}?`);ask();$("ear").onclick=ask;
-  let miss=0,done=false;
-  app.querySelectorAll(".choice").forEach(b=>b.onclick=()=>{
-    if(done)return;const i=+b.dataset.i;
-    if(i===target){done=true;b.classList.add("yes");yay();party();addStar("abc");adapt("abc",miss===0);
-      say(`Yay! That's ${T}! ${T} is for ${LETTERS[target][1]}!`,()=>findLetters(left-1))}
-    else{miss++;boop();b.classList.remove("no");void b.offsetWidth;b.classList.add("no");
-      say(`That's ${LETTERS[i][0]}. Find ${T}!`);
-      if(miss>=2){adapt("abc",false);app.querySelector(`.choice[data-i="${target}"]`).classList.add("glow")}}
-  });
-}
-
-/* ---------- NUMBERS ---------- */
-let ni=1;
-function numbers(){$("homeBtn").hidden=false;ni=(S.numSeen%10)+1;learnNumber(0)}
-function learnNumber(k){
-  const th=THINGS[(ni-1)%THINGS.length];let count=0;
-  app.innerHTML=`<div class="dots">${[0,1,2].map(i=>`<i class="${i<=k?"on":""}"></i>`).join("")}</div>
-   <div class="field" id="field">${Array.from({length:ni},(_,i)=>`<button class="obj hint" data-i="${i}" aria-label="${th[1]}">${th[0]}</button>`).join("")}</div>
-   <div id="after"></div>`;
-  say(ni===1?`Let's count! Tap the ${th[1]}.`:`Let's count the ${th[2]}! Tap each one.`);
-  app.querySelectorAll(".obj").forEach(b=>b.onclick=()=>{
-    if(b.classList.contains("done"))return;
-    count++;b.classList.add("done");b.classList.remove("hint");b.insertAdjacentHTML("beforeend",`<span class="badge">${count}</span>`);
-    tick(count);say(NUMWORDS[count]);
-    if(count===ni){setTimeout(()=>{
-      $("after").innerHTML=`<div class="bignum" style="color:${col(ni)}">${ni}</div><button class="next" id="nx" aria-label="Next">➜</button>`;
-      yay();say(`${NUMWORDS[ni]}! ${NUMWORDS[ni]} ${ni===1?th[1]:th[2]}!`);
-      $("nx").onclick=()=>{S.numSeen=Math.max(S.numSeen,ni);save();ni=ni%10+1;
-        if(k<2)learnNumber(k+1);else findNumbers(3)};
-    },650)}
-  });
-}
-function findNumbers(left){
-  if(left<=0){learnNumber(0);return}
-  const max=Math.max(3,Math.min(10,S.numSeen||ni));const pool=Array.from({length:max},(_,i)=>i+1);
-  const n=Math.min(level.num,pool.length);
-  const target=pool[rnd(pool.length)];
-  const others=shuffle(pool.filter(x=>x!==target)).slice(0,n-1);
-  const opts=shuffle([target,...others]);
-  const howMany=Math.random()<0.5; const th=THINGS[rnd(THINGS.length)];
-  app.innerHTML=`${howMany?`<div class="counted">${Array.from({length:target},()=>th[0]).join("")}</div>`:""}
-   <div class="prompt"><button class="ear" id="ear" aria-label="Hear again">🔊</button><div class="ask">${howMany?"How many?":"Find <span>?</span>"}</div></div>
-   <div class="choices ${n===3?"three":""}">${opts.map(x=>`<button class="choice" data-x="${x}" style="color:${col(x)}">${x}</button>`).join("")}</div>`;
-  const ask=()=>say(howMany?`How many ${th[2]}?`:`Can you find the number ${NUMWORDS[target]}?`);ask();$("ear").onclick=ask;
-  let miss=0,done=false;
-  app.querySelectorAll(".choice").forEach(b=>b.onclick=()=>{
-    if(done)return;const x=+b.dataset.x;
-    if(x===target){done=true;b.classList.add("yes");yay();party();addStar("num");adapt("num",miss===0);
-      say(howMany?`Yay! ${NUMWORDS[target]} ${target===1?th[1]:th[2]}!`:`Yay! That's ${NUMWORDS[target]}!`,()=>findNumbers(left-1))}
-    else{miss++;boop();b.classList.remove("no");void b.offsetWidth;b.classList.add("no");
-      say(howMany?`Let's count again. Find ${NUMWORDS[target]}!`:`That's ${NUMWORDS[x]}. Find ${NUMWORDS[target]}!`);
-      if(miss>=2){adapt("num",false);app.querySelector(`.choice[data-x="${target}"]`).classList.add("glow")}}
-  });
-}
-
-/* ---------- star jar ---------- */
-function jar(){
-  $("homeBtn").hidden=false;const t=S.abc+S.num;
-  app.innerHTML=`<div class="jarbig">🫙</div><div class="stars">${"⭐".repeat(Math.min(t,300))}</div>`;
-  say(t?`You have ${t} stars! Great job!`:"Let's win some stars!");
-}
-start();
-</script>
-</body></html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#f8f6f0" />
+    <meta
+      name="description"
+      content="A gentle, voice-led playground for letters, numbers and counting. Made for little learners."
+    />
+    <title>Little Stars ABC 123</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #293c50;
+        --muted: #586a78;
+        --paper: #f8f6f0;
+        --purple: #7052ad;
+        --green: #23785b;
+        --line: #e4e7e4;
+        --pink: #b23d6a;
+        --blue: #316cac;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        min-height: 100%;
+        background: var(--paper);
+      }
+      body {
+        margin: 0;
+        color: var(--ink);
+        font-family:
+          ui-rounded,
+          "Arial Rounded MT Bold",
+          system-ui,
+          -apple-system,
+          sans-serif;
+        line-height: 1.4;
+        background:
+          radial-gradient(ellipse at 10% 30%, #ece9fa 0, transparent 46%),
+          radial-gradient(ellipse at 90% 80%, #e6f2e9 0, transparent 40%);
+        min-height: 100svh;
+        padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px)
+          env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+      }
+      button,
+      a {
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+      }
+      button {
+        font: inherit;
+        cursor: pointer;
+        color: inherit;
+      }
+      button:focus-visible,
+      a:focus-visible {
+        outline: 4px solid #3766bd;
+        outline-offset: 5px;
+      }
+      button {
+        transition:
+          transform 0.15s,
+          background 0.15s;
+      }
+      button:active {
+        transform: translateY(2px);
+      }
+      button:disabled {
+        cursor: default;
+      }
+      button[aria-disabled="true"] {
+        cursor: default;
+      }
+      [hidden] {
+        display: none !important;
+      }
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+      .shell {
+        width: min(100%, 1020px);
+        margin: auto;
+        padding: 16px 24px 12px;
+        min-height: 100svh;
+        display: flex;
+        flex-direction: column;
+      }
+      .top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        min-height: 64px;
+      }
+      .brand {
+        font-size: 18px;
+        font-weight: 850;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .brand span {
+        font-size: 32px;
+      }
+      .tools {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .iconbtn,
+      .jar {
+        min-width: 58px;
+        min-height: 58px;
+        padding: 8px 14px;
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        background: #fff;
+        box-shadow: 0 3px 0 #e2e5df;
+        font-size: 25px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+      .jar {
+        font-size: 20px;
+        font-weight: 800;
+      }
+      .iconbtn svg {
+        width: 28px;
+        height: 28px;
+      }
+      .iconbtn.speaking {
+        background: #e9e3f8;
+        box-shadow: 0 0 0 3px #c5b8e1;
+      }
+      .main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 24px 0;
+        gap: 18px;
+        min-width: 0;
+      }
+      .eyebrow {
+        font-size: 12px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--muted);
+        font-weight: 800;
+        margin: 0;
+      }
+      h1,
+      h2,
+      p {
+        margin: 0;
+      }
+      h1 {
+        font-size: clamp(28px, 5vw, 46px);
+        letter-spacing: -1.5px;
+        line-height: 1.15;
+      }
+      h2 {
+        font-size: clamp(25px, 4vw, 36px);
+        letter-spacing: -0.8px;
+      }
+      .intro {
+        color: var(--muted);
+        font-size: 17px;
+        max-width: 430px;
+      }
+      .mascot {
+        font-size: 80px;
+        line-height: 1.15;
+        filter: drop-shadow(0 8px 0 #efdba4);
+      }
+      .primary {
+        display: inline-flex;
+        gap: 14px;
+        align-items: center;
+        justify-content: center;
+        min-height: 68px;
+        border: 0;
+        border-radius: 24px;
+        background: var(--green);
+        color: white;
+        box-shadow: 0 5px 0 #195c45;
+        padding: 12px 28px;
+        font-size: 23px;
+        font-weight: 800;
+      }
+      .primary .arrow {
+        font-size: 32px;
+      }
+      .big-play {
+        min-width: 180px;
+        min-height: 84px;
+      }
+      .homegrid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 24px;
+        width: min(100%, 660px);
+        margin: 8px 0;
+      }
+      .tile {
+        position: relative;
+        min-height: 248px;
+        border: 2px solid #fff;
+        border-radius: 34px;
+        padding: 24px;
+        box-shadow: 0 7px 0 #e4e2df;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+      .tile.abc {
+        background: #f8e3eb;
+        color: #913458;
+      }
+      .tile.num {
+        background: #dfedf9;
+        color: #285f96;
+      }
+      .tile .tile-art {
+        font-size: 40px;
+        letter-spacing: 8px;
+      }
+      .tile strong {
+        font-size: 64px;
+        letter-spacing: 1px;
+        line-height: 1.1;
+      }
+      .tile small {
+        font-size: 17px;
+        font-weight: 700;
+      }
+      .tile .tile-arrow {
+        position: absolute;
+        bottom: 18px;
+        right: 20px;
+        font-size: 25px;
+      }
+      .home-note {
+        font-size: 14px;
+        color: var(--muted);
+      }
+      .footer {
+        display: flex;
+        justify-content: center;
+        padding: 4px;
+        min-height: 48px;
+      }
+      .parent-button {
+        font-size: 13px;
+        background: none;
+        border: 0;
+        color: var(--muted);
+        min-height: 44px;
+        padding: 10px 20px;
+        text-decoration: underline;
+        text-underline-offset: 4px;
+      }
+      .stepbar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        color: var(--muted);
+        font-weight: 700;
+        font-size: 14px;
+      }
+      .dots {
+        display: flex;
+        gap: 6px;
+      }
+      .dots i {
+        display: block;
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: #d8dce3;
+      }
+      .dots i.on {
+        background: var(--purple);
+      }
+      .activity {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 18px;
+      }
+      .card {
+        width: min(100%, 380px);
+        border: 2px solid #fff;
+        background: #fff;
+        border-radius: 32px;
+        padding: 20px;
+        box-shadow: 0 7px 0 #e5e5e0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 300px;
+      }
+      .glyph {
+        font-size: clamp(96px, 20vw, 148px);
+        font-weight: 850;
+        line-height: 1;
+      }
+      .pic {
+        font-size: 72px;
+        line-height: 1.2;
+      }
+      .word {
+        font-size: 28px;
+        font-weight: 750;
+      }
+      .card-hint {
+        font-size: 13px;
+        color: var(--muted);
+        margin-top: 8px;
+      }
+      .actions {
+        display: flex;
+        justify-content: center;
+        gap: 14px;
+        align-items: center;
+      }
+      .prompt {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        min-height: 48px;
+      }
+      .ask {
+        font-size: clamp(24px, 5vw, 34px);
+        font-weight: 800;
+      }
+      .target {
+        color: var(--purple);
+      }
+      .choices {
+        display: flex;
+        justify-content: center;
+        gap: 18px;
+        max-width: 100%;
+        width: 640px;
+      }
+      .choice {
+        flex: 1;
+        min-width: 0;
+        max-width: 220px;
+        min-height: 150px;
+        aspect-ratio: 1;
+        border: 3px solid #e3e2ed;
+        border-radius: 30px;
+        background: white;
+        font-size: clamp(64px, 15vw, 112px);
+        line-height: 1;
+        font-weight: 800;
+        box-shadow: 0 6px 0 #e4e2e9;
+        position: relative;
+      }
+      .choice.yes {
+        background: #e1f2e5;
+        border-color: #3a8960;
+      }
+      .choice.yes:after {
+        content: "✓";
+        position: absolute;
+        top: 8px;
+        right: 12px;
+        font-size: 28px;
+        color: #236544;
+      }
+      .choice.hint {
+        border-color: #be8731;
+        background: #fff6d8;
+      }
+      .feedback {
+        min-height: 32px;
+        font-weight: 750;
+        font-size: 18px;
+        color: var(--green);
+      }
+      .field {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 12px;
+        width: min(100%, 600px);
+        padding: 22px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 30px;
+        box-shadow: 0 6px 0 #e5e5e0;
+      }
+      .obj {
+        position: relative;
+        border: 2px solid #eceaf2;
+        border-radius: 22px;
+        background: #faf9fe;
+        aspect-ratio: 1;
+        min-width: 0;
+        min-height: 60px;
+        font-size: clamp(32px, 6vw, 56px);
+        display: grid;
+        place-items: center;
+      }
+      .obj.done {
+        background: #e4f2e8;
+        border-color: #79af8d;
+      }
+      .badge {
+        position: absolute;
+        right: -5px;
+        top: -8px;
+        min-width: 28px;
+        height: 28px;
+        padding: 2px 5px;
+        border-radius: 12px;
+        background: var(--purple);
+        color: white;
+        font-size: 17px;
+        font-weight: 800;
+      }
+      .count-status {
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--purple);
+        min-height: 34px;
+      }
+      .counted {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 8px;
+        font-size: 36px;
+        background: #fff;
+        border: 1px solid var(--line);
+        padding: 16px 22px;
+        border-radius: 24px;
+      }
+      .counted span {
+        min-width: 42px;
+      }
+      .jarbig {
+        font-size: 78px;
+      }
+      .stars {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 6px;
+        max-width: 480px;
+        font-size: 30px;
+      }
+      .parent-panel {
+        width: min(100%, 550px);
+        text-align: left;
+        background: #fff;
+        padding: 28px;
+        border-radius: 28px;
+        border: 1px solid var(--line);
+        display: grid;
+        gap: 18px;
+      }
+      .parent-panel p,
+      .parent-panel li {
+        font-size: 15px;
+        line-height: 1.65;
+        color: var(--muted);
+      }
+      .parent-panel ul {
+        margin: 0;
+        padding-left: 20px;
+      }
+      .lib-back {
+        color: var(--purple);
+        display: inline-block;
+        padding: 12px 0;
+        font-weight: 700;
+        min-height: 48px;
+      }
+      .notice {
+        font-size: 13px;
+        background: #fff1cd;
+        color: #614b1b;
+        padding: 8px 16px;
+        border-radius: 12px;
+        max-width: 650px;
+        margin: 12px auto 0;
+        text-align: center;
+      }
+      .celebrate {
+        animation: happy 0.5s ease-out;
+      }
+      .spark {
+        position: fixed;
+        pointer-events: none;
+        z-index: 10;
+        font-size: 36px;
+        left: 50%;
+        top: 40%;
+        animation: spark 1s forwards;
+      }
+      @keyframes happy {
+        50% {
+          transform: scale(1.035);
+        }
+      }
+      @keyframes spark {
+        to {
+          transform: translate(var(--x), -120px) rotate(20deg);
+          opacity: 0;
+        }
+      }
+      @media (max-width: 560px) {
+        .shell {
+          padding: 12px 16px 8px;
+        }
+        .brand {
+          font-size: 14px;
+          gap: 5px;
+        }
+        .brand span {
+          font-size: 26px;
+        }
+        .tools {
+          gap: 7px;
+        }
+        .iconbtn,
+        .jar {
+          min-height: 52px;
+          min-width: 52px;
+          padding: 7px 10px;
+          border-radius: 17px;
+        }
+        .jar {
+          font-size: 17px;
+        }
+        .main {
+          padding: 22px 0;
+          gap: 16px;
+        }
+        .homegrid {
+          gap: 14px;
+        }
+        .tile {
+          min-height: 218px;
+          padding: 18px 8px;
+          border-radius: 28px;
+        }
+        .tile strong {
+          font-size: 48px;
+        }
+        .tile .tile-art {
+          font-size: 31px;
+          letter-spacing: 3px;
+        }
+        .tile .tile-arrow {
+          right: 14px;
+          bottom: 12px;
+        }
+        .choices {
+          gap: 10px;
+        }
+        .choice {
+          border-radius: 24px;
+          min-height: 100px;
+        }
+        .field {
+          gap: 10px;
+          padding: 16px;
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+        .obj {
+          font-size: 38px;
+        }
+        .counted {
+          font-size: 30px;
+          gap: 5px;
+          padding: 12px;
+        }
+        .counted span {
+          min-width: 36px;
+        }
+        .primary {
+          min-height: 62px;
+          font-size: 20px;
+        }
+        .parent-panel {
+          padding: 22px;
+        }
+        .card {
+          min-height: 280px;
+        }
+        .intro {
+          font-size: 16px;
+        }
+      }
+      @media (max-height: 550px) and (min-width: 560px) {
+        .shell {
+          padding: 8px 20px;
+        }
+        .top {
+          min-height: 48px;
+        }
+        .iconbtn,
+        .jar {
+          min-height: 46px;
+          min-width: 50px;
+          border-radius: 15px;
+        }
+        .main {
+          padding: 10px 0;
+          gap: 10px;
+        }
+        .footer {
+          min-height: 32px;
+        }
+        .parent-button {
+          min-height: 32px;
+          padding: 4px 12px;
+        }
+        h1 {
+          font-size: 32px;
+        }
+        h2 {
+          font-size: 25px;
+        }
+        .mascot {
+          font-size: 46px;
+        }
+        .intro {
+          font-size: 14px;
+        }
+        .homegrid {
+          max-width: 580px;
+          gap: 20px;
+          margin: 0;
+        }
+        .tile {
+          min-height: 160px;
+          padding: 14px;
+        }
+        .tile strong {
+          font-size: 48px;
+        }
+        .tile .tile-art {
+          font-size: 28px;
+        }
+        .tile small {
+          font-size: 14px;
+        }
+        .activity {
+          gap: 10px;
+        }
+        .activity.learn {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          max-width: 720px;
+          align-items: center;
+        }
+        .learn .stepbar {
+          grid-column: 1/-1;
+        }
+        .card {
+          min-height: 190px;
+          width: 100%;
+          padding: 10px;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+        }
+        .glyph {
+          font-size: 100px;
+          grid-row: 1/3;
+        }
+        .pic {
+          font-size: 52px;
+        }
+        .word {
+          font-size: 24px;
+        }
+        .card-hint {
+          grid-column: 1/-1;
+          margin: 0;
+        }
+        .field {
+          grid-template-columns: repeat(5, minmax(0, 1fr));
+          padding: 12px;
+          gap: 10px;
+        }
+        .obj {
+          min-height: 54px;
+          font-size: 32px;
+          border-radius: 16px;
+        }
+        .count-area {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          align-items: center;
+        }
+        .choice {
+          min-height: 90px;
+          max-width: 132px;
+          font-size: 76px;
+          border-radius: 22px;
+        }
+        .choices {
+          gap: 18px;
+        }
+        .counted {
+          display: flex;
+          font-size: 28px;
+          gap: 8px;
+          padding: 8px 14px;
+        }
+        .counted span {
+          min-width: 22px;
+        }
+        .prompt {
+          min-height: 34px;
+        }
+        .ask {
+          font-size: 25px;
+        }
+        .primary {
+          min-height: 55px;
+          font-size: 20px;
+          padding: 8px 24px;
+        }
+        .feedback {
+          min-height: 25px;
+          font-size: 16px;
+        }
+        .jarbig {
+          font-size: 48px;
+        }
+        .stars {
+          font-size: 24px;
+          max-width: 600px;
+        }
+        .home-note {
+          font-size: 12px;
+        }
+      }
+      /* Cohesive preschool design system: warm surfaces, depth and clear hierarchy. */
+      :root {
+        --ink: #27364a;
+        --muted: #526579;
+        --paper: #fcf9f3;
+        --purple: #6951a7;
+        --green: #207a61;
+        --line: #e6e5e1;
+      }
+      body {
+        background:
+          radial-gradient(circle at 10% 8%, #fff1d7 0, transparent 34%),
+          radial-gradient(circle at 90% 20%, #e8e4fa 0, transparent 32%),
+          radial-gradient(circle at 45% 92%, #dff2ed 0, transparent 40%),
+          var(--paper);
+      }
+      .shell { max-width: 940px; }
+      .brand { letter-spacing: -.35px; }
+      .eyebrow { letter-spacing: 1.6px; color: #6951a7; }
+      h1, h2 { text-wrap: balance; }
+      .intro { line-height: 1.6; }
+      .mascot { filter: drop-shadow(0 7px 0 #f4e5ba); }
+      .tile, .card, .field, .parent-panel {
+        box-shadow: 0 8px 0 #dcdedc, 0 14px 30px #2c405014;
+      }
+      .tile {
+        border: 3px solid #ffffff;
+        transition: transform .16s ease, box-shadow .16s ease;
+      }
+      .tile.abc { background: linear-gradient(155deg,#ffeaf1,#f8dce8); }
+      .tile.num { background: linear-gradient(155deg,#e7f4ff,#d5e8fc); }
+      .tile:active { transform: translateY(4px); box-shadow: 0 4px 0 #dcdedc; }
+      .tile strong { text-shadow: 0 2px 0 #ffffffa0; }
+      .primary {
+        background: #207a61;
+        border: 2px solid #165f4b;
+        box-shadow: 0 5px 0 #145440, 0 9px 18px #1b5e4830;
+      }
+      .primary:active { transform: translateY(3px); box-shadow: 0 2px 0 #145440; }
+      .iconbtn, .jar { border: 2px solid #e2e5e6; }
+      .choice { border-width: 3px; box-shadow: 0 6px 0 #d8dce5, 0 10px 18px #30415c12; }
+      .choice:active { transform: translateY(3px); }
+      .choice.no { background: #fff0eb; border-color: #d48a78; box-shadow: 0 5px 0 #ebc4b9; }
+      .choice.no::after { content: "↻"; position: absolute; right: 10px; top: 4px; font-size: 25px; color: #9b594a; }
+      .choice.yes { box-shadow: 0 5px 0 #a6d1b5; }
+      .choice.hint { box-shadow: 0 5px 0 #e7d29a; }
+      .obj { border-width: 2px; }
+      .obj:active { transform: scale(.96); }
+      .feedback { max-width: 100%; }
+      @media (prefers-reduced-motion: reduce) {
+        .tile, .primary { transition: none; }
+      }
+      /* Small phones: preserve usable touch targets without horizontal clipping. */
+      @media (max-width: 360px) {
+        .shell { padding: 10px 10px 8px; }
+        .top { gap: 6px; min-height: 56px; }
+        .brand { font-size: 13px; gap: 3px; }
+        .brand span { font-size: 22px; }
+        .tools { gap: 5px; }
+        .iconbtn, .jar { min-width: 48px; min-height: 48px; padding: 6px 8px; border-radius: 15px; }
+        .jar { font-size: 15px; }
+        .main { padding: 12px 0; gap: 12px; }
+        .activity { gap: 12px; }
+        .homegrid { gap: 10px; }
+        .tile { min-height: 185px; padding: 12px 6px; border-radius: 22px; }
+        .tile strong { font-size: 42px; }
+        .tile small { font-size: 14px; }
+        .card { min-height: 230px; padding: 12px; }
+        .glyph { font-size: 96px; }
+        .pic { font-size: 54px; }
+        .word { font-size: 24px; }
+        .choices { gap: 7px; }
+        .choice { min-height: 88px; font-size: clamp(54px, 17vw, 72px); border-radius: 18px; }
+        .field { grid-template-columns: repeat(5, minmax(0, 1fr)); padding: 10px; gap: 6px; border-radius: 20px; }
+        .obj { min-height: 48px; border-radius: 13px; font-size: 29px; }
+        .badge { min-width: 23px; height: 23px; font-size: 13px; }
+        .counted { padding: 8px; gap: 4px; font-size: 26px; }
+        .counted span { min-width: 0; }
+        .primary { min-height: 58px; padding: 10px 18px; font-size: 19px; }
+      }
+      /* Short landscape screens must scroll instead of cropping the activity. */
+      @media (max-height: 430px) and (orientation: landscape) {
+        .shell { min-height: 100svh; }
+        .main { justify-content: flex-start; padding: 8px 0; }
+        .activity { gap: 8px; }
+        .stepbar { gap: 6px; }
+        .field { padding: 8px; gap: 6px; }
+        .obj { min-height: 46px; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *:before,
+        *:after {
+          animation: none !important;
+          transition: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <header class="top">
+        <div class="brand" id="brand">
+          <span aria-hidden="true">🌟</span> Little Stars
+        </div>
+        <button class="iconbtn" id="homeBtn" aria-label="Go home" hidden>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            aria-hidden="true"
+          >
+            <path d="m3 10 9-7 9 7v10H15v-7H9v7H3Z" />
+          </svg>
+        </button>
+        <div class="tools">
+          <button
+            class="iconbtn"
+            id="replay"
+            aria-label="Hear the instructions again"
+            hidden
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              aria-hidden="true"
+            >
+              <path d="M3 9h4l5-4v14l-5-4H3Z M16 8q5 4 0 8 M19 4q9 8 0 16" />
+            </svg></button
+          ><button class="jar" id="jar" aria-label="Your stars" hidden>
+            <span aria-hidden="true">⭐</span><span id="starCount">0</span>
+          </button>
+        </div>
+      </header>
+      <p id="notice" class="notice" role="status" hidden></p>
+      <main id="app" class="main" tabindex="-1"></main>
+      <footer class="footer">
+        <button id="parents" class="parent-button">For grown-ups</button>
+      </footer>
+    </div>
+    <div id="live" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+    <script>
+      const LETTERS = [
+        ["A", "apple", "🍎"],
+        ["B", "ball", "🏀"],
+        ["C", "cat", "🐱"],
+        ["D", "dog", "🐶"],
+        ["E", "elephant", "🐘"],
+        ["F", "fish", "🐟"],
+        ["G", "grapes", "🍇"],
+        ["H", "house", "🏠"],
+        ["I", "ice cream", "🍦"],
+        ["J", "juice", "🧃"],
+        ["K", "kite", "🪁"],
+        ["L", "lion", "🦁"],
+        ["M", "moon", "🌙"],
+        ["N", "nose", "👃"],
+        ["O", "orange", "🍊"],
+        ["P", "pig", "🐷"],
+        ["Q", "queen", "👸"],
+        ["R", "rainbow", "🌈"],
+        ["S", "sun", "☀️"],
+        ["T", "tree", "🌳"],
+        ["U", "umbrella", "☂️"],
+        ["V", "violin", "🎻"],
+        ["W", "whale", "🐳"],
+        ["X", "x-ray", "🩻"],
+        ["Y", "yo-yo", "🪀"],
+        ["Z", "zebra", "🦓"],
+      ];
+      const NUMWORDS = [
+        "zero",
+        "one",
+        "two",
+        "three",
+        "four",
+        "five",
+        "six",
+        "seven",
+        "eight",
+        "nine",
+        "ten",
+      ];
+      const THINGS = [
+        ["🦆", "duck", "ducks"],
+        ["🎈", "balloon", "balloons"],
+        ["🍓", "strawberry", "strawberries"],
+        ["🐞", "ladybug", "ladybugs"],
+        ["⭐", "star", "stars"],
+        ["🐟", "fish", "fish"],
+        ["🍪", "cookie", "cookies"],
+        ["🌸", "flower", "flowers"],
+        ["🚗", "car", "cars"],
+        ["🐣", "chick", "chicks"],
+      ];
+      /* Keep the two legacy keys and their shapes: the arcade reads abc123-stars. */
+      const KEY = "abc123-stars",
+        SEEN_KEY = "abc123-seen",
+        CURSOR_KEY = "abc123-cursor-v1";
+      const $ = (id) => document.getElementById(id),
+        app = $("app");
+      const safeNumber = (value) =>
+        Number.isSafeInteger(Number(value)) && Number(value) >= 0
+          ? Number(value)
+          : 0;
+      let storageOK = true;
+      function read(key) {
+        try {
+          const v = JSON.parse(localStorage.getItem(key) || "{}");
+          return v && typeof v === "object" && !Array.isArray(v) ? v : {};
+        } catch {
+          storageOK = false;
+          return {};
+        }
+      }
+      const stored = read(KEY),
+        seen = read(SEEN_KEY),
+        cursor = read(CURSOR_KEY);
+      const S = {
+        abc: safeNumber(stored.abc),
+        num: safeNumber(stored.num),
+        abcSeen: Math.min(26, safeNumber(seen.abcSeen)),
+        numSeen: Math.min(10, safeNumber(seen.numSeen)),
+      };
+      let li =
+        Number.isInteger(cursor.abc) && cursor.abc >= 0 && cursor.abc < 26
+          ? cursor.abc
+          : S.abcSeen % 26;
+      let ni =
+        Number.isInteger(cursor.num) && cursor.num >= 1 && cursor.num <= 10
+          ? cursor.num
+          : (S.numSeen % 10) + 1;
+      function save() {
+        try {
+          // Merge maxima so another open tab cannot reduce earned stars or learned items.
+          const old = read(KEY),
+            progress = read(SEEN_KEY);
+          S.abc = Math.max(S.abc, safeNumber(old.abc));
+          S.num = Math.max(S.num, safeNumber(old.num));
+          S.abcSeen = Math.max(
+            S.abcSeen,
+            Math.min(26, safeNumber(progress.abcSeen)),
+          );
+          S.numSeen = Math.max(
+            S.numSeen,
+            Math.min(10, safeNumber(progress.numSeen)),
+          );
+          localStorage.setItem(KEY, JSON.stringify({ abc: S.abc, num: S.num }));
+          localStorage.setItem(
+            SEEN_KEY,
+            JSON.stringify({ abcSeen: S.abcSeen, numSeen: S.numSeen }),
+          );
+          localStorage.setItem(
+            CURSOR_KEY,
+            JSON.stringify({ abc: li, num: ni }),
+          );
+        } catch {
+          storageOK = false;
+        }
+        storageNotice();
+      }
+      function storageNotice() {
+        if (!storageOK)
+          notice(
+            "Progress may not be saved on this device. You can still play.",
+          );
+      }
+      function notice(text) {
+        $("notice").textContent = text;
+        $("notice").hidden = false;
+      }
+      const shuffle = (a) => {
+        a = [...a];
+        for (let i = a.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+      };
+      const sample = (a) => a[Math.floor(Math.random() * a.length)];
+      const palette = [
+        "#a93d67",
+        "#316cac",
+        "#a55a18",
+        "#287858",
+        "#7052ad",
+        "#b14040",
+      ];
+      const color = (i) => palette[i % palette.length];
+      let screen = 0,
+        voice = null,
+        utterance = null,
+        voiceToken = 0,
+        voiceTimer = null,
+        instruction = "",
+        started = false,
+        audio = null;
+      const pending = new Set();
+      function later(fn, ms) {
+        const current = screen;
+        const id = setTimeout(() => {
+          pending.delete(id);
+          if (screen === current) fn();
+        }, ms);
+        pending.add(id);
+        return id;
+      }
+      function cancelVoice() {
+        voiceToken++;
+        clearTimeout(voiceTimer);
+        if ("speechSynthesis" in window) {
+          try {
+            speechSynthesis.cancel();
+          } catch {}
+        }
+        utterance = null;
+        $("replay").classList.remove("speaking");
+      }
+      function pickVoice() {
+        if (!("speechSynthesis" in window)) return;
+        const voices = speechSynthesis.getVoices();
+        voice =
+          voices.find(
+            (v) =>
+              /^en-US$/i.test(v.lang) &&
+              /Samantha|Aria|Jenny|Google/i.test(v.name),
+          ) ||
+          voices.find((v) => /^en-US$/i.test(v.lang)) ||
+          voices.find((v) => /^en/i.test(v.lang)) ||
+          null;
+      }
+      if ("speechSynthesis" in window) {
+        pickVoice();
+        speechSynthesis.addEventListener("voiceschanged", pickVoice);
+      }
+      function say(text) {
+        cancelVoice();
+        $("live").textContent = text;
+        if (
+          !("speechSynthesis" in window) ||
+          !("SpeechSynthesisUtterance" in window)
+        ) {
+          notice(
+            "Voice is unavailable in this browser. Try Safari or Chrome with English voices enabled.",
+          );
+          return;
+        }
+        const token = voiceToken;
+        try {
+          pickVoice();
+          utterance = new SpeechSynthesisUtterance(text);
+          utterance.lang = "en-US";
+          utterance.rate = 0.85;
+          utterance.pitch = 1.1;
+          if (voice) utterance.voice = voice;
+          const finish = () => {
+            if (token === voiceToken) {
+              $("replay").classList.remove("speaking");
+              clearTimeout(voiceTimer);
+            }
+          };
+          utterance.onend = finish;
+          utterance.onerror = (e) => {
+            finish();
+            if (
+              token === voiceToken &&
+              !["canceled", "interrupted"].includes(e.error)
+            )
+              notice(
+                "If you cannot hear the voice, tap the speaker and check your device volume.",
+              );
+          };
+          $("replay").classList.add("speaking");
+          speechSynthesis.resume();
+          speechSynthesis.speak(utterance);
+          voiceTimer = setTimeout(finish, Math.max(4000, text.length * 120));
+        } catch {
+          notice(
+            "Tap the speaker to try the voice again. Check your device volume.",
+          );
+          $("replay").classList.remove("speaking");
+        }
+      }
+      function guide(text) {
+        instruction = text;
+        say(text);
+      }
+      function unlockAudio() {
+        try {
+          audio =
+            audio || new (window.AudioContext || window.webkitAudioContext)();
+          if (audio.state === "suspended") audio.resume().catch(() => {});
+        } catch {}
+      }
+      function tone(notes = [523, 659, 784]) {
+        unlockAudio();
+        if (!audio) return;
+        try {
+          notes.forEach((f, i) => {
+            const o = audio.createOscillator(),
+              g = audio.createGain(),
+              t = audio.currentTime + i * 0.1;
+            o.type = "sine";
+            o.frequency.value = f;
+            g.gain.setValueAtTime(0, t);
+            g.gain.linearRampToValueAtTime(0.06, t + 0.015);
+            g.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+            o.connect(g).connect(audio.destination);
+            o.start(t);
+            o.stop(t + 0.22);
+          });
+        } catch {}
+      }
+      function render(html, { home = false, start = false } = {}) {
+        screen++;
+        pending.forEach(clearTimeout);
+        pending.clear();
+        cancelVoice();
+        document.querySelectorAll(".spark").forEach((x) => x.remove());
+        app.innerHTML = html;
+        $("homeBtn").hidden = start || home;
+        $("brand").hidden = !start && !home;
+        $("replay").hidden = start;
+        $("jar").hidden = start;
+        $("starCount").textContent = S.abc + S.num;
+        $("jar").setAttribute("aria-label", `Your stars: ${S.abc + S.num}`);
+        app.focus({ preventScroll: true });
+        window.scrollTo(0, 0);
+        storageNotice();
+      }
+      function celebrate() {
+        tone();
+        if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          app.classList.remove("celebrate");
+          void app.offsetWidth;
+          app.classList.add("celebrate");
+          for (let i = 0; i < 5; i++) {
+            const star = document.createElement("span");
+            star.className = "spark";
+            star.setAttribute("aria-hidden", "true");
+            star.textContent = "⭐";
+            star.style.setProperty("--x", `${(i - 2) * 55}px`);
+            document.body.append(star);
+            later(() => star.remove(), 1100);
+          }
+        }
+      }
+      function addStar(track) {
+        const old = read(KEY);
+        S[track] = Math.max(S[track], safeNumber(old[track])) + 1;
+        save();
+        $("starCount").textContent = S.abc + S.num;
+        $("jar").setAttribute("aria-label", `Your stars: ${S.abc + S.num}`);
+      }
+      function steps(k, label) {
+        return `<div class="stepbar"><span>${label}</span><span class="dots" aria-label="Step ${k + 1} of 3">${[0, 1, 2].map((i) => `<i class="${i <= k ? "on" : ""}"></i>`).join("")}</span></div>`;
+      }
+      function nextButton(label = "Next") {
+        return `<button class="primary" id="next" aria-label="${label}">${label}<span class="arrow" aria-hidden="true">➜</span></button>`;
+      }
+      function start() {
+        render(
+          `<div class="mascot" aria-hidden="true">🌟</div><p class="eyebrow">A little learning. A lot of joy.</p><h1>Little Stars<br>ABC 123</h1><p class="intro">Letters, numbers & happy discoveries.</p><button class="primary big-play" id="play"><span aria-hidden="true">▶</span> Let's play</button><p class="home-note">Sound on for a helping voice</p>`,
+          { start: true },
+        );
+        $("play").onclick = () => {
+          started = true;
+          unlockAudio();
+          home();
+        };
+      }
+      function home() {
+        render(
+          `<p class="eyebrow">Your little learning playground</p><h1>What shall we play?</h1><p class="intro">Pick a picture. Let's explore!</p><div class="homegrid"><button class="tile abc" id="abc" aria-label="Play with letters"><span class="tile-art" aria-hidden="true">🍎 🐱</span><strong>ABC</strong><small>Letters</small><span class="tile-arrow" aria-hidden="true">➜</span></button><button class="tile num" id="num" aria-label="Play with numbers"><span class="tile-art" aria-hidden="true">🦆 🎈</span><strong>123</strong><small>Numbers</small><span class="tile-arrow" aria-hidden="true">➜</span></button></div><p class="home-note">Explore a little. Collect a star. Try again!</p>`,
+          { home: true },
+        );
+        $("abc").onclick = () => learnLetter(0);
+        $("num").onclick = () => learnNumber(0);
+        guide(
+          "Let’s play! Tap A B C for letters, or one two three for numbers.",
+        );
+      }
+      function learnLetter(k) {
+        const [letter, word, picture] = LETTERS[li];
+        render(
+          `<section class="activity learn" aria-label="Learn letters">${steps(k, "Letters")}<button class="card" id="card" aria-label="Hear ${letter} is for ${word}"><span class="glyph" style="color:${color(li)}">${letter}</span><span class="pic" aria-hidden="true">${picture}</span><span class="word">${word[0].toUpperCase() + word.slice(1)}</span><span class="card-hint">🔊 Tap to listen</span></button><div class="actions">${nextButton()}</div></section>`,
+        );
+        const text = `${letter}. ${letter} is for ${word}! Tap the arrow for the next game.`;
+        guide(text);
+        $("card").onclick = () => say(`${letter}. ${letter} is for ${word}!`);
+        $("next").onclick = () => {
+          S.abcSeen = Math.max(S.abcSeen, li + 1);
+          li = (li + 1) % 26;
+          save();
+          if (k < 2) learnLetter(k + 1);
+          else find("abc", 0);
+        };
+      }
+      function learnNumber(k) {
+        const n = ni,
+          thing = THINGS[n - 1];
+        let count = 0;
+        render(
+          `<section class="activity learn" aria-label="Count objects">${steps(k, "Counting")}<div class="field">${Array.from({ length: n }, (_, i) => `<button class="obj" data-item="${i}" aria-label="Count ${thing[1]} ${i + 1}" aria-pressed="false"><span aria-hidden="true">${thing[0]}</span></button>`).join("")}</div><div class="count-area"><h2>Tap & count</h2><p class="count-status" id="countStatus">0 / ${n}</p><div id="countNext" hidden>${nextButton()}</div></div></section>`,
+        );
+        guide(`Let's count ${thing[2]}! Tap each ${thing[1]}.`);
+        app.querySelectorAll(".obj").forEach(
+          (button) =>
+            (button.onclick = () => {
+              if (button.getAttribute("aria-pressed") === "true") {
+                say(`${button.dataset.count}. Already counted!`);
+                return;
+              }
+              count++;
+              button.dataset.count = count;
+              button.classList.add("done");
+              button.setAttribute("aria-pressed", "true");
+              button.setAttribute(
+                "aria-label",
+                `${thing[1]} ${button.dataset.item * 1 + 1}, counted ${count}`,
+              );
+              button.insertAdjacentHTML(
+                "beforeend",
+                `<span class="badge" aria-hidden="true">${count}</span>`,
+              );
+              $("countStatus").textContent = `${count} / ${n}`;
+              if (count === n) {
+                $("countNext").hidden = false;
+                guide(
+                  `${NUMWORDS[n]}! ${NUMWORDS[n]} ${n === 1 ? thing[1] : thing[2]}! Well done. Tap the arrow.`,
+                );
+                tone([523, 659]);
+              } else {
+                instruction = `You counted ${NUMWORDS[count]}. Tap another ${thing[1]}.`;
+                say(NUMWORDS[count]);
+              }
+            }),
+        );
+        $("next").onclick = () => {
+          S.numSeen = Math.max(S.numSeen, n);
+          ni = (n % 10) + 1;
+          save();
+          if (k < 2) learnNumber(k + 1);
+          else find("num", 0);
+        };
+      }
+      const level = { abc: 2, num: 2 },
+        streak = { abc: 0, num: 0 };
+      function find(track, k) {
+        const isABC = track === "abc";
+        const pool = Array.from(
+            { length: Math.max(3, isABC ? S.abcSeen : S.numSeen) },
+            (_, i) => (isABC ? i : i + 1),
+          ),
+          target = sample(pool);
+        const options = shuffle([
+          target,
+          ...shuffle(pool.filter((x) => x !== target)).slice(
+            0,
+            level[track] - 1,
+          ),
+        ]);
+        const howMany = !isABC && Math.random() < 0.5,
+          thing = sample(THINGS);
+        const label = (x) => (isABC ? LETTERS[x][0] : String(x)),
+          spoken = (x) => (isABC ? label(x) : NUMWORDS[x]);
+        let done = false,
+          misses = 0;
+        const question = howMany
+          ? `How many ${thing[2]}? Tap the number.`
+          : `Can you find ${isABC ? "the letter" : "the number"} ${spoken(target)}?`;
+        render(
+          `<section class="activity quiz" aria-label="${isABC ? "Find letters" : howMany ? "How many objects" : "Find numbers"}">${steps(k, "Star time")}${howMany ? `<div class="counted" role="img" aria-label="${target} ${target === 1 ? thing[1] : thing[2]}">${Array.from({ length: target }, () => `<span aria-hidden="true">${thing[0]}</span>`).join("")}</div>` : ""}<div class="prompt"><h2 class="ask">${howMany ? "How many?" : `Find <span class="target">${label(target)}</span>`}</h2></div><div class="choices">${options.map((x) => `<button class="choice" data-value="${x}" aria-label="${isABC ? "Letter" : "Number"} ${label(x)}" style="color:${color(x)}">${label(x)}</button>`).join("")}</div><p id="feedback" class="feedback" role="status">You can do it!</p><div id="quizNext" hidden>${nextButton(k === 2 ? "See my stars" : "Next")}</div></section>`,
+        );
+        guide(question);
+        app.querySelectorAll(".choice").forEach(
+          (button) =>
+            (button.onclick = () => {
+              if (done) return;
+              const value = Number(button.dataset.value);
+              if (value === target) {
+                done = true;
+                button.classList.add("yes");
+                app
+                  .querySelectorAll(".choice")
+                  .forEach((b) => b.setAttribute("aria-disabled", "true"));
+                addStar(track);
+                celebrate();
+                $("feedback").textContent = "You found it! +1 ⭐";
+                $("quizNext").hidden = false;
+                streak[track] = misses ? 0 : streak[track] + 1;
+                if (streak[track] >= 5) {
+                  level[track] = 3;
+                  streak[track] = 0;
+                }
+                guide(
+                  `You found it! ${isABC ? `${label(target)} is for ${LETTERS[target][1]}` : howMany ? `${spoken(target)} ${target === 1 ? thing[1] : thing[2]}` : `That's ${spoken(target)}`}! You earned a star. Tap the arrow.`,
+                );
+              } else {
+                misses++;
+                streak[track] = 0;
+                // Show which option was tried without shaming the child.
+                app.querySelectorAll(".choice.no").forEach((b) => b.classList.remove("no"));
+                button.classList.add("no");
+                if (misses >= 2) {
+                  level[track] = 2;
+                  app
+                    .querySelector(`[data-value="${target}"]`)
+                    .classList.add("hint");
+                }
+                $("feedback").textContent =
+                  misses >= 2
+                    ? "Try the highlighted one."
+                    : "Let’s try together!";
+                guide(
+                  `That's ${spoken(value)}. Let's try ${spoken(target)}.${misses >= 2 ? " Tap the highlighted one." : ""}`,
+                );
+              }
+            }),
+        );
+        $("next").onclick = () => {
+          if (k < 2) find(track, k + 1);
+          else reward(track);
+        };
+      }
+      function reward(track) {
+        render(
+          `<div class="mascot" aria-hidden="true">🌟</div><p class="eyebrow">A little moment to shine</p><h1>You did it!</h1><p class="intro">Three discoveries. Three bright stars.</p><div class="stars" aria-label="Three stars">⭐ ⭐ ⭐</div><div class="actions">${nextButton("Play more")}</div><button class="parent-button" id="allDone">All done · Go home</button>`,
+        );
+        $("next").onclick = () =>
+          track === "abc" ? learnLetter(0) : learnNumber(0);
+        $("allDone").onclick = home;
+        guide(
+          "Wonderful! You earned three stars. Tap the arrow to play more, or the house to choose another game.",
+        );
+      }
+      function jar() {
+        const total = S.abc + S.num;
+        render(
+          `<div class="jarbig" aria-hidden="true">🌟</div><p class="eyebrow">Every discovery counts</p><h1>${total} ${total === 1 ? "happy star" : "happy stars"}</h1><div class="stars" aria-hidden="true">${"⭐".repeat(Math.min(total, 30))}</div><p class="intro">${total ? "Look how much you’ve explored!" : "Your first star is waiting for you."}</p><p class="home-note">Letters: ${S.abc} ⭐ &nbsp; Numbers: ${S.num} ⭐</p><button class="primary" id="backPlay">Let’s play <span aria-hidden="true">➜</span></button>`,
+        );
+        $("backPlay").onclick = home;
+        guide(
+          total
+            ? `You have ${total} stars! Great exploring! Tap the arrow to play.`
+            : "Let’s collect your first star! Tap the arrow to play.",
+        );
+      }
+      function parents() {
+        render(
+          `<section class="parent-panel"><h2>For grown-ups</h2><p>A gentle playground for ages 3–4. Explore three letters or numbers, then play three matching games. There’s no timer and no penalty for trying again.</p><ul><li>Tap the speaker at any time to hear the current instruction.</li><li>English narration uses your device’s built-in voice. Check media volume, silent mode and available English voices if it is quiet.</li><li>Stars and progress stay in this browser on this device. Private browsing or clearing website data can remove them.</li><li>The house always returns to the two activities. A few happy minutes together is a great start.</li></ul><button class="primary" id="voiceTest">🔊 Test English voice</button><a class="lib-back" href="../">← All games in Study Arcade</a><button class="primary" id="returnPlay">Back to play <span aria-hidden="true">➜</span></button></section>`,
+        );
+        $("voiceTest").onclick = () => {
+          unlockAudio();
+          say(
+            "Hello, little star! A is for apple. One, two, three. Let’s play!",
+          );
+        };
+        $("returnPlay").onclick = () => (started ? home() : start());
+        instruction = "Grown-up settings. Tap the arrow to go back to play.";
+      }
+      $("homeBtn").onclick = () => (started ? home() : start());
+      $("replay").onclick = () => {
+        unlockAudio();
+        say(instruction);
+      };
+      $("jar").onclick = jar;
+      $("parents").onclick = parents;
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) cancelVoice();
+      });
+      window.addEventListener("pagehide", cancelVoice);
+      window.addEventListener("storage", (event) => {
+        if (event.key === KEY) {
+          const fresh = read(KEY);
+          S.abc = Math.max(S.abc, safeNumber(fresh.abc));
+          S.num = Math.max(S.num, safeNumber(fresh.num));
+          $("starCount").textContent = S.abc + S.num;
+        }
+      });
+      start();
+    </script>
+  </body>
+</html>
