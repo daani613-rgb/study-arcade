@@ -766,6 +766,56 @@
           font-size: 12px;
         }
       }
+      /* Cohesive preschool design system: warm surfaces, depth and clear hierarchy. */
+      :root {
+        --ink: #27364a;
+        --muted: #526579;
+        --paper: #fcf9f3;
+        --purple: #6951a7;
+        --green: #207a61;
+        --line: #e6e5e1;
+      }
+      body {
+        background:
+          radial-gradient(circle at 10% 8%, #fff1d7 0, transparent 34%),
+          radial-gradient(circle at 90% 20%, #e8e4fa 0, transparent 32%),
+          radial-gradient(circle at 45% 92%, #dff2ed 0, transparent 40%),
+          var(--paper);
+      }
+      .shell { max-width: 940px; }
+      .brand { letter-spacing: -.35px; }
+      .eyebrow { letter-spacing: 1.6px; color: #6951a7; }
+      h1, h2 { text-wrap: balance; }
+      .intro { line-height: 1.6; }
+      .mascot { filter: drop-shadow(0 7px 0 #f4e5ba); }
+      .tile, .card, .field, .parent-panel {
+        box-shadow: 0 8px 0 #dcdedc, 0 14px 30px #2c405014;
+      }
+      .tile {
+        border: 3px solid #ffffff;
+        transition: transform .16s ease, box-shadow .16s ease;
+      }
+      .tile.abc { background: linear-gradient(155deg,#ffeaf1,#f8dce8); }
+      .tile.num { background: linear-gradient(155deg,#e7f4ff,#d5e8fc); }
+      .tile:active { transform: translateY(4px); box-shadow: 0 4px 0 #dcdedc; }
+      .tile strong { text-shadow: 0 2px 0 #ffffffa0; }
+      .primary {
+        background: #207a61;
+        border: 2px solid #165f4b;
+        box-shadow: 0 5px 0 #145440, 0 9px 18px #1b5e4830;
+      }
+      .primary:active { transform: translateY(3px); box-shadow: 0 2px 0 #145440; }
+      .iconbtn, .jar { border: 2px solid #e2e5e6; }
+      .choice { border-width: 3px; box-shadow: 0 6px 0 #d8dce5, 0 10px 18px #30415c12; }
+      .choice:active { transform: translateY(3px); }
+      .choice.yes { box-shadow: 0 5px 0 #a6d1b5; }
+      .choice.hint { box-shadow: 0 5px 0 #e7d29a; }
+      .obj { border-width: 2px; }
+      .obj:active { transform: scale(.96); }
+      .feedback { max-width: 100%; }
+      @media (prefers-reduced-motion: reduce) {
+        .tile, .primary { transition: none; }
+      }
       /* Small phones: preserve usable touch targets without horizontal clipping. */
       @media (max-width: 360px) {
         .shell { padding: 10px 10px 8px; }
