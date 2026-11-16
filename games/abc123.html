@@ -808,6 +808,8 @@
       .iconbtn, .jar { border: 2px solid #e2e5e6; }
       .choice { border-width: 3px; box-shadow: 0 6px 0 #d8dce5, 0 10px 18px #30415c12; }
       .choice:active { transform: translateY(3px); }
+      .choice.no { background: #fff0eb; border-color: #d48a78; box-shadow: 0 5px 0 #ebc4b9; }
+      .choice.no::after { content: "↻"; position: absolute; right: 10px; top: 4px; font-size: 25px; color: #9b594a; }
       .choice.yes { box-shadow: 0 5px 0 #a6d1b5; }
       .choice.hint { box-shadow: 0 5px 0 #e7d29a; }
       .obj { border-width: 2px; }
@@ -1368,6 +1370,9 @@
               } else {
                 misses++;
                 streak[track] = 0;
+                // Show which option was tried without shaming the child.
+                app.querySelectorAll(".choice.no").forEach((b) => b.classList.remove("no"));
+                button.classList.add("no");
                 if (misses >= 2) {
                   level[track] = 2;
                   app
