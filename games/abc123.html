@@ -766,6 +766,43 @@
           font-size: 12px;
         }
       }
+      /* Small phones: preserve usable touch targets without horizontal clipping. */
+      @media (max-width: 360px) {
+        .shell { padding: 10px 10px 8px; }
+        .top { gap: 6px; min-height: 56px; }
+        .brand { font-size: 13px; gap: 3px; }
+        .brand span { font-size: 22px; }
+        .tools { gap: 5px; }
+        .iconbtn, .jar { min-width: 48px; min-height: 48px; padding: 6px 8px; border-radius: 15px; }
+        .jar { font-size: 15px; }
+        .main { padding: 12px 0; gap: 12px; }
+        .activity { gap: 12px; }
+        .homegrid { gap: 10px; }
+        .tile { min-height: 185px; padding: 12px 6px; border-radius: 22px; }
+        .tile strong { font-size: 42px; }
+        .tile small { font-size: 14px; }
+        .card { min-height: 230px; padding: 12px; }
+        .glyph { font-size: 96px; }
+        .pic { font-size: 54px; }
+        .word { font-size: 24px; }
+        .choices { gap: 7px; }
+        .choice { min-height: 88px; font-size: clamp(54px, 17vw, 72px); border-radius: 18px; }
+        .field { grid-template-columns: repeat(5, minmax(0, 1fr)); padding: 10px; gap: 6px; border-radius: 20px; }
+        .obj { min-height: 48px; border-radius: 13px; font-size: 29px; }
+        .badge { min-width: 23px; height: 23px; font-size: 13px; }
+        .counted { padding: 8px; gap: 4px; font-size: 26px; }
+        .counted span { min-width: 0; }
+        .primary { min-height: 58px; padding: 10px 18px; font-size: 19px; }
+      }
+      /* Short landscape screens must scroll instead of cropping the activity. */
+      @media (max-height: 430px) and (orientation: landscape) {
+        .shell { min-height: 100svh; }
+        .main { justify-content: flex-start; padding: 8px 0; }
+        .activity { gap: 8px; }
+        .stepbar { gap: 6px; }
+        .field { padding: 8px; gap: 6px; }
+        .obj { min-height: 46px; }
+      }
       @media (prefers-reduced-motion: reduce) {
         *,
         *:before,
