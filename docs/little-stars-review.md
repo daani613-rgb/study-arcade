@@ -44,3 +44,5 @@ The remote work branch exists and has been updated. A separate-origin preview wa
 - Verified the revised source was saved in the remote branch. No changes were made to main, existing localStorage keys, game logic, or activity data.
 - **Not verified in this follow-up:** full browser rendering, actual device audio, screen readers, touch input, and regression test execution. The prior 434 simulated DOM checks are historical results from before these CSS changes, not new test results.
 - **Release gate:** review in real iPhone Safari and Android Chrome (voice, 320px/390px portrait, landscape, all game paths, saved stars). Do not merge or publish without owner approval.
+
+- Added gentle visual retry feedback for wrong quiz selections (`c0a2bdc`) and a matching DOM regression assertion (`11da04e`). These changes have not yet been run in a real browser or test runner.
