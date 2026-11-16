@@ -148,6 +148,12 @@ button:focus-visible,a:focus-visible{box-shadow:0 0 0 9px var(--ink)!important}
     <li>חמש עד עשר דקות בכל פעם מספיקות.</li>
   </ul>
   <p class="note" id="voiceNote" hidden>לא נמצא קול באנגלית במכשיר. אפשר להוסיף קול אנגלי בהגדרות המכשיר (שפה וקול), או לשחק עם הכתוביות ולהקריא אותן בקול.</p>
+  <p style="margin:10px 0 4px"><b>הקול:</b> בחרו את הקול שנשמע לכם הכי נעים, ולחצו "נסו".</p>
+  <div class="row" style="position:static;padding:0">
+    <select id="voicePick" dir="ltr" lang="en" aria-label="Voice" style="font:16px system-ui,sans-serif;padding:8px;border:3px solid var(--ink);border-radius:12px;max-width:100%"></select>
+    <button class="pbtn" id="voiceTry">נסו</button>
+  </div>
+  <p class="note" style="background:#e9f6ff">לקול טבעי יותר באייפון: הגדרות &gt; נגישות &gt; תוכן מוקרא &gt; קולות &gt; אנגלית, והורידו קול "משופר" או "פרימיום" (למשל Ava או Samantha). אחרי ההורדה, טענו את הדף מחדש ובחרו אותו כאן.</p>
   <div class="row">
     <button class="pbtn" id="soundToggle">כיבוי שמע</button>
     <a class="lib-back" href="../">&larr; All games</a>
@@ -199,7 +205,15 @@ function render(html,focusSel){const a=document.activeElement;const wasIn=!a||a=
 
 /* ---- voice + captions ---- */
 let voice=null,hasEn=true;
-function pickVoice(){try{const v=speechSynthesis.getVoices();voice=v.find(x=>/en-US/i.test(x.lang)&&/Samantha|Google US|Aria|Jenny|Female/i.test(x.name))||v.find(x=>/en-US/i.test(x.lang))||v.find(x=>/^en/i.test(x.lang))||null;hasEn=!v.length||!!voice;$("voiceNote").hidden=hasEn}catch(e){}}
+/* Friendly voice: prefer natural/neural/enhanced voices, avoid novelty and robotic ones; a parent can choose. */
+const NOVELTY=/Albert|Bad News|Bahh|Bells|Boing|Bubbles|Cellos|Good News|Jester|Organ|Superstar|Trinoids|Whisper|Wobble|Zarvox|Deranged|Hysterical|Pipe|Fred|Junior|Ralph|Grandpa|Grandma|Rocko|Eddy|Reed|Sandy|Shelley|Flo/i;
+const WARM=[[/Natural|Neural/i,60],[/Premium/i,55],[/Enhanced/i,50],[/\bAva\b/i,40],[/Samantha/i,34],[/Allison|Susan|Zoe|Nicky|Evan|Joelle|Noelle/i,30],[/Aria|Jenny|Michelle|Ana\b/i,38],[/Google US English/i,32],[/Google UK English Female/i,24],[/Female/i,10]];
+function scoreVoice(x){if(!/^en/i.test(x.lang)||NOVELTY.test(x.name))return -1;let sc=/en[-_]US/i.test(x.lang)?20:/en[-_](GB|AU|CA|IE|NZ)/i.test(x.lang)?12:6;WARM.forEach(([r,w])=>{if(r.test(x.name))sc+=w});if(x.localService===false)sc+=4;return sc}
+let voiceList=[];
+function pickVoice(){try{const v=speechSynthesis.getVoices();voiceList=v.filter(x=>scoreVoice(x)>=0).sort((a,b)=>scoreVoice(b)-scoreVoice(a));
+  let saved=null;try{saved=localStorage.getItem("abc123-voice")}catch(e){}
+  voice=(saved&&voiceList.find(x=>x.name===saved))||voiceList[0]||null;hasEn=!v.length||!!voice;$("voiceNote").hidden=hasEn;fillVoices()}catch(e){}}
+function fillVoices(){const sel=$("voicePick");if(!sel)return;sel.innerHTML=voiceList.slice(0,12).map(x=>`<option value="${x.name.replace(/"/g,"&quot;")}" ${voice&&x.name===voice.name?"selected":""}>${x.name} (${x.lang})</option>`).join("")||`<option>לא נמצא קול באנגלית</option>`}
 try{pickVoice();speechSynthesis.onvoiceschanged=pickVoice}catch(e){}
 let capTimer=null;
 let capPad=0;
@@ -212,7 +226,7 @@ function say(text,cb,capText){
   const speaking=!muted&&("speechSynthesis" in window)&&voice!==undefined;
   if(!speaking){setTimeout(fin,Math.max(1600,text.length*90));return}
   let started=false;
-  try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);if(voice)u.voice=voice;u.lang="en-US";u.rate=.82;u.pitch=1.15;
+  try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);if(voice)u.voice=voice;u.lang="en-US";u.rate=.88;u.pitch=1.05;
     u.onstart=()=>{started=true};u.onend=fin;u.onerror=fin;speechSynthesis.speak(u)}catch(e){}
   /* fallback only if speech never starts or never ends */
   setTimeout(()=>{if(!started)fin()},2200);
@@ -245,6 +259,8 @@ pb.addEventListener("pointerdown",()=>{holdT=setTimeout(()=>$("parents").showMod
 ["pointerup","pointerleave","pointercancel"].forEach(ev=>pb.addEventListener(ev,()=>clearTimeout(holdT)));
 pb.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();$("parents").showModal()}});
 $("closeParents").onclick=()=>$("parents").close();
+$("voicePick").onchange=e=>{const v=voiceList.find(x=>x.name===e.target.value);if(v){voice=v;try{localStorage.setItem("abc123-voice",v.name)}catch(err){}}};
+$("voiceTry").onclick=()=>{const was=muted;muted=false;say("Hi! I'm your friend. B is for bear!");muted=was};
 $("soundToggle").onclick=()=>{muted=!muted;$("soundToggle").textContent=muted?"הפעלת שמע":"כיבוי שמע";try{speechSynthesis.cancel()}catch(e){}};
 
 /* ---- start + home ---- */
