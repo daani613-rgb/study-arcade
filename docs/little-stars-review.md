@@ -1,7 +1,7 @@
 # Little Stars implementation and review
 
 Base: `39e6869840b30294b336d7a68e52350c88bbb5ca`.
-Work branch: `improve/little-stars-child-friendly` (local; remote write is blocked pending browser authentication).
+Work branch: `improve/little-stars-child-friendly` (pushed to GitHub; main remains unchanged).
 
 ## Audit
 
@@ -28,10 +28,19 @@ JavaScript parsing passed. Local Chromium could not launch (environment socket p
 
 ## Before release
 
-1. Complete authenticated GitHub access; push only this branch and open a draft PR.
+1. GitHub write access and branch push are complete. Open a draft PR for review; do not merge.
 2. Provide an isolated branch preview; do not change the live Pages source.
 3. Test portrait 320/375/390/430px, phone landscape, tablet and desktop widths, including 10 objects and 3 choices. Check every visible control, zoom, keyboard focus, device audio and reduced motion.
 4. Test existing saved progress on the original website origin. A separate preview origin has separate storage and will start with its own stars.
 5. Parent/child review on an actual iPhone and Android device. Merge/publish only after owner approval.
 
-No remote branch, PR or preview has yet been created. Main and the live site are unchanged.
+The remote work branch exists and has been updated. A separate-origin preview was reported in the handoff, but its URL is not documented here. Main and the live site remain unchanged.
+
+## Follow-up review (2026-11-16)
+
+- Verified via GitHub that the work branch is two commits ahead of main before follow-up changes, with game, DOM tests, viewport harness, and this report present.
+- Applied focused CSS improvements for <=360px phones and short landscape screens, including five-column counting targets and compact activity layout (`b4180d3`).
+- Applied a cohesive preschool visual polish with warmer surfaces, more distinct cards and interactive button states (`e3c58ce`).
+- Verified the revised source was saved in the remote branch. No changes were made to main, existing localStorage keys, game logic, or activity data.
+- **Not verified in this follow-up:** full browser rendering, actual device audio, screen readers, touch input, and regression test execution. The prior 434 simulated DOM checks are historical results from before these CSS changes, not new test results.
+- **Release gate:** review in real iPhone Safari and Android Chrome (voice, 320px/390px portrait, landscape, all game paths, saved stars). Do not merge or publish without owner approval.
