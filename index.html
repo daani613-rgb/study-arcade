@@ -55,8 +55,9 @@ footer{color:var(--muted);font-size:.9rem;font-weight:700;border-top:1.5px solid
 </div>
 
 <script>
-/* newest first. kind: "stars" = {levelId:stars}, "xp" = {xp, done:{}} */
+/* newest first. kind: "stars" = {levelId:stars}, "xp" = {xp, done:{}}, "lessons" = {done:{}, best} */
 const GAMES=[
+ {file:"games/sie-ch1.html",title:"SIE Ch.1: Equity Securities",subject:"Finance",topic:"FINRA SIE 2.1.1: common and preferred stock, rights, warrants, ADRs, Rule 144",age:"Adult",icon:"📈",c:"#0f6b5c",added:"2026-11-15",key:"sie-ch1",kind:"lessons",total:8},
  {file:"games/netilas.html",title:"The Netilas Yadayim Files",subject:"Halacha",topic:"Hilchos Netilas Yadayim, pages 57-64",age:"Age 13",icon:"🙌",c:"#1c8fb0",added:"2026-11-12",key:"ny-files",kind:"xp",total:5},
  {file:"games/megadata-interview.html",title:"Megadata Interview Quest",subject:"Job interview",topic:"Implementation Specialist: nursing-home data, PBJ, HPRD, integrations, HIPAA",age:"Adult",icon:"💼",c:"#0f6e64",added:"2026-11-12",key:"mdq-stars-v1",kind:"stars",total:6},
  {file:"games/kingdavid.html",title:"The King David Files",subject:"Navi",topic:"Shmuel Bet, perek ה: David crowned, Yerushalayim, the Plishtim",age:"Age 13",icon:"⭐",c:"#7a3cff",added:"2026-11-11",key:"kd-files",kind:"xp",total:5},
@@ -67,6 +68,7 @@ const GAMES=[
 ];
 const read=k=>{try{return JSON.parse(localStorage.getItem(k)||"null")}catch(e){return null}};
 function progress(g){const d=read(g.key);if(!d)return null;
+  if(g.kind==="lessons"){const n=Object.keys(d.done||{}).length;return{n,label:`${n}/${g.total} lessons`+(d.best!=null?` · exam best ${d.best}%`:"")}}
   if(g.kind==="xp"){const n=Object.keys(d.done||{}).length;return{n,label:`${n}/${g.total} episodes · ${d.xp||0} XP`}}
   const n=Object.values(d).filter(v=>v>0).length,st=Object.values(d).reduce((a,b)=>a+(+b||0),0);return{n,label:`${n}/${g.total} done · ${st}⭐`}}
 const ages=["All",...new Set(GAMES.map(g=>g.age))];let filt="All";
