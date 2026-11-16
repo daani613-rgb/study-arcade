@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shmuel II Chapters 4 and 5: The Hard Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f1e7;--card:#fffdf8;--ink:#2b2620;--muted:#7a6f62;--accent:#8a5a2b;--good:#2f7d4f;--goodbg:#e4f3ea;--bad:#b23a3a;--badbg:#f8e3e1;--line:#e4d9c6;--sel:#f1e3cc}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Nunito,system-ui,sans-serif;font-size:17px;line-height:1.5}
+.wrap{max-width:680px;margin:0 auto;padding:20px 16px 60px}
+h1{font-family:"Frank Ruhl Libre",serif;font-size:28px;margin:8px 0 4px;color:var(--accent)}
+.he{font-family:"Frank Ruhl Libre",serif;font-weight:700;unicode-bidi:isolate}
+.sub{color:var(--muted);margin:0 0 18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 2px 0 var(--line)}
+.btn{display:inline-block;border:0;border-radius:12px;padding:12px 18px;font:800 16px Nunito,sans-serif;cursor:pointer;background:var(--accent);color:#fff}
+.btn.ghost{background:transparent;color:var(--accent);border:2px solid var(--accent)}
+.btn:disabled{opacity:.4;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.top{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:14px;margin-bottom:8px}
+.bar{height:8px;background:var(--line);border-radius:8px;overflow:hidden;margin-bottom:16px}
+.bar i{display:block;height:100%;background:var(--accent);transition:width .3s}
+.tag{display:inline-block;font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);background:var(--sel);border-radius:6px;padding:2px 8px;margin-bottom:8px}
+.q{font-size:19px;font-weight:800;margin:4px 0 6px}
+.hint{color:var(--muted);font-size:14px;margin-bottom:12px}
+.opt{display:block;width:100%;text-align:left;background:#fff;border:2px solid var(--line);border-radius:12px;padding:12px 14px;margin:8px 0;font:600 16px Nunito,sans-serif;color:var(--ink);cursor:pointer}
+.opt.on{border-color:var(--accent);background:var(--sel)}
+.opt.right{border-color:var(--good);background:var(--goodbg)}
+.opt.wrong{border-color:var(--bad);background:var(--badbg)}
+.opt:disabled{cursor:default}
+.ord{display:flex;align-items:center;gap:10px}
+.num{min-width:28px;height:28px;border-radius:50%;background:var(--line);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px}
+.opt.on .num{background:var(--accent);color:#fff}
+.sortitem{border:2px solid var(--line);border-radius:12px;padding:10px 12px;margin:8px 0;background:#fff}
+.sortitem .t{font-weight:600;margin-bottom:8px}
+.pick{display:flex;gap:8px}
+.pick button{flex:1;border:2px solid var(--line);background:#fff;border-radius:10px;padding:8px;font:700 14px Nunito,sans-serif;cursor:pointer;color:var(--ink)}
+.pick button.on{border-color:var(--accent);background:var(--sel)}
+.sortitem.right{border-color:var(--good);background:var(--goodbg)}
+.sortitem.wrong{border-color:var(--bad);background:var(--badbg)}
+.fb{margin-top:14px;border-radius:12px;padding:12px 14px;font-size:15px}
+.fb.good{background:var(--goodbg);border-left:5px solid var(--good)}
+.fb.bad{background:var(--badbg);border-left:5px solid var(--bad)}
+.fb b{display:block;margin-bottom:4px}
+.big{font-family:"Frank Ruhl Libre",serif;font-size:56px;color:var(--accent);margin:0}
+.miss{border-top:1px solid var(--line);padding:12px 0;font-size:15px}
+.miss .mq{font-weight:800}
+.choose label{display:block;margin:8px 0;font-weight:600}
+.lib-back{position:fixed;left:max(12px,env(safe-area-inset-left,0px));bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:50;font:700 14px system-ui,sans-serif;padding:8px 14px;border-radius:999px;background:rgba(20,20,40,.82);color:#fff;text-decoration:none}
+</style>
+</head>
+<body>
+<a class="lib-back" href="../">&larr; All games</a>
+<div class="wrap" id="app" style="padding-bottom:80px"></div>
+<script>
+const H = s => '<span class="he" dir="rtl">'+s+'</span>';
+const QS = [
+/* ---------- CHAPTER 4 ---------- */
+{ch:4,type:'mc',q:`At the start of chapter 4, why does ${H('איש בשת')}'s kingdom suddenly become so weak?`,
+ opts:[`${H('אבנר')} died, and there was no one left to strengthen his kingdom`,`The ${H('פלשתים')} attacked ${H('מחנים')}`,`${H('מפיבשת')} tried to take the throne`,`${H('דוד')}'s army surrounded the city`],a:0,
+ why:`"Now that ${H('אבנר')} died, there is no one left to strengthen his kingdom." ${H('אבנר')} was the real power behind ${H('איש בשת')}.`},
+{ch:4,type:'mc',q:`According to your notes, what were ${H('איש בשת')}'s people afraid of after ${H('אבנר')} died?`,
+ opts:[`They thought ${H('דוד')} had killed ${H('אבנר')} and would betray them too`,`They thought ${H('יואב')} would make himself king`,`They thought the ${H('פלשתים')} would capture them`,`They thought ${H('מפיבשת')}'s nurse would reveal a secret`],a:0,
+ why:`They were scared that ${H('דוד')} would betray them, because they thought ${H('דוד')} was the one who killed ${H('אבנר')}.`},
+{ch:4,type:'multi',q:`Pasuk ${H('ד')} suddenly jumps to a story about ${H('מפיבשת')}. Which reasons did your notes give for why it's there?`,hint:'Choose ALL correct answers.',
+ opts:[`To show that ${H('יונתן')}'s son was the only descendant of ${H('שאול')} left who could be king`,`To show that ${H('שאול')}'s family line will continue through ${H('מפיבשת')}`,`To explain why ${H('רכב')} and ${H('בענה')} were able to run so fast`,`To show that the nurse was punished for dropping him`],a:[0,1],
+ why:`Your notes: 1) to show ${H('יונתן')}'s son is the only one left of ${H('שאול')}'s descendants to be king, 2) ${H('שאול')}'s lineage will continue through ${H('מפיבשת')}.`},
+{ch:4,type:'order',q:`Put the flashback about ${H('מפיבשת')} in the correct order.`,hint:'Tap the events in order, 1 to 5. Tap again to undo.',
+ items:[`The rumor that ${H('שאול')} was dying reached the palace`,`The nurse picked up ${H('מפיבשת')}`,`She ran`,`She tripped and he fell`,`His legs became crippled`],
+ why:`Rumor came to the palace, the nurse took him and ran, she tripped, he fell, and his legs were crippled.`},
+{ch:4,type:'multi',q:`The pesukim tell us TWICE that ${H('רכב')} and ${H('בענה')} killed ${H('איש בשת')}. Why is it repeated?`,hint:'Choose ALL correct answers.',
+ opts:[`They went back a second time to remove his head`,`The second time is just filling in more details`,`Two different people killed him on two different days`,`The first time he survived, so they had to try again`],a:[0,1],
+ why:`The mefarshim: 1) they went back to remove his head, 2) the pasuk is filling in details.`},
+{ch:4,type:'mc',q:`${H('רכב')} and ${H('בענה')} thought of themselves as a ${H('מבשר')}. What does that word mean, and why is it ironic here?`,
+ opts:[`Bearer of good news: they expected a reward, but ${H('דוד')} had them killed`,`Messenger of war: they came to declare war on ${H('דוד')}`,`Bearer of good news: ${H('דוד')} rewarded them with land in ${H('חברון')}`,`Spy: they were sent by ${H('יואב')} to trick ${H('דוד')}`],a:0,
+ why:`${H('מבשר')} = bearer of good news. They thought if they killed ${H('איש בשת')} and brought the news, ${H('דוד')} would reward them. Instead ${H('דוד')} killed them.`},
+{ch:4,type:'sort',q:`${H('דוד')} compares the killing of ${H('איש בשת')} to the death of ${H('שאול')}. Sort each fact into the right person.`,
+ cats:['איש בשת','שאול'],
+ items:[{t:'Happened during war',c:1},{t:'Happened during peace',c:0},{t:'Asked to be killed',c:1},{t:'Did not ask to die',c:0},{t:'Was about to be captured',c:1},{t:'Was about to die anyway',c:1}],
+ why:`${H('שאול')}: about to die, asked to be killed, about to be captured, during war. ${H('איש בשת')}: not during war, didn't ask to die, during peace.`},
+{ch:4,type:'mc',q:`Using that comparison, what is ${H('דוד')}'s main point in pasuk ${H('יא')}?`,
+ opts:[`If he punished the man who killed ${H('שאול')}, who asked to die in war, then killing ${H('איש בשת')} in peace for no reason is even worse`,`Killing a king is only wrong during war`,`${H('איש בשת')} deserved to die, but not by them`,`${H('שאול')}'s death was worse, so they will get a lighter punishment`],a:0,
+ why:`${H('דוד')} says they killed him for no reason. ${H('שאול')}'s case had excuses (war, he asked, he was dying). ${H('איש בשת')}'s had none, so it is worse.`},
+{ch:4,type:'mc',q:`Why did ${H('דוד')} have their hands and feet cut off?`,
+ opts:[`${H('מידה כנגד מידה')}: the feet they ran away with, the hands they used to kill`,`The hands took the wheat, the feet walked into the house`,`So they could never escape from prison`,`Because that is how the ${H('פלשתים')} punished traitors`],a:0,
+ why:`${H('מידה כנגד מידה')}: feet, that they ran away with. Hands, that they used to kill him.`},
+{ch:4,type:'multi',q:`Why did ${H('דוד')} hang them in public?`,hint:'Choose ALL correct answers.',
+ opts:[`To show that ${H('דוד')} didn't do it`,`To show that you can't mess with a Jewish king`,`To scare the ${H('פלשתים')} away from ${H('חברון')}`,`To honor ${H('אבנר')}`],a:[0,1],
+ why:`1) To show he didn't do it, 2) to show that you can't mess with a Jewish king.`},
+
+/* ---------- CHAPTER 5 ---------- */
+{ch:5,type:'mc',q:`Where did all the tribes of Israel come to ${H('דוד')} to make him king?`,
+ opts:[H('חברון'),H('ירושלים'),H('מחנים'),H('צקלג')],a:0,
+ why:`Pasuk ${H('א')}: the tribes of Israel came to ${H('דוד')} in ${H('חברון')}.`},
+{ch:5,type:'mc',q:`Why did the tribes say "we are your bone and flesh"?`,
+ opts:[`They were nervous ${H('דוד')} would only be nice to ${H('יהודה')}, so they said "we are all family"`,`They were apologizing for fighting on ${H('שאול')}'s side`,`They wanted ${H('דוד')} to marry into their tribes`,`It was the official words for anointing a king`],a:0,
+ why:`They were nervous that ${H('דוד')} would only be nice to ${H('יהודה')}, his own tribe, so they said "we are all family."`},
+{ch:5,type:'multi',q:`In pesukim ${H('א')} and ${H('ב')}, which arguments did the tribes give for making ${H('דוד')} king?`,hint:'Choose ALL correct answers.',
+ opts:[`"We are your bone and flesh"`,`Hashem promised that you will be the ruler`,`You already defeated the ${H('יבוסי')}`,`${H('איש בשת')} chose you before he died`],a:[0,1],
+ why:`Family ("bone and flesh") and Hashem's promise ("Hashem promised you will be the ruler, so be our ruler").`},
+{ch:5,type:'mc',q:`Why were the ${H('זקנים')} the ones to crown ${H('דוד')}?`,
+ opts:[`They were the ones who could anoint him`,`They were the oldest, and the oldest always go first`,`They were from ${H('שבט יהודה')}`,`${H('שמואל')} told them to`],a:0,
+ why:`Because they are the ones who could anoint him.`},
+{ch:5,type:'mc',q:`Why did they make a treaty (${H('ברית')}) with ${H('דוד')}?`,
+ opts:[`So that they and ${H('יהודה')} would be treated equally`,`So that ${H('דוד')} would fight the ${H('פלשתים')} for them`,`So that ${H('דוד')} would not punish ${H('שאול')}'s family`,`So that ${H('דוד')} would move to ${H('ירושלים')}`],a:0,
+ why:`So that they and ${H('יהודה')} would get treated equally.`},
+{ch:5,type:'mc',q:`The treaty was made "${H('לפני ה׳')}". What does that mean?`,
+ opts:[`In front of the ${H('ארון')}`,`Before ${H('דוד')} became king`,`While praying`,`In front of the ${H('כהן גדול')} only`],a:0,
+ why:`"${H('לפני ה׳')}" = in front of the ${H('ארון')}.`},
+{ch:5,type:'mc',q:`${H('דוד')} became king at 30 and ruled for 40 years. Using these numbers, how old was he when his reign ended?`,
+ opts:['70','40','63','77'],a:0,
+ why:`30 + 40 = 70. This is a thinking question: you had to use both numbers from pasuk ${H('ד')}.`},
+{ch:5,type:'mc',q:`How long did ${H('דוד')} rule in each place?`,
+ opts:[`${H('חברון')} over ${H('יהודה')}: 7½ years. ${H('ירושלים')} over all Israel: 33 years`,`${H('חברון')}: 33 years. ${H('ירושלים')}: 7½ years`,`${H('חברון')}: 7 years. ${H('ירושלים')}: 33 years`,`${H('חברון')}: 10 years. ${H('ירושלים')}: 30 years`],a:0,
+ why:`Pasuk ${H('ה')}: 7½ years in ${H('חברון')} over ${H('יהודה')}, 33 years in ${H('ירושלים')} over all Israel.`},
+{ch:5,type:'multi',q:`7½ + 33 = 40½. So why does the pasuk say ${H('דוד')} ruled for 40 years?`,hint:'Choose ALL correct answers.',
+ opts:[`It's a big number, so the pasuk rounded it`,`For 6 months he was on the run from ${H('אבשלום')}`,`For 6 months he was sick and couldn't rule`,`The 6 months in ${H('חברון')} were before he was anointed`],a:[0,1],
+ why:`1) Big number, so the pasuk rounded it. 2) 6 months on the run from ${H('אבשלום')}.`},
+{ch:5,type:'mc',q:`Why hadn't ${H('ירושלים')} (the ${H('יבוסים')}) been conquered until ${H('דוד')}?`,
+ opts:[`Because of the treaty between ${H('אברהם אבינו')} and ${H('אבימלך')}, which lasted 3 generations, and one of ${H('אבימלך')}'s grandchildren lived a long time`,`Because the walls were too high for any army`,`Because ${H('יהושע')} made a treaty with the ${H('יבוסים')}`,`Because ${H('שאול')} was afraid of them`],a:0,
+ why:`There was a treaty between ${H('אברהם אבינו')} and ${H('אבימלך')} that went through 3 generations, and one of ${H('אבימלך')}'s grandchildren lived a long time. Only then could ${H('דוד')} conquer.`},
+{ch:5,type:'mc',q:`One explanation of "${H('העורים והפסחים')}" is idols. Who did the idols look like?`,
+ opts:[`Blind = ${H('יצחק')}, lame = ${H('יעקב')}`,`Blind = ${H('יעקב')}, lame = ${H('יצחק')}`,`Blind = ${H('אברהם')}, lame = ${H('יצחק')}`,`Blind = ${H('שאול')}, lame = ${H('מפיבשת')}`],a:0,
+ why:`${H('יצחק')} was blind and ${H('יעקב')} limped. The idols had the treaty in their mouths, saying Israel couldn't hurt them.`},
+{ch:5,type:'mc',q:`Which of these is NOT one of the explanations for "${H('העורים והפסחים')}"?`,
+ opts:[`All the ${H('יבוסים')} were actually blind and lame`,`Idols of ${H('יצחק')} and ${H('יעקב')} with the treaty in their mouth`,`They put real blind and lame people in front of the city: "to conquer us, you have to kill them"`,`"Our fortifications are so strong" (even the blind and lame can guard them)`],a:0,
+ why:`Your notes list 4 explanations: idols of ${H('יצחק')} and ${H('יעקב')}, real blind and lame people in front, idols there, and "our fortifications are so strong." The ${H('יבוסים')} were not all blind and lame.`},
+{ch:5,type:'mc',q:`What exactly did ${H('דוד')} conquer, and what did he rename it?`,
+ opts:[`${H('מצודת ציון')}, renamed ${H('עיר דוד')}`,`${H('ירושלים')}, renamed ${H('עיר שלם')}`,`${H('חברון')}, renamed ${H('קרית ארבע')}`,`${H('בעל פרצים')}, renamed ${H('ציון')}`],a:0,
+ why:`Your notes: ${H('דוד')} conquers ${H('מצודת ציון')} and renames it ${H('עיר דוד')}.`},
+{ch:5,type:'mc',q:`In pasuk ${H('ח')}, what did a soldier have to strike and reach in order to capture the city?`,
+ opts:[`The metal bar (${H('צנור')})`,`The top of the tower`,`The king of the ${H('יבוסים')}`,`The idols at the gate`],a:0,
+ why:`Whoever strikes and reaches the metal bar and captures the city gets the reward ${H('דוד')} promised.`},
+{ch:5,type:'mc',q:`Why is ${H('ירושלים')} called ${H('ציון')}?`,
+ opts:[`From the word ${H('מצוין')}: it is outstanding in ${H('קדושה')}`,`From the word ${H('ציון')}, a marker on a grave`,`From the word ${H('ציה')}, a dry land`,`It was named after a ${H('יבוסי')} king`],a:0,
+ why:`${H('ציון')} comes from ${H('מצוין')}, outstanding: it is outstanding in ${H('קדושה')}.`},
+{ch:5,type:'mc',q:`Who sent supplies and workers to build a new house for ${H('דוד')}?`,
+ opts:[H('חירם'),H('אכיש'),H('אבימלך'),H('פרעה')],a:0,
+ why:`Pasuk ${H('יא')}: ${H('חירם')} sends supplies and workers to build a house for ${H('דוד')}.`},
+{ch:5,type:'mc',q:`How did ${H('דוד')} know that Hashem had really established his kingdom?`,
+ opts:[`When people liked him and gave him gifts`,`When a ${H('נביא')} told him`,`When he beat the ${H('פלשתים')}`,`When he turned 40`],a:0,
+ why:`Pasuk ${H('יב')}: people liked him and gave him gifts, so he knew Hashem had established his kingdom.`},
+{ch:5,type:'mc',q:`The pasuk says Hashem gave ${H('דוד')} success "${H('בעבור עמו ישראל')}". What does this teach?`,
+ opts:[`Hashem did it because He loves His nation, not just for ${H('דוד')}`,`${H('דוד')} earned it all by himself`,`The people voted for ${H('דוד')}`,`Hashem did it to scare the ${H('פלשתים')}`],a:0,
+ why:`When ${H('דוד')} got success, he says ${H('בעבור עמו ישראל')}: Hashem is doing this because He loves His nation.`},
+{ch:5,type:'mc',q:`What lesson for US do the mefarshim learn from how ${H('דוד')} saw his success?`,
+ opts:[`We can be proud of our efforts, but recognize that the success is from Hashem`,`We shouldn't try hard, because Hashem does everything anyway`,`If we succeed, it proves we did everything right`,`We should never feel proud of anything`],a:0,
+ why:`We can be proud of our efforts, but recognize that the success is from Hashem. (Careful: "don't try" and "never be proud" both go too far.)`},
+{ch:5,type:'multi',q:`Why did ${H('דוד')} take more wives?`,hint:'Choose ALL correct answers.',
+ opts:[`To make sure a fitting heir to the throne would be born`,`For military reasons (alliances)`,`Because the ${H('זקנים')} required it in the treaty`,`Because ${H('חירם')} asked him to`],a:[0,1],
+ why:`He wanted to make sure a fitting heir to the throne was born to him, and also for military reasons.`},
+{ch:5,type:'mc',q:`Why does the pasuk say "${H('ויעלו כל הפלשתים')}", ALL the ${H('פלשתים')}?`,
+ opts:[`They knew how strong ${H('דוד')} was, so they brought everyone`,`They were all invited to see ${H('דוד')} crowned`,`They were running away from ${H('חירם')}`,`Only some came, the pasuk exaggerates`],a:0,
+ why:`They knew how strong ${H('דוד')} was.`},
+{ch:5,type:'order',q:`Put the war with the ${H('פלשתים')} (pesukim ${H('יז')} to ${H('כא')}) in order.`,hint:'Tap the events in order, 1 to 5. Tap again to undo.',
+ items:[`The ${H('פלשתים')} hear ${H('דוד')} is king and come to fight`,`The ${H('פלשתים')} spread out`,`${H('דוד')} asks Hashem "should I fight?" and Hashem says yes`,`${H('דוד')} wins and names the place ${H('בעל פרצים')}`,`The ${H('פלשתים')} leave their idols, and ${H('דוד')}'s men carry them away`],
+ why:`Hear he is king, spread out, ${H('דוד')} asks Hashem, wins and names the place ${H('בעל פרצים')}, they leave their idols.`},
+{ch:5,type:'mc',q:`Last one, connecting both chapters: what is the same about how ${H('דוד')} became king in chapter 4 and chapter 5?`,
+ opts:[`He never grabbed power himself: he punished those who killed for him, and waited for the people and Hashem`,`He fought a war against ${H('שבטי ישראל')} to become king`,`He paid ${H('רכב')} and ${H('בענה')} to clear the way`,`He made himself king without asking anyone`],a:0,
+ why:`In chapter 4 he punishes the killers of ${H('איש בשת')} (and hangs them to show he didn't do it). In chapter 5 the tribes come to HIM, with Hashem's promise. Before fighting, he asks Hashem.`}
+];
+
+let state={list:[],i:0,score:0,missed:[],answered:false,sel:null};
+const app=document.getElementById('app');
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+function home(){
+  app.innerHTML=`<h1>${H('שמואל ב׳')} Chapters 4 and 5</h1>
+  <p class="sub">The hard quiz. No guessing your way through: some questions have more than one right answer, some need you to put things in order, and some need you to think.</p>
+  <div class="card choose">
+    <div class="q">What do you want to practice?</div>
+    <label><input type="radio" name="c" value="all" checked> Both chapters (${QS.length} questions)</label>
+    <label><input type="radio" name="c" value="4"> Only chapter 4 (${QS.filter(q=>q.ch==4).length})</label>
+    <label><input type="radio" name="c" value="5"> Only chapter 5 (${QS.filter(q=>q.ch==5).length})</label>
+    <label><input type="checkbox" id="mix"> Mix up the question order</label>
+    <div class="row"><button class="btn" id="go">Start</button></div>
+  </div>`;
+  document.getElementById('go').onclick=()=>{
+    const c=document.querySelector('input[name=c]:checked').value;
+    let l=QS.filter(q=>c=='all'||q.ch==c);
+    if(document.getElementById('mix').checked) l=shuffle(l);
+    start(l);
+  };
+}
+function prep(q){
+  const p={...q};
+  if(q.type=='mc'||q.type=='multi'){
+    const idx=shuffle(q.opts.map((_,k)=>k));
+    p.view=idx; // display order -> original index
+  }
+  if(q.type=='order') p.view=shuffle(q.items.map((_,k)=>k));
+  if(q.type=='sort') p.view=shuffle(q.items.map((_,k)=>k));
+  return p;
+}
+function start(l,retry){state={retry:!!retry,list:l.map(prep),i:0,score:0,missed:[],answered:false,sel:null};show()}
+function show(){
+  const q=state.list[state.i],n=state.list.length;
+  state.answered=false;
+  state.sel = q.type=='mc'?null : q.type=='multi'?new Set() : q.type=='order'?[] : {};
+  const tagText={mc:'Choose one',multi:'Choose all that apply',order:'Put in order',sort:'Sort'}[q.type];
+  let body='';
+  if(q.type=='mc'||q.type=='multi') body=q.view.map(k=>`<button class="opt" data-k="${k}">${q.opts[k]}</button>`).join('');
+  if(q.type=='order') body=q.view.map(k=>`<button class="opt ord" data-k="${k}"><span class="num"></span><span>${q.items[k]}</span></button>`).join('');
+  if(q.type=='sort') body=q.view.map(k=>`<div class="sortitem" data-k="${k}"><div class="t">${q.items[k].t}</div><div class="pick">${q.cats.map((c,ci)=>`<button data-c="${ci}">${H(c)}</button>`).join('')}</div></div>`).join('');
+  app.innerHTML=`<div class="top"><span>Chapter ${q.ch} &middot; Question ${state.i+1} of ${n}</span><span>Score: ${state.score}</span></div>
+  <div class="bar"><i style="width:${state.i/n*100}%"></i></div>
+  <div class="card"><span class="tag">${tagText}</span><div class="q">${q.q}</div>${q.hint?`<div class="hint">${q.hint}</div>`:''}
+  <div id="opts">${body}</div><div id="fb"></div>
+  <div class="row"><button class="btn" id="check" disabled>Check</button></div></div>`;
+  wire(q);
+}
+function canCheck(q){
+  if(q.type=='mc') return state.sel!==null;
+  if(q.type=='multi') return state.sel.size>0;
+  if(q.type=='order') return state.sel.length==q.items.length;
+  if(q.type=='sort') return Object.keys(state.sel).length==q.items.length;
+}
+function wire(q){
+  const chk=document.getElementById('check');
+  const refresh=()=>{chk.disabled=!canCheck(q)};
+  if(q.type=='mc'||q.type=='multi'){
+    document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{
+      if(state.answered)return; const k=+b.dataset.k;
+      if(q.type=='mc'){state.sel=k;document.querySelectorAll('.opt').forEach(x=>x.classList.toggle('on',x===b))}
+      else{state.sel.has(k)?state.sel.delete(k):state.sel.add(k);b.classList.toggle('on')}
+      refresh();
+    });
+  }
+  if(q.type=='order'){
+    document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{
+      if(state.answered)return; const k=+b.dataset.k; const pos=state.sel.indexOf(k);
+      if(pos>=0) state.sel.splice(pos); else state.sel.push(k);
+      document.querySelectorAll('.opt').forEach(x=>{const p=state.sel.indexOf(+x.dataset.k);x.classList.toggle('on',p>=0);x.querySelector('.num').textContent=p>=0?p+1:''});
+      refresh();
+    });
+  }
+  if(q.type=='sort'){
+    document.querySelectorAll('.sortitem').forEach(it=>it.querySelectorAll('button').forEach(b=>b.onclick=()=>{
+      if(state.answered)return; state.sel[it.dataset.k]=+b.dataset.c;
+      it.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b)); refresh();
+    }));
+  }
+  chk.onclick=()=>state.answered?next():grade(q);
+}
+function grade(q){
+  state.answered=true; let ok;
+  if(q.type=='mc'){ok=state.sel===q.a;
+    document.querySelectorAll('.opt').forEach(b=>{const k=+b.dataset.k;b.disabled=true;if(k===q.a)b.classList.add('right');else if(k===state.sel)b.classList.add('wrong')})}
+  if(q.type=='multi'){const A=new Set(q.a);ok=A.size==state.sel.size&&[...A].every(x=>state.sel.has(x));
+    document.querySelectorAll('.opt').forEach(b=>{const k=+b.dataset.k;b.disabled=true;b.classList.remove('on');if(A.has(k))b.classList.add('right');else if(state.sel.has(k))b.classList.add('wrong')})}
+  if(q.type=='order'){ok=state.sel.every((k,p)=>k===p);
+    document.querySelectorAll('.opt').forEach(b=>{const k=+b.dataset.k;b.disabled=true;b.classList.remove('on');b.classList.add(state.sel.indexOf(k)===k?'right':'wrong');b.querySelector('.num').textContent=(state.sel.indexOf(k)+1)+(state.sel.indexOf(k)===k?'':' → '+(k+1))})}
+  if(q.type=='sort'){ok=q.items.every((it,k)=>state.sel[k]===it.c);
+    document.querySelectorAll('.sortitem').forEach(el=>{const k=+el.dataset.k;el.classList.add(state.sel[k]===q.items[k].c?'right':'wrong');el.querySelectorAll('button').forEach(b=>{b.disabled=true;if(+b.dataset.c===q.items[k].c)b.classList.add('on');else b.classList.remove('on')})})}
+  if(ok)state.score++; else state.missed.push(q);
+  document.getElementById('fb').innerHTML=`<div class="fb ${ok?'good':'bad'}"><b>${ok?'Correct!':'Not quite.'+(q.type=='multi'?' You need ALL the right ones and none of the wrong ones.':'')}</b>${q.why}</div>`;
+  const c=document.getElementById('check');c.disabled=false;c.textContent=state.i+1<state.list.length?'Next':'See results';
+}
+function next(){state.i++; if(state.i<state.list.length)show(); else results()}
+function results(){
+  const n=state.list.length,pct=Math.round(state.score/n*100);
+  const msg=pct>=90?'You really know it.':pct>=75?'Strong. Go over the ones you missed.':pct>=50?'Getting there. Review your notes and try the missed ones again.':'Time to reread the notes, then try again.';
+  if(!state.retry){try{const K="sam45-quiz",d=JSON.parse(localStorage.getItem(K)||"{}");
+    [4,5].forEach(ch=>{const qs=state.list.filter(q=>q.ch==ch);if(!qs.length)return;const ok=qs.length-state.missed.filter(q=>q.ch==ch).length,p=ok/qs.length;
+      const st=p>=0.9?3:p>=0.75?2:p>=0.5?1:0;d["ch"+ch]=Math.max(d["ch"+ch]||0,st)});localStorage.setItem(K,JSON.stringify(d))}catch(e){}}
+  app.innerHTML=`<div class="card" style="text-align:center"><p class="big">${state.score}/${n}</p><div class="q">${pct}%: ${msg}</div>
+  <div class="row" style="justify-content:center">${state.missed.length?'<button class="btn" id="retry">Retry the ones I missed</button>':''}<button class="btn ghost" id="again">Start over</button></div></div>
+  ${state.missed.length?`<div class="card" style="margin-top:16px"><div class="q">Review: what you missed</div>${state.missed.map(q=>`<div class="miss"><div class="mq">${q.q}</div>${q.why}</div>`).join('')}</div>`:''}`;
+  const r=document.getElementById('retry'); if(r) r.onclick=()=>start(shuffle(state.missed),true);
+  document.getElementById('again').onclick=home;
+}
+home();
+</script>
+</body>
+</html>
