@@ -88,6 +88,7 @@ function solve(t, wrong = false) {
     other = buttons.find((b) => b !== correct);
   if (wrong) {
     other.click();
+    t.ok(other.classList.contains("no"), "Wrong answer gets gentle visual feedback");
     other.click();
     t.ok(correct.classList.contains("hint"), "Helpful hint after two tries");
   }
