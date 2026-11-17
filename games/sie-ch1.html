@@ -94,7 +94,9 @@ h2.section{font-size:.95rem;font-weight:700;color:var(--muted);margin:6px 0 -2px
 .term .t-en{font-size:1.45rem}
 .t-pr{color:var(--muted);font-size:.95rem}
 .t-def{margin:0;font-family:var(--en);direction:ltr;text-align:left;font-weight:500;background:var(--bg);border-radius:10px;padding:8px 10px}
-.math{unicode-bidi:isolate;direction:ltr}.math .mp{white-space:nowrap}
+.math{unicode-bidi:isolate;direction:ltr}.story .math{white-space:nowrap}.row .pill{white-space:normal;max-width:100%;overflow-wrap:anywhere}.dot{min-height:44px}
+.story table,.grid4{border-collapse:collapse;width:100%;font-size:.9rem;margin:6px 0}.story th,.story td,.grid4 td{border:1px solid var(--edge);padding:6px;text-align:center;vertical-align:top}.story th{font-weight:700}.grid4 td.hit{outline:3px solid var(--gold);font-weight:700}
+body:not(.athome) .lib-back{display:none}.lib-back{min-height:44px;display:inline-flex;align-items:center}.math .mp{white-space:nowrap}
 .lesson small:not([lang]){direction:rtl;font-family:var(--he)}
 .term .t-hint{margin:0;font-size:.95rem;color:var(--gold)}
 .opt.he{direction:rtl;text-align:right;font-family:var(--he)}
@@ -112,7 +114,7 @@ const KEY=D.id;
 let S={done:{},best:null,attempts:0};try{S=Object.assign(S,JSON.parse(localStorage.getItem(KEY)||"{}"))}catch(e){}
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
 const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
-const toTop=()=>window.scrollTo({top:0,behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});
+const toTop=()=>(document.body.classList.remove("athome"),window.scrollTo({top:0,behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"}));
 const L="ABCD";
 
 /* ---------- v3: pronunciation (device voice, natural voices first) ---------- */
@@ -148,6 +150,7 @@ const lessonBtn=(id,icon,title,sub,st,stCls,extra)=>`<button class="lesson${extr
 
 /* ---------- home ---------- */
 function home(){
+  document.body.classList.add("athome");setTimeout(()=>{const h=app.querySelector("h1");if(h){h.tabIndex=-1;h.focus({preventScroll:true})}},0);
   const n=D.lessons.filter(l=>S.done[l.id]).length;const inList=Object.keys(S.miss).filter(k=>ALLT.some(x=>x.t[0]===k));const weak=inList.filter(k=>S.miss[k].due<=today());const later=inList.length-weak.length;
   app.innerHTML=`<div><span class="eyebrow" lang="en">SIE · ${D.section}</span><h1>${D.heTitle}</h1>
    <p class="muted" style="margin:6px 0 0">${D.lessons.length} שיעורים. בכל שיעור: סיפור, כרטיסי מילים${hasDefs?" עם הגייה והגדרה באנגלית":""}, תרגול מילים ובדיקה קטנה. אחר כך תרגול לפני המבחן, ובסוף מבחן בסגנון FINRA.${canSpeak?" אפשר ללחוץ על כל מונח באנגלית כדי לשמוע אותו.":""}</p></div>
@@ -160,6 +163,7 @@ function home(){
    ${later?`<p class="muted" style="margin:0">${weak.length?"ועוד ":""}${later} ${later===1?"מילה שפספסת תחזור":"מילים שפספסת יחזרו"} בימים הבאים. מילה יוצאת מהרשימה אחרי שעונים עליה נכון ב-4 ימים שונים.</p>`:""}
    ${lessonBtn("allwords","Aa","כל המילים, לפי שיעורים",hasDefs?"Definition → term · term → definition · term → עברית":"Term → עברית",S.words!=null?"✓ "+S.words+"%":"בחר",S.words!=null?" done":"")}
    ${D.pairs?lessonBtn("pairs","⇄","צמדים מבלבלים",D.pairs.map(p=>p.a.replace(/ \(.*\)/,"")+" / "+p.b).slice(0,2).join(" · ")+" …",S.pairs!=null?"✓ "+S.pairs+"%":"התחל",S.pairs!=null?" done":""):""}
+   ${D.sorter?lessonBtn("sorter","⊞",D.sorter.title,D.sorter.labels.join(" · "),S.sorter!=null?"✓ "+S.sorter+"%":"התחל",S.sorter!=null?" done":""):""}
    ${D.examWords?lessonBtn("examwords","?","האנגלית של המבחן",D.examWords.slice(0,4).map(e=>e[0]).join(" · "),S.ew!=null?"✓ "+S.ew+"%":"התחל",S.ew!=null?" done":""):""}
   </div>
   <h2 class="section">שלב 3: תרגול ומבחן</h2>
@@ -170,7 +174,7 @@ function home(){
    ${lessonBtn("gloss","אב","מילון מונחים","All terms"+(canSpeak?", with 🔊":""),"פתח")}</div>`;
   app.querySelectorAll(".lesson[data-i]").forEach(b=>b.onclick=()=>story(+b.dataset.i,0));
   $("exam").onclick=examIntro;$("gloss").onclick=glossary;$("practice").onclick=practice;$("allwords").onclick=allWords;
-  if($("pairs"))$("pairs").onclick=pairs;if($("calc"))$("calc").onclick=calcHome;
+  if($("pairs"))$("pairs").onclick=pairs;if($("calc"))$("calc").onclick=calcHome;if($("sorter"))$("sorter").onclick=sorter;
   if($("examwords"))$("examwords").onclick=()=>runDrill(examWordItems(),"האנגלית של המבחן",r=>{S.ew=r;save()},home);
   if($("weak"))$("weak").onclick=()=>runDrill(wordItems(weak.map(k=>ALLT.find(x=>x.t[0]===k).t)),"מילים שפספסתי",null,home);
 }
@@ -179,7 +183,7 @@ function story(li,si){
   const Lz=D.lessons[li],s=Lz.story[si];toTop();
   app.innerHTML=`<div class="row"><button class="btn soft" id="back">→ לתפריט</button><span class="pill">שיעור ${li+1}: ${Lz.he}</span></div>
   <div class="panel"><div class="bars" aria-hidden="true">${Lz.story.map((x,i)=>`<i class="${i<=si?"on":""}"></i>`).join("")}</div>
-   <div class="story">${s.he}</div>
+   <div class="story">${mathLtr(s.he.replace(/\s(שלב \d+:|כלל( ל-[a-z]+)?:)/g,"<br>$1"))}</div>
    <div class="row"><button class="btn soft" id="prev" ${si===0?'style="visibility:hidden"':""}>→ הקודם</button><button class="btn" id="next">${si===Lz.story.length-1?"לכרטיסי המילים ←":"הבא ←"}</button></div></div>`;
   if(canSpeak)app.querySelectorAll(".story .en").forEach(x=>{x.setAttribute("role","button");x.tabIndex=0;x.lang="en";x.setAttribute("aria-label","Hear: "+x.textContent)});
   else app.querySelectorAll(".story .en").forEach(x=>x.classList.add("nospeak"));
@@ -237,7 +241,7 @@ function runDrill(items,title,onScore,onDone,doneLabel){
       app.innerHTML=`<div class="panel" style="text-align:center;align-items:center"><span class="eyebrow">${title}</span><h2>סיימת!</h2>
         <p style="margin:0">נכון בפעם הראשונה (בלי רמז): ${first} מתוך ${total} (${pct}%). כל מה שפספסת חזר עד שענית נכון${missed.size?", ונשמר ברשימת \"מילים שפספסתי\"":""}.</p>
         <div class="row" style="justify-content:center"><button class="btn soft" id="again">עוד סיבוב</button><button class="btn" id="on">${doneLabel||"לתפריט"}</button></div></div>`;
-      $("again").onclick=()=>runDrill(shuffle(items).map(it=>it.regen?it.regen():({...it,_id:undefined,opts:shuffle(it.opts)})),title,onScore,onDone,doneLabel);$("on").onclick=onDone;focusPanel();return}
+      $("again").onclick=()=>runDrill(shuffle(items).map(it=>it.regen?it.regen():({...it,_id:undefined,opts:it.fixed?it.opts:shuffle(it.opts)})),title,onScore,onDone,doneLabel);$("on").onclick=onDone;focusPanel();return}
     const it=q[0];toTop();let hinted=false;
     app.innerHTML=`<div class="row"><button class="btn soft" id="back">→ לתפריט</button><span class="pill">${title}</span><span class="pill">נשארו ${q.length}</span></div>
     <div class="bar" aria-hidden="true"><i style="width:${(total-q.length)/total*100}%"></i></div>
@@ -254,7 +258,7 @@ function runDrill(items,title,onScore,onDone,doneLabel){
       if(it.say)speak(it.say);
       q.shift();
       if(clean){if(!missed.has(it._id)){first++;if(it.term)markHit(it.term)}}
-      else{if(!missed.has(it._id)&&it.term)markMiss(it.term);missed.add(it._id);q.splice(Math.min(q.length,3),0,{...it,opts:shuffle(it.opts)})}
+      else{if(!missed.has(it._id)&&it.term)markMiss(it.term);missed.add(it._id);q.splice(Math.min(q.length,3),0,{...it,opts:it.fixed?it.opts:shuffle(it.opts)})}
       $("go").hidden=false;$("go").focus();$("go").onclick=draw});
     focusPanel();
   }
@@ -291,7 +295,8 @@ function practice(){
   const defItems=shuffle(ALLT.filter(x=>W[x.t[0]]&&W[x.t[0]].def&&!W[x.t[0]].noDrill).map(x=>wordItems([x.t]).find(it=>it.qHe===x.t[2])).filter(Boolean));
   const pi=shuffle(pairItems());
   const ci=D.calcs?shuffle(D.calcs).slice(0,3).map(k=>calcItem(k)):[];const m=ci.length?[7,5,5]:[8,6,6];
-  let pool=[...checkItems.slice(0,m[0]),...defItems.slice(0,m[1]),...pi.slice(0,m[2]),...ci];
+  const si=shuffle(sorterItems()).slice(0,D.sorter?3:0);if(si.length){m[1]-=1;m[2]-=2}
+  let pool=[...checkItems.slice(0,m[0]),...defItems.slice(0,m[1]),...pi.slice(0,m[2]),...ci,...si];
   if(pool.length<20)pool=pool.concat(shuffle([...checkItems.slice(m[0]),...defItems.slice(m[1]),...pi.slice(m[2])]).slice(0,20-pool.length));
   runDrill(shuffle(pool),"תרגול מעורב",r=>{S.practice=r;save()},home);
 }
@@ -320,6 +325,7 @@ const pc=v=>r2(v).toFixed(2)+"%";
 const p1=v=>{const r=r2(v);return (Math.abs(Math.round(r*10)-r*10)>1e-6?r.toFixed(2):r.toFixed(1))+"%"};
 const nm=v=>Math.round(v).toLocaleString("en-US");
 const WHO=[["Rina","רינה","she","her","משלמת","מחזיקה","הרוויחה"],["Dana","דנה","she","her","משלמת","מחזיקה","הרוויחה"],["Yossi","יוסי","he","his","משלם","מחזיק","הרוויח"],["Avi","אבי","he","his","משלם","מחזיק","הרוויח"]];
+const an=n=>/^(8|11|18)/.test(String(n))?"an":"a";
 const CF={
  semi:{t:"ריבית חצי-שנתית",f:"Each payment = (coupon rate × par) ÷ 2",x:"4% × $1,000 = $40 a year → $20 every six months",g(){const c=Rn([2,2.5,3,3.5,4,4.5,5,5.5,6,6.5,7,7.5,8]),a=10*c,s=a/2;
   return {en:`A bond has a $1,000 par value and a ${c}% coupon, paid semiannually. How much is each interest payment?`,he:`לאג"ח ערך נקוב של 1,000 דולר וקופון של ${c}%, שמשולם פעמיים בשנה. כמה כל תשלום ריבית?`,
@@ -356,6 +362,46 @@ const CF={
    ok:usd(dsc),bad:["$0, since T-bills pay no interest",usd(dsc/2),usd(dsc*2),usd(dsc+50),usd(dsc*wk/52<5?dsc+25:dsc*52/wk)],why:`שטר אוצר לא משלם ריבית בדרך. קונים מתחת ל-par ומקבלים par בפדיון. ההפרש הוא הריבית: $10,000 − ${usd(P)} = ${usd(dsc)}. לכן "אין ריבית" זו מלכודת: אין תשלומי ריבית, אבל יש ריבית.`};
   return {en:`${w[0]} pays ${usd(P)} for a $10,000, ${wk}-week Treasury bill. What does ${w[2]} receive?`,he:`${w[1]} ${w[4]} ${usd(P)} על שטר אוצר של 10,000 דולר ל-${wk} שבועות. מה ${w[2]==="she"?"היא מקבלת":"הוא מקבל"}?`,
    ok:Rn(["$10,000 at maturity, nothing before","Only $10,000, on the maturity date","$10,000 when it matures, with no interest payments before"]),bad:[`${usd(10000+dsc)} at maturity, nothing before`,`${usd(dsc/2)} halfway, then $10,000`,`${usd(P)} back plus a ${usd(dsc)} coupon`,`${usd(dsc/2)} every ${wk/2} weeks, then ${usd(P)}`,`Only ${usd(P)}, on the maturity date`],why:`שטר אוצר נמכר מתחת ל-par, לא משלם ריבית בדרך, ובפדיון משלם את ה-par: $10,000. הריבית היא ההפרש (${usd(dsc)}), והיא כבר בתוך ה-10,000.`}}},
+ /* chapter 3: options (per share first, then x100 per contract) */
+ /* a/an before a number read aloud: 8, 11, 18, 80... take "an" */
+ oprem:{t:"פרמיה לחוזה",f:"Total premium = premium per share × 100 × number of contracts",x:"$2.20 × 100 = $220 per contract",g(){const pr=Rn([.75,1.25,1.5,2.5,3.5,4.25,6]),n=Rn([1,2,3,4,5]),cp=Rn(["call","put"]),t=pr*100*n;
+  return {en:`An investor buys ${n} ${cp} contract${n>1?"s":""} at a premium of ${pr}. What is the total premium paid?`,he:`משקיע קונה ${n} ${n>1?"חוזי":"חוזה"} ${cp} בפרמיה של ${pr}. כמה פרמיה שילם בסך הכל?`,
+  ok:usd(t),bad:[usd(pr*n),usd(pr*100),usd(pr*10*n),usd((pr+1)*100*n),usd(pr*100*(n+1)),usd((pr+.5)*100*n)],why:`שלב 1: הפרמיה מצוטטת למניה: ${usd(pr)}. שלב 2: חוזה אחד = 100 מניות: ${usd(pr)} × 100 = ${usd(pr*100)}. שלב 3: כפול ${n} ${n>1?"חוזים":"חוזה"}: ${usd(pr*100)} × ${n} = ${usd(t)}.`}}},
+ obe:{t:"נקודת איזון",f:"Call: strike + premium. Put: strike − premium (same for buyer and writer)",x:"105 call at 3 → $108; 45 put at 5 → $40",g(){const K=Rn([25,30,35,40,50,55,65,70,80,90]),pr=Rn([1,1.5,2,2.5,3,4,5,6]),call=Math.random()<.5,buy=Math.random()<.6,be=call?K+pr:K-pr;
+  return {en:`An investor ${buy?"buys":"writes"} ${an(K)} ${K} ${call?"call":"put"} at ${pr}. What is the breakeven point at expiration?`,he:`משקיע ${buy?"קונה":"כותב"} ${call?"call":"put"} עם מחיר מימוש ${K} בפרמיה של ${pr}. מה נקודת האיזון בפקיעה?`,
+  ok:usd(be),bad:[usd(call?K-pr:K+pr),usd(K),usd(K+2*pr),usd(K-2*pr),usd(be+1),usd(be-1)],why:`ב-${call?"call":"put"} נקודת האיזון = מחיר המימוש ${call?"ועוד":"פחות"} הפרמיה. ${buy?"":"זו אותה נקודה גם למוכר, רק מהצד השני. "}${call?"call מרוויח כשהמניה עולה, אז היא צריכה לעלות מעל המימוש בגובה הפרמיה":"put מרוויח כשהמניה יורדת, אז היא צריכה לרדת מתחת למימוש בגובה הפרמיה"}: ${K} ${call?"+":"−"} ${pr} = ${usd(be)}.`}}},
+ olong:{t:"קונה: רווח והפסד מקסימליים",f:"Buyer's max loss = premium. Long call max gain: unlimited. Long put max gain = (strike − premium) × 100",x:"45 put at 5: max gain $4,000, max loss $500",g(){const K=Rn([20,30,40,50,60,75]),pr=Rn([1,2,3,4,5]),call=Math.random()<.5,gain=Math.random()<.5;
+  const ok=gain?(call?"Unlimited":usd((K-pr)*100)):usd(pr*100);
+  return {en:`An investor buys one ${K} ${call?"call":"put"} at ${pr}. What is the maximum ${gain?"gain":"loss"}?`,he:`משקיע קונה ${call?"call":"put"} אחד עם מחיר מימוש ${K} בפרמיה של ${pr}. מה ה${gain?"רווח":"הפסד"} המקסימלי?`,
+  ok,must:["Unlimited"],bad:[usd(pr*100),usd((K-pr)*100),usd((K+pr)*100),usd(K*100),usd(pr)],why:gain?(call?`ב-long call אין גבול לרווח, כי מחיר מניה יכול לעלות בלי גבול.`:`ב-long put המקרה הכי טוב הוא שהמניה יורדת לאפס. שלב 1: ${K} − ${pr} = ${K-pr} למניה. שלב 2: × 100 = ${usd((K-pr)*100)}.`):`קונה מפסיד לכל היותר את הפרמיה ששילם: ${pr} × 100 = ${usd(pr*100)}. זה קורה אם בפקיעה האופציה מחוץ לכסף או בדיוק בכסף.`}}},
+ oshort:{t:"מוכר: רווח והפסד מקסימליים",f:"Writer's max gain = premium. Uncovered call max loss: unlimited. Uncovered put max loss = (strike − premium) × 100",x:"60 call at 2: max gain $200, max loss unlimited",g(){const K=Rn([20,30,40,50,60,75,90]),pr=Rn([1,2,3,4,5,6]),call=Math.random()<.5,gain=Math.random()<.5;
+  const ok=gain?usd(pr*100):(call?"Unlimited":usd((K-pr)*100));
+  return {en:`An investor writes one uncovered ${K} ${call?"call":"put"} at ${pr}. What is the maximum ${gain?"gain":"loss"}?`,he:`משקיע כותב ${call?"call":"put"} לא מכוסה אחד עם מחיר מימוש ${K} בפרמיה של ${pr}. מה ה${gain?"רווח":"הפסד"} המקסימלי?`,
+  ok,must:["Unlimited"],bad:[usd(pr*100),usd((K-pr)*100),usd((K+pr)*100),usd(pr),usd((K-2*pr)*100)].concat(call?[usd(K*100)]:[]),why:gain?`מוכר מרוויח לכל היותר את הפרמיה שקיבל: ${pr} × 100 = ${usd(pr*100)}. זה קורה אם האופציה פוקעת בלי ערך.`:(call?`ב-call לא מכוסה ההפסד לא מוגבל: אם המניה עולה, הכותב חייב למסור מניות שאין לו, ומחיר מניה יכול לעלות בלי גבול.`:`ב-put לא מכוסה המקרה הגרוע הוא שהמניה יורדת לאפס, והכותב חייב לקנות אותה ב-${K}. שלב 1: מחיר המימוש פחות הפרמיה שקיבל: ${K} − ${pr} = ${K-pr} למניה. שלב 2: × 100 = ${usd((K-pr)*100)}.`)}}},
+ omoney:{t:"בתוך הכסף או מחוצה לו",f:"Call ITM: stock above strike. Put ITM: stock below strike. Equal: at the money",x:"Stock $55: 50 call ITM, 60 put ITM",g(){const S=Rn([32,38,43,45,47,52,55,58,60,63,67,70,72,78]),K=Math.round(S/5)*5+Rn([-5,0,0,5]),call=Math.random()<.5;
+  const st=S===K?"At the money":(call?S>K:S<K)?"In the money":"Out of the money";
+  return {en:`A stock trades at $${S}. Which BEST describes ${an(K)} ${K} ${call?"call":"put"}?`,he:`מניה נסחרת ב-${S} דולר. מה מתאר הכי טוב ${call?"call":"put"} עם מחיר מימוש ${K}?`,
+  ok:st,n:2,bad:["In the money","Out of the money","At the money"],why:`${call?"call = זכות לקנות. הוא בתוך הכסף כשמחיר המניה מעל מחיר המימוש":"put = זכות למכור. הוא בתוך הכסף כשמחיר המניה מתחת למחיר המימוש"}. כאן: מניה ${S}, מימוש ${K}. ${S===K?"שווים, אז על הכסף.":(call?S>K:S<K)?`בתוך הכסף ב-${Math.abs(S-K)}.`:"מחוץ לכסף."}`}}},
+ ointr:{t:"ערך פנימי וערך זמן",f:"Intrinsic value = amount in the money (never below 0). Time value = premium − intrinsic value",x:"Stock $55, 50 call at 7: intrinsic 5, time value 2",g(){const S=Rn([33,41,46,52,57,64,68,73,86]),call=Math.random()<.5,K=Math.round(S/5)*5+Rn([-5,5]),iv=Math.max(0,call?S-K:K-S),tv=Rn([.5,1,1.5,2,2.5,3.5,4.5,6,7.5]),pr=iv+tv,askT=Math.random()<.5;
+  return askT?{en:`${an(K)==="an"?"An":"A"} ${K} ${call?"call":"put"} trades at a premium of ${pr} when the stock is at $${S}. How much of the premium is time value?`,he:`${call?"call":"put"} עם מחיר מימוש ${K} נסחר בפרמיה של ${pr} כשהמניה ב-${S}. כמה מהפרמיה הוא ערך זמן?`,
+   ok:String(tv),bad:[String(pr),String(iv||r2(pr+1)),String(r2(Math.abs(S-K)+pr)),String(r2(Math.max(.5,tv-1))),String(r2(tv+1)),String(r2(Math.abs(iv-tv))||r2(tv+2))],why:`שלב 1: ערך פנימי. ${call?"call":"put"} ${K}, מניה ${S}: ${iv?`בתוך הכסף, ${call?`${S} − ${K}`:`${K} − ${S}`} = ${iv}`:"מחוץ לכסף, אז 0"}. שלב 2: ערך זמן = פרמיה − ערך פנימי = ${pr} − ${iv} = ${tv}.`}
+   :{en:`A stock trades at $${S}. What is the intrinsic value of ${an(K)} ${K} ${call?"call":"put"}?`,he:`מניה נסחרת ב-${S} דולר. מה הערך הפנימי של ${call?"call":"put"} עם מחיר מימוש ${K}?`,
+   ok:usd(iv),bad:[usd(Math.abs(S-K)),usd(0),usd(Math.abs(S-K)*2),usd(Math.abs(S-K)+5),usd(Math.abs(S-K)/2),usd(Math.abs(S-K)+1)],why:`${call?"call בתוך הכסף כשהמניה מעל המימוש":"put בתוך הכסף כשהמניה מתחת למימוש"}. מניה ${S}, מימוש ${K}: ${iv?`בתוך הכסף ב-${iv}, וזה הערך הפנימי.`:"מחוץ לכסף, ולכן הערך הפנימי 0. ערך פנימי אף פעם לא שלילי."}`}}},
+ occ:{t:"call מכוסה",f:"Covered call: max gain = strike − stock cost + premium; breakeven = stock cost − premium; max loss = stock cost − premium",x:"Buy at $58, sell 60 call at 2: max gain $400, breakeven $56",g(){const C=Rn([36,44,48,52,62,68,74]),K=Math.ceil((C+1)/5)*5+Rn([0,5]),pr=Rn([1,1.5,2,2.5,3,4]),v=Rn(["gain","be","loss"]);
+  const mg=(K-C+pr)*100,be=C-pr,ml=(C-pr)*100;const ok=v==="gain"?usd(mg):v==="be"?usd(be):usd(ml);
+  const q=v==="gain"?["maximum gain","הרווח המקסימלי"]:v==="be"?["breakeven point","נקודת האיזון"]:["maximum loss","ההפסד המקסימלי"];
+  return {en:`An investor buys 100 shares at $${C} and sells one ${K} call at ${pr}. What is the ${q[0]}?`,he:`משקיע קונה 100 מניות ב-${C} דולר ומוכר call אחד עם מחיר מימוש ${K} בפרמיה של ${pr}. מה ${q[1]}?`,
+  ok,bad:v==="be"?[usd(C+pr),usd(K+pr),usd(K-pr),usd(C),usd(K),usd(C-2*pr),usd(C-pr-5)]:[usd(mg),usd(ml),usd(pr*100),usd((K-C)*100),usd(C*100),usd((K+pr)*100)],
+  why:v==="gain"?`call מכוסה: אם המניה עולה מעל ${K}, יממשו לו והוא ימכור ב-${K}. שלב 1: ${K} − ${C} = ${K-C} רווח על המניה. שלב 2: ועוד הפרמיה: ${K-C} + ${pr} = ${r2(K-C+pr)}. שלב 3: × 100 = ${usd(mg)}.`:v==="be"?`הפרמיה מורידה את העלות של המניה: ${C} − ${pr} = ${usd(be)}.`:`המקרה הגרוע: המניה יורדת לאפס. הפרמיה מקטינה את ההפסד: (${C} − ${pr}) × 100 = ${usd(ml)}. ה-call לא מגן מירידה.`}}},
+ opp:{t:"put מגן",f:"Protective put: max loss = stock cost − strike + premium; breakeven = stock cost + premium; max gain unlimited",x:"Buy at $62, buy 60 put at 3: max loss $500, breakeven $65",g(){const C=Rn([42,47,53,58,66,72,84]),K=Math.floor((C-1)/5)*5-Rn([0,5]),pr=Rn([1,1.5,2,2.5,3,4]),v=Rn(["loss","be","gain"]);
+  const ml=(C-K+pr)*100,be=C+pr;const ok=v==="loss"?usd(ml):v==="be"?usd(be):"Unlimited";
+  const q=v==="loss"?["maximum loss","ההפסד המקסימלי"]:v==="be"?["breakeven point","נקודת האיזון"]:["maximum gain","הרווח המקסימלי"];
+  return {en:`An investor buys 100 shares at $${C} and buys one ${K} put at ${pr}. What is the ${q[0]}?`,he:`משקיע קונה 100 מניות ב-${C} דולר וקונה put אחד עם מחיר מימוש ${K} בפרמיה של ${pr}. מה ${q[1]}?`,
+  ok,must:v==="be"?[]:["Unlimited"],bad:v==="be"?[usd(C-pr),usd(K+pr),usd(K-pr),usd(C),usd(K),usd(C+2*pr),usd(C+pr+5)]:[usd(ml),usd(pr*100),usd((C-K)*100),usd((K-pr)*100),usd((C+pr)*100)],
+  why:v==="loss"?`גם אם המניה קורסת, הוא יכול למכור ב-${K}. שלב 1: ${C} − ${K} = ${C-K} הפסד על המניה. שלב 2: ועוד הפרמיה: ${C-K} + ${pr} = ${r2(C-K+pr)}. שלב 3: × 100 = ${usd(ml)}.`:v==="be"?`המניה צריכה לעלות מספיק כדי לכסות גם את "הביטוח": ${C} + ${pr} = ${usd(be)}.`:`הוא עדיין מחזיק את המניות, ומחיר מניה יכול לעלות בלי גבול. ה-put רק מגביל את הירידה.`}}},
+ ocash:{t:"סילוק במזומן של אופציית מדד",f:"Cash paid on exercise = in-the-money amount × multiplier",x:"3 points in the money × 100 = $300",g(){const L=Rn([2150,2340,2480,2610,2790]),call=Math.random()<.5,d=Rn([5,8,12,15,20,25]),K=call?L-d:L+d;
+  return {en:`An index ${call?"call":"put"} with a strike of ${K} and a multiplier of 100 is exercised when the index is at ${L}. How much cash does the assigned writer pay?`,he:`אופציית ${call?"call":"put"} על מדד, עם מחיר מימוש ${K} ומכפיל 100, ממומשת כשהמדד ב-${L}. כמה מזומן משלם הכותב שקיבל הקצאה?`,
+  ok:usd(d*100),bad:[usd(d),usd(d*10),usd(d*1000),usd((d+5)*100),usd((d*2)*100),usd(Math.max(1,d-5)*100)],why:`אופציה על מדד מסולקת במזומן. שלב 1: כמה היא בתוך הכסף: ${call?`${L} − ${K}`:`${K} − ${L}`} = ${d} נקודות. שלב 2: כפול המכפיל: ${d} × 100 = ${usd(d*100)}.`}}},
  /* chapter 1 */
  cumvote:{t:"הצבעה מצטברת ורגילה",f:"Cumulative: total votes = shares × seats, any split. Statutory: at most (shares) votes per candidate",x:"500 shares × 4 seats = 2,000 votes",g(){const s=Rn([100,200,300,500,1000,2500,10000]),k=Rn([3,4,5,6]),v=Rn([0,1,2]);
   const base=`שלב 1: כל מניה נותנת קול אחד לכל מושב פנוי. שלב 2: ${nm(s)} מניות × ${k} מושבים = ${nm(s*k)} קולות בסך הכל, בשתי השיטות. שלב 3: ההבדל הוא איך מחלקים: `;
@@ -375,8 +421,8 @@ const CF={
   return {en:`An affiliate wants to sell under Rule 144. The company has ${nm(O)} shares outstanding. The stock is listed on an exchange, and its average weekly reported trading volume over the 4 weeks before the Form 144 filing was ${nm(V)} shares. What is the most the affiliate may sell in a 3-month period?`,he:`בעל שליטה רוצה למכור לפי Rule 144. לחברה ${nm(O)} מניות במחזור. המניה רשומה למסחר בבורסה, ומחזור המסחר השבועי הממוצע ב-4 השבועות האחרונים היה ${nm(V)} מניות. מה הכמות המקסימלית שמותר לו למכור בתקופה של 3 חודשים?`,
   ok:nm(Math.max(one,V))+" shares",bad:[nm(Math.min(one,V))+" shares",nm(4*V)+" shares",nm(one+V)+" shares",nm(O/10)+" shares",nm(Math.max(one,V)/2)+" shares"],why:`שלב 1: 1% מהמניות במחזור = ${nm(O)} × 1% = ${nm(one)}. שלב 2: המחזור השבועי הממוצע = ${nm(V)} (ממוצע לשבוע, לא סכום של 4 שבועות). שלב 3: לוקחים את הגדול מבין השניים: ${nm(Math.max(one,V))}.`}}}
 };
-const mathLtr=h=>String(h).replace(/[$\d(][\d$.,%\s×÷−+=()]*[\d%)]/g,m=>/[×÷−+=]/.test(m)?`<bdi dir="ltr" class="math">${m.trim().split(/ (?==)/).map(x=>`<span class="mp">${x}</span>`).join(" ")}</bdi>${/\s$/.test(m)?" ":""}`:m);
-function calcItem(k){let g,b,tries=0;do{g=CF[k].g();b=shuffle([...new Set(g.bad)].filter(x=>x!==g.ok)).slice(0,3);tries++}while(tries<30&&b.length<3);
+const mathLtr=h=>String(h).replace(/(?:[−+×÷] ?)?[$\d(](?:[\d$.,%\s×÷−+=()]*[\d%)])?(?: = <b>[$\d.,%]+<\/b>)?/g,m=>/[×÷−+=]/.test(m)?`<bdi dir="ltr" class="math">${m.trim().split(/ (?==)/).map(x=>`<span class="mp">${x}</span>`).join(" ")}</bdi>${/\s$/.test(m)?" ":""}`:m);
+function calcItem(k){let g,b,tries=0;do{g=CF[k].g();const must=(g.must||[]).filter(x=>x!==g.ok);b=[...must,...shuffle([...new Set(g.bad)].filter(x=>x!==g.ok&&!must.includes(x)))].slice(0,g.n||3);tries++}while(tries<30&&b.length<(g.n||3));
   return {q:`<p class="q enq" lang="en">${g.en}</p>`,qHe:g.he,opts:shuffle([{h:g.ok,ok:1},...b.map(h=>({h}))]),why:mathLtr(bidi(g.why)),regen:()=>calcItem(k)}}
 function calcHome(){
   toTop();const K=D.calcs.filter(k=>CF[k]);
@@ -385,6 +431,19 @@ function calcHome(){
    ${K.map(k=>`<div class="term"><span class="t-he">${CF[k].t}</span><p class="t-def" lang="en" dir="ltr">${CF[k].f}</p><p class="muted" lang="en" dir="ltr" style="margin:0">Example: ${CF[k].x}</p></div>`).join("")}
    <button class="btn" id="go">התחל סבב (${K.length*2} שאלות) ←</button></div>`;
   $("back").onclick=home;$("go").onclick=()=>runDrill(shuffle(K.flatMap(k=>[calcItem(k),calcItem(k)])),"תרגול חישובים",r=>{S.calc=r;save()},calcHome,"לרשימת הנוסחאות");focusPanel();
+}
+
+/* ---------- sorter: fixed grid of options (e.g. the four option positions) ---------- */
+function sorterItems(){const T=D.sorter;if(!T)return [];
+  const grid=hit=>`<table class="grid4" dir="ltr" lang="en"><tr>${T.labels.slice(0,2).map((l,i)=>`<td class="${i===hit?"hit":""}">${l}</td>`).join("")}</tr><tr>${T.labels.slice(2,4).map((l,i)=>`<td class="${i+2===hit?"hit":""}">${l}</td>`).join("")}</tr></table>`;
+  return T.items.map(([en,he,a])=>({q:`<p class="q enq" lang="en">${en}</p><p class="muted" dir="ltr" lang="en" style="margin:0;text-align:left">${T.ask}</p>`,qHe:he,
+    opts:T.labels.map((l,i)=>({h:enSpan(l),ok:i===a?1:0})),fixed:1,why:`${grid(a)}${T.rule}`,say:T.labels[a],term:W[T.labels[a]]?T.labels[a]:null}));
+}
+function sorter(){toTop();const T=D.sorter;
+  app.innerHTML=`<div class="row"><button class="btn soft" id="back">→ לתפריט</button><span class="pill">${T.title}</span></div>
+   <div class="panel"><h2>${T.title}</h2><p class="muted" style="margin:0">${T.intro}</p>${T.table}
+   <button class="btn" id="go">התחל סבב (20) ←</button></div>`;
+  $("back").onclick=home;$("go").onclick=()=>runDrill(shuffle(sorterItems()).slice(0,20),T.title,r=>{S.sorter=r;save()},sorter,"חזרה לטבלה");focusPanel();
 }
 
 function lessonEnd(li,r){
@@ -430,7 +489,7 @@ function exam(){
     $("prev").onclick=()=>{if(cur>0){cur--;draw()}};
     if($("next"))$("next").onclick=()=>{cur++;draw()};
     if($("fin"))$("fin").onclick=()=>{const left=ans.filter(x=>x==null).length;if(left&&!$("confirm")){$("fin").insertAdjacentHTML("beforebegin",`<p class="fb no" id="confirm" role="alert">יש ${left} שאלות בלי תשובה. במבחן האמיתי אין עונש על ניחוש, אז כדאי לענות על הכל. לחץ שוב על "הגש" כדי להגיש בכל זאת.</p>`);return}clearInterval(tick);result(Q,ans,Date.now()-t0)};
-    $("quit").onclick=()=>{clearInterval(tick);home()};
+    $("quit").onclick=()=>{if(!$("qconf")){$("quit").insertAdjacentHTML("beforebegin",`<p class="fb no" id="qconf" role="alert">יציאה תמחק את התשובות במבחן הזה. לחץ שוב כדי לצאת.</p>`);return}clearInterval(tick);home()};
     focusPanel();
   }
   draw();
