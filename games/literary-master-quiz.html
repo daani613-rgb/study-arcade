@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Literary Elements: Master Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f1ec;--card:#fff;--ink:#1f2330;--muted:#5f6472;--accent:#2f4b8f;--accent2:#e8edf8;--good:#21734a;--goodbg:#e3f3ea;--bad:#a93232;--badbg:#f8e2e0;--line:#dcdde3}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Nunito,system-ui,sans-serif;font-size:17px;line-height:1.5}
+.wrap{max-width:700px;margin:0 auto;padding:20px 16px 90px}
+h1{font-family:Fraunces,serif;font-size:30px;margin:8px 0 4px;color:var(--accent)}
+.sub{color:var(--muted);margin:0 0 18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 2px 0 var(--line)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;border-radius:12px;padding:12px 18px;font:800 16px Nunito,sans-serif;cursor:pointer;background:var(--accent);color:#fff}
+.btn.ghost{background:transparent;color:var(--accent);border:2px solid var(--accent)}
+.btn.small{padding:6px 12px;font-size:14px;border-radius:10px}
+.btn:disabled{opacity:.4;cursor:default}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #f0b400;outline-offset:2px}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;align-items:center}
+.top{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:14px;margin-bottom:8px}
+.bar{height:8px;background:var(--line);border-radius:8px;overflow:hidden;margin-bottom:16px}
+.bar i{display:block;height:100%;background:var(--accent);transition:width .3s}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;align-items:center}
+.tag{font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);background:var(--accent2);border-radius:6px;padding:2px 8px}
+.tag.story{background:#fbefd9;color:#7a4b00}
+.q{font-size:19px;font-weight:800;margin:4px 0 6px}
+.hint{color:var(--muted);font-size:14px;margin-bottom:12px}
+.opt{display:block;width:100%;text-align:left;background:#fff;border:2px solid var(--line);border-radius:12px;padding:12px 14px;margin:8px 0;font:600 16px Nunito,sans-serif;color:var(--ink);cursor:pointer}
+.opt.on{border-color:var(--accent);background:var(--accent2)}
+.opt.right{border-color:var(--good);background:var(--goodbg)}
+.opt.wrong{border-color:var(--bad);background:var(--badbg)}
+.opt:disabled{cursor:default}
+.ord{display:flex;align-items:center;gap:10px}
+.num{min-width:30px;height:28px;border-radius:14px;background:var(--line);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;padding:0 6px}
+.opt.on .num{background:var(--accent);color:#fff}
+.sortitem{border:2px solid var(--line);border-radius:12px;padding:10px 12px;margin:8px 0;background:#fff}
+.sortitem .t{font-weight:600;margin-bottom:8px}
+.pick{display:flex;gap:6px;flex-wrap:wrap}
+.pick button{flex:1 1 auto;min-width:90px;border:2px solid var(--line);background:#fff;border-radius:10px;padding:7px 8px;font:700 14px Nunito,sans-serif;cursor:pointer;color:var(--ink)}
+.pick button.on{border-color:var(--accent);background:var(--accent2)}
+.pick button.ok{border-color:var(--good);background:#fff;color:var(--good)}
+.pick button.ok::before{content:"✓ "}
+.pick button.no{border-color:var(--bad);background:#fff;color:var(--bad);text-decoration:line-through}
+.sortitem.right{border-color:var(--good);background:var(--goodbg)}
+.sortitem.wrong{border-color:var(--bad);background:var(--badbg)}
+.fb{margin-top:14px;border-radius:12px;padding:12px 14px;font-size:15px}
+.fb.good{background:var(--goodbg);border-left:5px solid var(--good)}
+.fb.bad{background:var(--badbg);border-left:5px solid var(--bad)}
+.fb b{display:block;margin-bottom:4px}
+.big{font-family:Fraunces,serif;font-size:56px;color:var(--accent);margin:0}
+.miss{border-top:1px solid var(--line);padding:12px 0;font-size:15px}
+.miss .mq{font-weight:800}
+.choose label{display:block;margin:8px 0;font-weight:600}
+.lib-back{position:fixed;left:max(12px,env(safe-area-inset-left,0px));bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:50;font:700 14px system-ui,sans-serif;padding:8px 14px;border-radius:999px;background:rgba(20,20,40,.82);color:#fff;text-decoration:none}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+</style>
+</head>
+<body>
+<a class="lib-back" href="../">&larr; All games</a>
+<main class="wrap" id="app"></main>
+<div class="sr" aria-live="polite" id="live"></div>
+<script>
+const S={set:"Setting",char:"Characters",pov:"Perspective",con:"Conflict",plot:"Plot",theme:"Theme",sym:"Symbols & personification"};
+const QS=[
+/* SETTING */
+{s:"set",type:"mc",q:"Which of these is NOT part of a story's setting?",
+ opts:["The main character's biggest fear","The weather on the day it happens","The year the story takes place","The sounds and smells of the place"],a:0,
+ why:"Setting = where and when: time, place, weather, and what you'd see, hear, or smell there. A character's fear is about the character (it could be an internal conflict), not the setting."},
+{s:"set",type:"sort",q:"Sort each detail into the right part of setting.",cats:["Time","Location","Weather","Sensory"],
+ items:[{t:"The summer of 1999",c:0},{t:"A space station orbiting Mars",c:1},{t:"Rain all day long",c:2},{t:"The smell of burnt toast",c:3},{t:"Monday morning, 7 a.m.",c:0},{t:"A tiny bakery in Paris",c:1},{t:"The taste of salty ocean air",c:3}],
+ why:"Time = when. Location = where. Weather = what the sky is doing. Sensory = what your five senses notice (see, hear, smell, taste, touch)."},
+{s:"set",type:"mc",q:"\"The hallway was dark. A door creaked somewhere behind her, and the only light flickered on and off.\" What MOOD does this setting create?",
+ opts:["Creepy and tense","Calm and peaceful","Cheerful and silly","Bored and sleepy"],a:0,
+ why:"Darkness, a creaking door, and a flickering light make the reader nervous. That feeling is the mood."},
+{s:"set",type:"mc",q:"What is \"mood created by setting\"?",
+ opts:["The feeling the reader gets from the place and time","The author's attitude toward the subject (tone)","How the main character feels at that moment","What the weather is like in the scene"],a:0,
+ why:"Mood is the feeling the READER gets. The empty, silent streets in The Pedestrian make readers feel eerie and lonely."},
+{s:"set",type:"mc",q:"\"Dublin, Ireland, in the Brown family's kitchen.\" Which part is the SPECIFIC location?",
+ opts:["The Brown family's kitchen","Dublin","Ireland","Dublin, Ireland"],a:0,
+ why:"Geographical location is the big place (Dublin, Ireland). Specific location is the exact spot (the kitchen)."},
+
+/* CHARACTERS */
+{s:"char",type:"mc",q:"\"Maya wants to win the science fair. Her classmate Jake keeps trying to copy her project.\" Who is the antagonist?",
+ opts:["Jake","Maya","The science fair judges","Maya's science project"],a:0,
+ why:"Maya is the protagonist (we follow her and her goal). Jake is the antagonist because he stands in her way."},
+{s:"char",type:"multi",q:"Which of these CAN be an antagonist?",hint:"Choose ALL correct answers.",
+ opts:["A bully at school","A dangerous storm","A whole society and its rules","A character's own fear","The narrator's point of view"],a:[0,1,2,3],
+ why:"An antagonist is anything that stands in the protagonist's way: a person, nature, society, or even the character's own fear (some teachers call that one \"conflict vs. self\" instead). Point of view is just who tells the story."},
+{s:"char",type:"mc",q:"Is the antagonist always the bad guy?",
+ opts:["No, it's whatever works against the protagonist","Yes, it has to be a villain who wants to hurt someone","No, it's the character who changes the most","Yes, it's any character who isn't the narrator"],a:0,
+ why:"In The Letter A, the antagonist is Christy's physical limitations and the doctors' low expectations. Nobody there is a villain."},
+{s:"char",type:"sort",q:"Protagonist or antagonist?",cats:["Protagonist","Antagonist"],
+ items:[{t:"Margot",c:0},{t:"William and the children",c:1},{t:"Leonard Mead",c:0},{t:"The automated police car",c:1},{t:"Christy Brown",c:0}],
+ why:"Protagonist = the main character the story follows. Antagonist = whoever or whatever works against them."},
+
+/* PERSPECTIVE */
+{s:"pov",type:"sort",q:"Which perspective is each sentence written in?",cats:["First person","Third person limited","Third person omniscient"],
+ items:[{t:"I couldn't believe my eyes.",c:0},{t:"Tom wondered if anyone noticed. He hoped not.",c:1},{t:"Tom was worried. Across the room, Lily was secretly worried too.",c:2},{t:"My hands shook as I opened the letter.",c:0}],
+ why:"\"I\" or \"my\" = first person. \"He\" with only ONE character's thoughts = third person limited. \"He\" or \"she\" with more than one character's thoughts = third person omniscient (omniscient means all-knowing)."},
+{s:"pov",type:"mc",q:"In third person LIMITED, the reader knows...",
+ opts:["The thoughts of just one character","The thoughts of every character in the story","Everything one character does, but none of their thoughts","What one character tells the reader, using \"I\""],a:0,
+ why:"Limited means the narrator stays with one character. In The Pedestrian, that's Leonard Mead."},
+{s:"pov",type:"mc",q:"A story says: \"I watched my brothers write with the chalk, and I wanted to try.\" Which perspective is it?",
+ opts:["First person","Third person limited","Third person omniscient","Second person"],a:0,
+ why:"The narrator is in the story and says \"I\". That's first person, like Christy telling his own memories."},
+{s:"pov",type:"mc",q:"Why does narrative perspective matter?",
+ opts:["It controls whose thoughts and feelings we get to see","It controls what the characters are allowed to do","It controls which event becomes the climax","It controls how many characters are in the story"],a:0,
+ why:"In first person, we're inside Christy's head and feel his frustration. In third person limited, we only know what Leonard thinks, not what the police car is \"thinking\"."},
+
+/* CONFLICT */
+{s:"con",type:"sort",q:"Internal or external conflict?",cats:["Internal","External"],
+ items:[{t:"Sam can't decide whether to tell the truth",c:0},{t:"A hurricane destroys the town",c:1},{t:"Two friends fight over a game",c:1},{t:"Ava is afraid she's not good enough",c:0},{t:"A new law bans all music",c:1}],
+ why:"Internal = inside the character's mind (choices, fears, feelings). External = something outside: another person, nature, or society."},
+{s:"con",type:"sort",q:"Match each conflict to its type.",cats:["vs. self","vs. person","vs. nature","vs. society"],
+ items:[{t:"A hiker lost in a snowstorm",c:2},{t:"A girl argues with her brother",c:1},{t:"A boy battles his fear of heights",c:0},{t:"A town punishes anyone who dresses differently",c:3}],
+ why:"Self = inside your own head. Person = against someone else. Nature = against weather, animals, the wild. Society = against the rules or beliefs of everyone."},
+{s:"con",type:"mc",q:"Leonard is arrested just for taking a walk. What type of conflict is that?",
+ opts:["Character vs. society","Character vs. nature","Character vs. self","Character vs. person"],a:0,
+ why:"In his world, walking is treated as suspicious. He's going against the rules of the whole society."},
+{s:"con",type:"mc",q:"What does \"result of the conflict\" mean?",
+ opts:["How the problem turns out","Where the problem first begins","Who causes the problem","Why the problem matters to the reader"],a:0,
+ why:"The result is how it ends up. For Christy, it's writing the letter A, which opens a way to communicate."},
+
+/* PLOT */
+{s:"plot",type:"order",q:"Put this mini-story in plot order.",hint:"Tap 1 to 5 in order. Tap a number again to undo from there.",
+ items:["Zoe joins a new soccer team and doesn't know anyone","As the big game gets closer, she keeps missing her kicks","With seconds left, Zoe takes the final penalty kick","Her team lifts her up and cheers","Next season, Zoe is chosen as team captain"],
+ why:"Exposition (meet Zoe), rising action (pressure builds), climax (the big kick, the turning point), falling action (right after), resolution (how things end up)."},
+{s:"plot",type:"sort",q:"Match each definition to its plot part.",cats:["Exposition","Rising action","Climax","Falling action","Resolution"],
+ items:[{t:"Introduces the characters and the setting",c:0},{t:"Problems build and tension grows",c:1},{t:"The turning point, where tension is highest",c:2},{t:"What happens right after the turning point",c:3},{t:"How everything finally wraps up",c:4}],
+ why:"Picture a mountain: walk in (exposition), climb (rising action), reach the top (climax), come down (falling action), arrive at the bottom (resolution)."},
+{s:"plot",type:"mc",q:"Which of these is a CLIMAX?",
+ opts:["Christy draws the letter A with his left foot","Christy's father lifts him onto his shoulders","Christy watches his siblings write with chalk","Doctors call Christy a hopeless case"],a:0,
+ why:"Drawing the A is the turning point. Watching the chalk is rising action, being called hopeless is exposition, and his father lifting him is falling action."},
+{s:"plot",type:"mc",q:"Locking Margot in the closet happens BEFORE the big moment and leads to it. Which part of the plot is it?",
+ opts:["Rising action","Climax","Falling action","Exposition"],a:0,
+ why:"Locking Margot up builds tension. The climax is the sun coming out while she's stuck inside."},
+
+/* THEME */
+{s:"theme",type:"sort",q:"Theme or summary?",cats:["Theme","Summary"],
+ items:[{t:"Kindness can change someone's life",c:0},{t:"A boy helps a lost dog find its home",c:1},{t:"Jealousy can make people cruel",c:0},{t:"Margot misses the sun because she's locked up",c:1},{t:"Freedom is worth standing up for",c:0}],
+ why:"A theme is a lesson about life that could fit many stories. A summary tells what happens in ONE story."},
+{s:"theme",type:"mc",q:"Which is the best way to write a theme?",
+ opts:["A sentence that says something about life","One word for the topic, like \"courage\"","A sentence that tells how the story ends","A moral copied word for word from the story"],a:0,
+ why:"\"Friendship\" is just a topic. A theme says something ABOUT the topic: \"True friends stand by you when it's hard.\""},
+{s:"theme",type:"mc",q:"How is a theme usually conveyed?",
+ opts:["Mostly through what the characters do and what happens to them","Mostly through the title the author picks for the story","Mostly through the description of the setting at the start","Mostly through one sentence where the narrator states it"],a:0,
+ why:"Authors usually show the lesson instead of saying it. In The Letter A, the doctors doubt Christy, his mother believes in him, and he succeeds. That shows the theme."},
+
+/* SYMBOLS AND PERSONIFICATION */
+{s:"sym",type:"mc",q:"What is a symbol?",
+ opts:["An object that stands for a bigger idea","A word that sounds like the noise it makes","Giving human actions to a non-human thing","A comparison that uses \"like\" or \"as\""],a:0,
+ why:"A symbol stands for a bigger idea, like the sun in All Summer standing for hope. The other answers are onomatopoeia, personification, and simile."},
+{s:"sym",type:"multi",q:"Which sentences use PERSONIFICATION?",hint:"Choose ALL correct answers.",
+ opts:["The wind whispered through the trees","The old car coughed and wheezed up the hill","The sun smiled down on the kids","The dog barked at the mailman","Her eyes were as bright as stars"],a:[0,1,2],
+ why:"Wind can't whisper, cars can't cough, and the sun can't smile. Those are human actions given to non-human things. Dogs really do bark, and \"as bright as stars\" is a simile (it uses \"as\")."},
+{s:"sym",type:"mc",q:"Which sentence is personification, not a simile?",
+ opts:["The rain drummed its fingers on the roof","The rain sounded like a drum on the roof","The rain fell on the roof for seven years","The rain on the roof was cold and gray"],a:0,
+ why:"Rain doesn't have fingers, so that's a human action given to rain. \"Like a drum\" is a simile, and the last two are just description."},
+{s:"sym",type:"mc",q:"\"The leaves danced across the empty street.\" What is being personified?",
+ opts:["The leaves","The street","The wind","The reader"],a:0,
+ why:"The leaves are doing a human action (dancing). The thing doing the human action is the thing being personified."},
+{s:"sym",type:"mc",q:"What's the difference between a symbol and a motif?",
+ opts:["A motif repeats; a symbol stands for an idea","A symbol repeats; a motif stands for an idea","A symbol is a person; a motif is a place","A motif is the lesson; a symbol is the problem"],a:0,
+ why:"A motif is something that keeps coming back, like the rain in All Summer. A symbol stands for something bigger. Example: rain that keeps falling all through All Summer is a motif; the sun standing for hope is a symbol. Sometimes one thing is both!"},
+{s:"sym",type:"mc",q:"In The Pedestrian, what does the TV stand for?",
+ opts:["Everyone acting the same","Freedom to go anywhere","Being yourself","Hope for the future"],a:0,
+ why:"TV = passive conformity: everyone sits inside watching TV, all doing the same thing. Walking = freedom, the lit house = individuality."},
+{s:"sym",type:"mc",q:"Why is the yellow chalk in The Letter A a symbol, not just chalk?",
+ opts:["It stands for Christy's new way to communicate","It is the object Christy uses the most","It shows up at the climax of the story","It is the only yellow thing in the story"],a:0,
+ why:"An object becomes a symbol when it stands for an idea. The chalk stands for communication, achievement, hope, and a new beginning."}
+];
+
+let state={},voice=null;
+const app=document.getElementById("app"),live=document.getElementById("live");
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function pickVoice(){try{const v=speechSynthesis.getVoices();voice=v.find(x=>/en-US/i.test(x.lang))||v.find(x=>/^en/i.test(x.lang))||null}catch(e){}}
+try{pickVoice();speechSynthesis.onvoiceschanged=pickVoice}catch(e){}
+function speak(t){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang="en-US";u.rate=.92;if(voice)u.voice=voice;speechSynthesis.speak(u)}catch(e){}}
+const txt=h=>{const d=document.createElement("div");d.innerHTML=h;return d.textContent};
+
+function home(){
+  const cnt=k=>QS.filter(q=>q.s===k).length;
+  app.innerHTML=`<h1>Literary Elements: Master Quiz</h1>
+  <p class="sub">Every idea on the worksheet, plus personification. Most questions use brand-new examples, so you can't just remember the stories. You have to really get it.</p>
+  <div class="card choose">
+    <h2 class="q" style="margin-top:0">What do you want to practice?</h2>
+    <label><input type="radio" name="c" value="all" checked> Everything (${QS.length} questions)</label>
+    ${Object.keys(S).map(k=>`<label><input type="radio" name="c" value="${k}"> ${S[k]} only (${cnt(k)})</label>`).join("")}
+    <label><input type="checkbox" id="mix"> Mix up the question order</label>
+    <p class="hint">Tap 🔊 on any question to hear it read aloud.</p>
+    <div class="row"><button class="btn" id="go">Start</button></div>
+  </div>`;
+  document.getElementById("go").onclick=()=>{
+    const c=document.querySelector("input[name=c]:checked").value;
+    let l=QS.filter(q=>c==="all"||q.s===c);
+    if(document.getElementById("mix").checked)l=shuffle(l);
+    start(l);
+  };
+}
+function prep(q){const p={...q};const n=(q.opts||q.items).length;p.view=shuffle([...Array(n).keys()]);return p}
+function start(l,retry){state={retry:!!retry,list:l.map(prep),i:0,score:0,missed:[]};show()}
+function readText(q){let t=txt(q.q);if(q.opts)t+=". "+q.view.map(k=>txt(q.opts[k])).join(". ");if(q.items)t+=". "+q.view.map(k=>txt(q.items[k].t||q.items[k])).join(". ");return t}
+function show(){
+  const q=state.list[state.i],n=state.list.length;
+  state.answered=false;
+  state.sel=q.type==="mc"?null:q.type==="multi"?new Set():q.type==="order"?[]:{};
+  const tagText={mc:"Choose one",multi:"Choose all that apply",order:"Put in order",sort:"Sort"}[q.type];
+  let body="";
+  if(q.type==="mc"||q.type==="multi")body=q.view.map(k=>`<button class="opt" data-k="${k}" aria-pressed="false">${q.opts[k]}</button>`).join("");
+  if(q.type==="order")body=q.view.map(k=>`<button class="opt ord" data-k="${k}" aria-pressed="false"><span class="num"></span><span>${q.items[k]}</span></button>`).join("");
+  if(q.type==="sort")body=q.view.map(k=>`<div class="sortitem" data-k="${k}" role="group" aria-label="${txt(q.items[k].t)}"><div class="t">${q.items[k].t}</div><div class="pick">${q.cats.map((c,ci)=>`<button data-c="${ci}" aria-pressed="false">${c}</button>`).join("")}</div></div>`).join("");
+  app.innerHTML=`<div class="top"><span>Question ${state.i+1} of ${n}</span><span>Score: ${state.score}</span></div>
+  <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="${n}" aria-valuenow="${state.i}"><i style="width:${state.i/n*100}%"></i></div>
+  <div class="card"><div class="tags"><span class="tag story">${S[q.s]}</span><span class="tag">${tagText}</span></div>
+  <h2 class="q" id="qt" tabindex="-1">${q.q}</h2>${q.hint?`<div class="hint">${q.hint}</div>`:""}
+  <button class="btn ghost small" id="say" aria-label="Read the question aloud">🔊 Read aloud</button>
+  <div id="opts">${body}</div><div id="fb"></div>
+  <div class="row"><button class="btn" id="check" disabled>Check</button></div></div>`;
+  document.getElementById("say").onclick=()=>speak(readText(q));
+  document.getElementById("qt").focus({preventScroll:false});
+  wire(q);
+}
+function canCheck(q){
+  if(q.type==="mc")return state.sel!==null;
+  if(q.type==="multi")return state.sel.size>0;
+  if(q.type==="order")return state.sel.length===q.items.length;
+  return Object.keys(state.sel).length===q.items.length;
+}
+function wire(q){
+  const chk=document.getElementById("check"),refresh=()=>{chk.disabled=!canCheck(q)};
+  const opts=[...document.querySelectorAll("#opts .opt")];
+  if(q.type==="mc"||q.type==="multi")opts.forEach(b=>b.onclick=()=>{
+    if(state.answered)return;const k=+b.dataset.k;
+    if(q.type==="mc"){state.sel=k;opts.forEach(x=>{x.classList.toggle("on",x===b);x.setAttribute("aria-pressed",x===b)})}
+    else{state.sel.has(k)?state.sel.delete(k):state.sel.add(k);b.classList.toggle("on");b.setAttribute("aria-pressed",state.sel.has(k))}
+    refresh()});
+  if(q.type==="order")opts.forEach(b=>b.onclick=()=>{
+    if(state.answered)return;const k=+b.dataset.k,pos=state.sel.indexOf(k);
+    if(pos>=0)state.sel.splice(pos);else state.sel.push(k);
+    opts.forEach(x=>{const p=state.sel.indexOf(+x.dataset.k);x.classList.toggle("on",p>=0);x.setAttribute("aria-pressed",p>=0);x.querySelector(".num").textContent=p>=0?p+1:""});
+    refresh()});
+  if(q.type==="sort")document.querySelectorAll(".sortitem").forEach(it=>it.querySelectorAll("button").forEach(b=>b.onclick=()=>{
+    if(state.answered)return;state.sel[it.dataset.k]=+b.dataset.c;
+    it.querySelectorAll("button").forEach(x=>{x.classList.toggle("on",x===b);x.setAttribute("aria-pressed",x===b)});refresh()}));
+  chk.onclick=()=>state.answered?next():grade(q);
+}
+function grade(q){
+  state.answered=true;let ok;
+  const opts=[...document.querySelectorAll("#opts .opt")];
+  if(q.type==="mc"){ok=state.sel===q.a;opts.forEach(b=>{const k=+b.dataset.k;b.disabled=true;b.classList.remove("on");if(k===q.a)b.classList.add("right");else if(k===state.sel)b.classList.add("wrong")})}
+  if(q.type==="multi"){const A=new Set(q.a);ok=A.size===state.sel.size&&[...A].every(x=>state.sel.has(x));
+    opts.forEach(b=>{const k=+b.dataset.k;b.disabled=true;b.classList.remove("on");if(A.has(k))b.classList.add("right");else if(state.sel.has(k))b.classList.add("wrong")})}
+  if(q.type==="order"){ok=state.sel.every((k,p)=>k===p);
+    opts.forEach(b=>{const k=+b.dataset.k,p=state.sel.indexOf(k);b.disabled=true;b.classList.remove("on");b.classList.add(p===k?"right":"wrong");b.querySelector(".num").textContent=(p+1)+(p===k?"":" → "+(k+1))})}
+  if(q.type==="sort"){ok=q.items.every((it,k)=>state.sel[k]===it.c);
+    document.querySelectorAll(".sortitem").forEach(el=>{const k=+el.dataset.k;el.classList.add(state.sel[k]===q.items[k].c?"right":"wrong");
+      el.querySelectorAll("button").forEach(b=>{const c=+b.dataset.c;b.disabled=true;b.classList.remove("on");if(c===q.items[k].c)b.classList.add("ok");else if(c===state.sel[k])b.classList.add("no")})})}
+  if(ok)state.score++;else state.missed.push(q);
+  const extra=!ok&&q.type==="multi"?" You need ALL the right ones and none of the wrong ones.":!ok&&q.type!=="mc"?" ✓ marks the right answer.":"";
+  document.getElementById("fb").innerHTML=`<div class="fb ${ok?"good":"bad"}"><b>${ok?"Correct!":"Not quite."+extra}</b>${q.why}</div>`;
+  live.textContent=(ok?"Correct. ":"Not quite. ")+txt(q.why);
+  const c=document.getElementById("check");c.disabled=false;c.textContent=state.i+1<state.list.length?"Next":"See results";c.focus();
+}
+function next(){try{speechSynthesis.cancel()}catch(e){}state.i++;if(state.i<state.list.length)show();else results()}
+function results(){
+  const n=state.list.length,pct=Math.round(state.score/n*100);
+  if(!state.retry){try{const K="lit-master-quiz",d=JSON.parse(localStorage.getItem(K)||"{}");
+    Object.keys(S).forEach(s=>{const qs=state.list.filter(q=>q.s===s);if(!qs.length)return;const ok=qs.length-state.missed.filter(q=>q.s===s).length,p=ok/qs.length;
+      d[s]=Math.max(d[s]||0,p>=.9?3:p>=.75?2:p>=.5?1:0)});localStorage.setItem(K,JSON.stringify(d))}catch(e){}}
+  const msg=pct>=90?"You really know it.":pct>=75?"Strong. Go over the ones you missed.":pct>=50?"Getting there. Review the worksheet and retry the missed ones.":"Reread the worksheet, then try again.";
+  app.innerHTML=`<div class="card" style="text-align:center"><p class="big">${state.score}/${n}</p><h2 class="q" tabindex="-1" id="res">${pct}%: ${msg}</h2>
+  <div class="row" style="justify-content:center">${state.missed.length?'<button class="btn" id="retry">Retry the ones I missed</button>':""}<button class="btn ghost" id="again">Start over</button></div></div>
+  ${state.missed.length?`<div class="card" style="margin-top:16px"><h2 class="q" style="margin-top:0">Review: what you missed</h2>${state.missed.map(q=>`<div class="miss"><div class="mq">${S[q.s]}: ${q.q}</div>${q.why}</div>`).join("")}</div>`:""}`;
+  document.getElementById("res").focus();
+  const r=document.getElementById("retry");if(r)r.onclick=()=>start(shuffle(state.missed),true);
+  document.getElementById("again").onclick=home;
+}
+home();
+</script>
+</body>
+</html>
