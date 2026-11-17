@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Literary Elements: The Hard Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f1ec;--card:#fff;--ink:#1f2330;--muted:#5f6472;--accent:#2f4b8f;--accent2:#e8edf8;--good:#21734a;--goodbg:#e3f3ea;--bad:#a93232;--badbg:#f8e2e0;--line:#dcdde3}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Nunito,system-ui,sans-serif;font-size:17px;line-height:1.5}
+.wrap{max-width:700px;margin:0 auto;padding:20px 16px 90px}
+h1{font-family:Fraunces,serif;font-size:30px;margin:8px 0 4px;color:var(--accent)}
+.sub{color:var(--muted);margin:0 0 18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 2px 0 var(--line)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;border-radius:12px;padding:12px 18px;font:800 16px Nunito,sans-serif;cursor:pointer;background:var(--accent);color:#fff}
+.btn.ghost{background:transparent;color:var(--accent);border:2px solid var(--accent)}
+.btn.small{padding:6px 12px;font-size:14px;border-radius:10px}
+.btn:disabled{opacity:.4;cursor:default}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #f0b400;outline-offset:2px}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;align-items:center}
+.top{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:14px;margin-bottom:8px}
+.bar{height:8px;background:var(--line);border-radius:8px;overflow:hidden;margin-bottom:16px}
+.bar i{display:block;height:100%;background:var(--accent);transition:width .3s}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;align-items:center}
+.tag{font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);background:var(--accent2);border-radius:6px;padding:2px 8px}
+.tag.story{background:#fbefd9;color:#7a4b00}
+.q{font-size:19px;font-weight:800;margin:4px 0 6px}
+.hint{color:var(--muted);font-size:14px;margin-bottom:12px}
+.opt{display:block;width:100%;text-align:left;background:#fff;border:2px solid var(--line);border-radius:12px;padding:12px 14px;margin:8px 0;font:600 16px Nunito,sans-serif;color:var(--ink);cursor:pointer}
+.opt.on{border-color:var(--accent);background:var(--accent2)}
+.opt.right{border-color:var(--good);background:var(--goodbg)}
+.opt.wrong{border-color:var(--bad);background:var(--badbg)}
+.opt:disabled{cursor:default}
+.ord{display:flex;align-items:center;gap:10px}
+.num{min-width:30px;height:28px;border-radius:14px;background:var(--line);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;padding:0 6px}
+.opt.on .num{background:var(--accent);color:#fff}
+.sortitem{border:2px solid var(--line);border-radius:12px;padding:10px 12px;margin:8px 0;background:#fff}
+.sortitem .t{font-weight:600;margin-bottom:8px}
+.pick{display:flex;gap:6px;flex-wrap:wrap}
+.pick button{flex:1 1 auto;min-width:90px;border:2px solid var(--line);background:#fff;border-radius:10px;padding:7px 8px;font:700 14px Nunito,sans-serif;cursor:pointer;color:var(--ink)}
+.pick button.on{border-color:var(--accent);background:var(--accent2)}
+.pick button.ok{border-color:var(--good);background:#fff;color:var(--good)}
+.pick button.ok::before{content:"✓ "}
+.pick button.no{border-color:var(--bad);background:#fff;color:var(--bad);text-decoration:line-through}
+.sortitem.right{border-color:var(--good);background:var(--goodbg)}
+.sortitem.wrong{border-color:var(--bad);background:var(--badbg)}
+.fb{margin-top:14px;border-radius:12px;padding:12px 14px;font-size:15px}
+.fb.good{background:var(--goodbg);border-left:5px solid var(--good)}
+.fb.bad{background:var(--badbg);border-left:5px solid var(--bad)}
+.fb b{display:block;margin-bottom:4px}
+.big{font-family:Fraunces,serif;font-size:56px;color:var(--accent);margin:0}
+.miss{border-top:1px solid var(--line);padding:12px 0;font-size:15px}
+.miss .mq{font-weight:800}
+.choose label{display:block;margin:8px 0;font-weight:600}
+.lib-back{position:fixed;left:max(12px,env(safe-area-inset-left,0px));bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:50;font:700 14px system-ui,sans-serif;padding:8px 14px;border-radius:999px;background:rgba(20,20,40,.82);color:#fff;text-decoration:none}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+</style>
+</head>
+<body>
+<a class="lib-back" href="../">&larr; All games</a>
+<main class="wrap" id="app"></main>
+<div class="sr" aria-live="polite" id="live"></div>
+<script>
+const S={ped:"The Pedestrian",a:"The Letter A",sun:"All Summer in a Day",mix:"All three stories"};
+const QS=[
+/* ---------- SETTING ---------- */
+{s:"sun",type:"mc",q:"On Venus, how long does the sun come out, and how often?",
+ opts:["For one hour, every seven years","For one day, every seven years","For one hour, every seven months","For one day, every seven months"],a:0,
+ why:"It rains constantly for seven years, and the sun appears for one hour before the rain returns."},
+{s:"mix",type:"sort",q:"Setting check: which story does each detail belong to?",cats:["The Pedestrian","The Letter A","All Summer in a Day"],
+ items:[{t:"Venus",c:2},{t:"Dublin, Ireland",c:1},{t:"A city of three million people",c:0},{t:"The year 2053",c:0},{t:"The 1930s",c:1},{t:"An unspecified time in the future",c:2},{t:"An underground school with huge windows",c:2},{t:"Near 11 South Saint James Street",c:0}],
+ why:"Pedestrian: 2053, a city of three million, near 11 South Saint James Street. Letter A: the 1930s, Dublin. All Summer: the future, an underground school on Venus."},
+{s:"mix",type:"sort",q:"Weather is part of setting too. Match the weather to the story.",cats:["The Pedestrian","The Letter A","All Summer in a Day"],
+ items:[{t:"Cold, gray December afternoon with snow outside",c:1},{t:"Cold, misty, windless November night with frost",c:0},{t:"Endless rain, broken by a short burst of sun",c:2}],
+ why:"Two stories are cold, so read carefully: Pedestrian is a misty November NIGHT, Letter A is a gray December AFTERNOON with snow."},
+{s:"a",type:"multi",q:"Which of these are sensory details from The Letter A?",hint:"Choose ALL correct answers.",
+ opts:["A ticking clock","Crackling logs","Bright yellow chalk on dark slate","Rustling leaves","Drumming rain"],a:[0,1,2],
+ why:"Letter A: warm firelight, ticking clock, dripping water, crackling logs, yellow chalk on slate. Rustling leaves are from The Pedestrian, drumming rain from All Summer."},
+{s:"ped",type:"mc",q:"The mood in The Pedestrian is eerie and lonely. Which setting details create that mood?",
+ opts:["Silence, moonlight, and rustling leaves on empty streets","Drumming rain and the dark of an underground classroom","A gray afternoon, dripping water, and a ticking clock","Cold rain and thunder after a short burst of sunshine"],a:0,
+ why:"The Pedestrian's sensory details are frosty air, rustling leaves, a rusty leaf smell, moonlight, and silence. The other options are details from the other two stories."},
+{s:"sun",type:"order",q:"The mood in All Summer in a Day changes. Put the moods in the order they happen.",hint:"Tap 1 to 3 in order. Tap again to undo.",
+ items:["Gloomy and confining (during the rain)","Joyful and wondrous (in the sunshine)","Regretful (when the rain returns)"],
+ why:"Gloomy during the rain, joyful in the sun, then regretful when they remember Margot."},
+{s:"a",type:"mc",q:"How does the mood of The Letter A change?",
+ opts:["Tense and lonely, then hopeful and triumphant","Gloomy and confining, then joyful, then regretful","Eerie and lonely, then mysterious and unsettling","Hopeful and warm, then tense and frightened"],a:0,
+ why:"It starts tense and lonely and ends hopeful and triumphant. \"Gloomy, then joyful, then regretful\" is All Summer in a Day, and \"eerie and mysterious\" is The Pedestrian."},
+
+/* ---------- CHARACTERS AND PERSPECTIVE ---------- */
+{s:"a",type:"mc",q:"Who or what is the antagonist in The Letter A?",
+ opts:["His physical limitations and the doctors' low expectations","His siblings, who leave him out when they play with chalk","The hospitals and clinics, which refuse to treat him","His father, who doubts he will ever communicate"],a:0,
+ why:"An antagonist doesn't have to be a villain. Here it is his physical limitations and the doctors' low expectations. His family is on his side: his father lifts him onto his shoulders."},
+{s:"ped",type:"mc",q:"Who or what is the antagonist in The Pedestrian?",
+ opts:["The automated police car and the conformist society","The neighbors watching TV, who report him to the police","The cold weather and the empty, dangerous streets","A police officer who stops him on his evening walk"],a:0,
+ why:"The antagonist is the automated police car and the conformist society. The worksheet lists no other major human characters: everyone else stays inside watching TV, and the car is automated, with no officer."},
+{s:"mix",type:"mc",q:"In which story is the antagonist a group of children?",
+ opts:["All Summer in a Day","The Letter A","The Pedestrian","None of them"],a:0,
+ why:"In All Summer in a Day, the antagonist is William and the other children who bully and exclude Margot."},
+{s:"mix",type:"sort",q:"Narrative perspective: how is each story told?",hint:"Use the exact labels from the worksheets.",cats:["First person","Third person limited","Third person"],
+ items:[{t:"The Letter A",c:0},{t:"The Pedestrian",c:1},{t:"All Summer in a Day",c:2}],
+ why:"Letter A: first person (Christy uses \"I\"). Pedestrian: third person limited, focused on Leonard Mead. All Summer: third person, describing the children and focusing especially on Margot."},
+{s:"a",type:"mc",q:"If The Letter A were rewritten in third person, what would change?",
+ opts:["The narrator would say \"he\" and \"Christy\" instead of \"I\"","The narrator would say \"I\" instead of \"he\" and \"Christy\"","Christy would talk directly to the reader, calling them \"you\"","The events of the plot would happen in a different order"],a:0,
+ why:"Narrative perspective is about who tells the story. In first person, Christy tells his own memories using \"I\". In third person, a narrator would say \"he\". The events stay the same."},
+{s:"ped",type:"mc",q:"Why is The Pedestrian called third person LIMITED?",
+ opts:["The narrator uses \"he\" and follows only Leonard Mead","The narrator uses \"he\" and knows every character's thoughts","Leonard tells the story himself, using the word \"I\"","The narrator uses \"he\" and switches to the police car's view"],a:0,
+ why:"Third person limited means the narrator uses \"he\" but stays focused on one character, Leonard Mead."},
+
+/* ---------- CONFLICT ---------- */
+{s:"ped",type:"mc",q:"What kind of external conflict does Leonard face?",
+ opts:["Man vs. society: walking freely is treated as suspicious","Man vs. nature: the frost and empty streets put him in danger","Man vs. self: he can't decide whether to keep walking","Man vs. man: a police officer chases him through the streets"],a:0,
+ why:"Man vs. society. The automated police car questions and detains him just for walking."},
+{s:"mix",type:"mc",q:"In which story is the internal conflict described as minor, with the main conflict being external?",
+ opts:["The Pedestrian","The Letter A","All Summer in a Day","None of them"],a:0,
+ why:"The Pedestrian sheet says Leonard's inner struggle is minor and the main conflict is external."},
+{s:"a",type:"mc",q:"What is Christy's INTERNAL conflict?",
+ opts:["He feels trapped: he understands others but cannot communicate","Cerebral palsy makes speaking and moving very difficult for him","He feels angry at his mother for pushing him so hard","He feels jealous because his siblings get to go to school"],a:0,
+ why:"Internal means inside his mind: he understands others but can't communicate. The cerebral palsy is his EXTERNAL conflict. The worksheet says nothing about anger at his mother or jealousy: his mother is the one who believes in him."},
+{s:"mix",type:"sort",q:"Internal or external? Sort each conflict.",cats:["Internal","External"],
+ items:[{t:"Margot feels lonely because she remembers the sun and knows she is different",c:0},{t:"The children don't believe Margot and turn against her",c:1},{t:"Doctors doubt Christy's abilities",c:1},{t:"Christy feels trapped because he can't communicate",c:0},{t:"The police car questions and detains Leonard",c:1}],
+ why:"Internal conflicts happen inside a character (feelings, struggles). External conflicts come from outside: other people, society, or the body's limits."},
+{s:"ped",type:"mc",q:"What is the result of Leonard's conflict?",
+ opts:["He is taken to a psychiatric center","He is taken to prison for refusing to answer questions","He is given a warning and sent home to watch TV","He is fined, and the car follows him back to his house"],a:0,
+ why:"He is taken to a psychiatric center, his freedom is lost, and the streets are left deserted."},
+{s:"ped",type:"multi",q:"According to the worksheet, what did the police car ask Leonard about?",hint:"Choose ALL correct answers.",
+ opts:["His walking","His work","His marital status","Why he has no television","His neighbors' names","The name of his doctor"],a:[0,1,2,3],
+ why:"It questioned his walking, work, marital status, and lack of a television, and found his answers suspicious."},
+
+/* ---------- PLOT ---------- */
+{s:"ped",type:"mc",q:"\"They pass Leonard's brightly lit house on the way.\" Which part of the plot is this?",
+ opts:["Falling action","Climax","Rising action","Resolution"],a:0,
+ why:"It comes after the climax (the car orders him inside), while he rides in the car to the psychiatric center, so it is falling action. The resolution is the car driving off."},
+{s:"ped",type:"order",q:"Put The Pedestrian's plot in order.",hint:"Tap 1 to 5 in order. Tap again to undo.",
+ items:["Leonard walks at night while everyone else watches TV","The police car stops him and questions him","The car orders Leonard inside despite his protests","Leonard enters the empty car","The car drives off; his fate is unknown"],
+ why:"Exposition, rising action, climax (the car orders him inside, despite his protests), falling action (he enters the empty car), resolution (fate unknown, silent streets)."},
+{s:"a",type:"sort",q:"The Letter A: which part of the plot is each event?",cats:["Exposition","Rising action","Climax","Falling action","Resolution"],
+ items:[{t:"His difficult birth, and doctors calling him a hopeless case",c:0},{t:"At about six, he watches his siblings write with chalk",c:1},{t:"He draws the letter A with his left foot",c:2},{t:"His father lifts him onto his shoulders",c:3},{t:"The letter A begins a new path toward communication",c:4}],
+ why:"Careful with the father lifting him: it comes right after the climax, so it is falling action, not the climax itself."},
+{s:"sun",type:"mc",q:"What is the CLIMAX of All Summer in a Day?",
+ opts:["The sun comes out while Margot is still locked away","William leads the children in locking Margot in a closet","The rain begins again and the children remember Margot","The children return and quietly let Margot out"],a:0,
+ why:"Locking her in is rising action. The climax is the sun coming out while she is locked away. Remembering her is falling action, and letting her out is the resolution."},
+{s:"sun",type:"order",q:"Put All Summer in a Day's plot in order.",hint:"Tap 1 to 5 in order. Tap again to undo.",
+ items:["The class eagerly waits for the sun","Margot remembers the sun from Earth, and the children resent her","The children lock Margot in a closet","They enjoy the sunshine, then the rain returns","They quietly let Margot out, aware of the harm"],
+ why:"Waiting, resentment, locking her in, sunshine then rain, letting her out."},
+
+/* ---------- THEME ---------- */
+{s:"ped",type:"mc",q:"Which of these is the THEME of The Pedestrian, not just a summary of what happens?",
+ opts:["Conformity and technology can destroy freedom and connection","In 2053, everyone except Leonard stays inside watching TV","Technology makes people safer and more connected","Hard work and practice always lead to success"],a:0,
+ why:"A theme is a message about life. \"Everyone stays inside watching TV\" only says what happens. The other two are messages, but the story shows the opposite: technology isolates people, and Leonard is punished, not rewarded."},
+{s:"mix",type:"sort",q:"Match each theme to its story.",cats:["The Pedestrian","The Letter A","All Summer in a Day"],
+ items:[{t:"Never judge a person's potential by physical limitations or appearances",c:1},{t:"Bullying and jealousy can lead people to hurt someone different, causing regret",c:2},{t:"Conformity and technology can destroy freedom and connection",c:0}],
+ why:"Letter A: don't judge by physical limits. All Summer: bullying and jealousy cause regret. Pedestrian: conformity and technology destroy freedom."},
+{s:"a",type:"mc",q:"How is the theme of The Letter A conveyed?",
+ opts:["Doctors underestimate him, his mother believes in him, and he succeeds","His siblings doubt him, his father pushes him, and he learns to speak","Doctors heal his body, his family celebrates, and he starts school","He tells the reader the lesson in plain words in the last line"],a:0,
+ why:"The contrast does it: doctors underestimate Christy, his mother believes in him, and his success with the letter A proves his abilities."},
+{s:"mix",type:"multi",q:"In which stories do OTHER people or society punish the protagonist for being different?",hint:"Choose ALL correct answers.",
+ opts:["The Pedestrian","All Summer in a Day","The Letter A"],a:[0,1],
+ why:"The police car punishes Leonard's individuality, and the children exclude and lock up Margot because she is different. In The Letter A, the doctors doubt Christy but don't punish him, and his mother supports him."},
+
+/* ---------- SYMBOLS ---------- */
+{s:"a",type:"mc",q:"What do the yellow chalk and the letter A symbolize?",
+ opts:["Communication, achievement, hope, and a new beginning","Isolation, loneliness, and being left out by others","Freedom, individuality, and refusing to conform","Sadness, sameness, and waiting for something to change"],a:0,
+ why:"The yellow chalk and the letter A symbolize communication, achievement, hope, and a new beginning. The other answers are meanings of symbols from the other two stories."},
+{s:"mix",type:"multi",q:"Something bright stands for hope or a new beginning. In which stories?",hint:"Choose ALL correct answers.",
+ opts:["The Letter A: the yellow chalk","All Summer in a Day: the bright yellow sun","The Pedestrian: Leonard's brightly lit house"],a:[0,1],
+ why:"The yellow chalk stands for communication, achievement, hope, and a new beginning. The sun stands for hope and happiness. Leonard's lit house stands for individuality, not hope."},
+{s:"mix",type:"sort",q:"Which story does each symbol come from?",cats:["The Pedestrian","The Letter A","All Summer in a Day"],
+ items:[{t:"The closet",c:2},{t:"Yellow chalk",c:1},{t:"A brightly lit house",c:0},{t:"Endless rain",c:2},{t:"Empty streets",c:0},{t:"Television",c:0}],
+ why:"Pedestrian: walking, TV, the lit house, empty streets, the police car. Letter A: the yellow chalk and the letter A. All Summer: the sun, the rain, the closet."},
+{s:"ped",type:"sort",q:"The Pedestrian: what does each symbol stand for?",cats:["Freedom","Passive conformity","Individuality","Social control"],
+ items:[{t:"Walking",c:0},{t:"Television",c:1},{t:"Leonard's lit house",c:2},{t:"The automated police car",c:3}],
+ why:"Walking = freedom, TV = passive conformity, lit house = individuality, police car = social control. (Empty streets = isolation.)"},
+{s:"sun",type:"mc",q:"In All Summer in a Day, what do the sun and the rain stand for?",
+ opts:["Sun = hope and happiness; rain = sadness and sameness","Sun = freedom and individuality; rain = social control","Sun = communication and achievement; rain = isolation","Sun = Earth and memory; rain = jealousy and anger"],a:0,
+ why:"The sun symbolizes hope and happiness. Endless rain suggests sadness and sameness. The closet represents Margot's isolation."}
+];
+
+let state={},voice=null;
+const app=document.getElementById("app"),live=document.getElementById("live");
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function pickVoice(){try{const v=speechSynthesis.getVoices();voice=v.find(x=>/en-US/i.test(x.lang))||v.find(x=>/^en/i.test(x.lang))||null}catch(e){}}
+try{pickVoice();speechSynthesis.onvoiceschanged=pickVoice}catch(e){}
+function speak(t){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang="en-US";u.rate=.92;if(voice)u.voice=voice;speechSynthesis.speak(u)}catch(e){}}
+const txt=h=>{const d=document.createElement("div");d.innerHTML=h;return d.textContent};
+
+function home(){
+  const cnt=k=>QS.filter(q=>q.s===k).length;
+  app.innerHTML=`<h1>Literary Elements</h1>
+  <p class="sub">The hard quiz on <b>The Pedestrian</b>, <b>The Letter A</b> and <b>All Summer in a Day</b>. Setting, characters, perspective, conflict, plot, theme and symbols. Some questions mix up the stories on purpose, so read every detail.</p>
+  <div class="card choose">
+    <h2 class="q" style="margin-top:0">What do you want to practice?</h2>
+    <label><input type="radio" name="c" value="all" checked> Everything (${QS.length} questions)</label>
+    <label><input type="radio" name="c" value="ped"> The Pedestrian only (${cnt("ped")})</label>
+    <label><input type="radio" name="c" value="a"> The Letter A only (${cnt("a")})</label>
+    <label><input type="radio" name="c" value="sun"> All Summer in a Day only (${cnt("sun")})</label>
+    <label><input type="radio" name="c" value="mix"> Compare the stories (${cnt("mix")})</label>
+    <label><input type="checkbox" id="mix"> Mix up the question order</label>
+    <p class="hint">Tap 🔊 on any question to hear it read aloud.</p>
+    <div class="row"><button class="btn" id="go">Start</button></div>
+  </div>`;
+  document.getElementById("go").onclick=()=>{
+    const c=document.querySelector("input[name=c]:checked").value;
+    let l=QS.filter(q=>c==="all"||q.s===c);
+    if(document.getElementById("mix").checked)l=shuffle(l);
+    start(l);
+  };
+}
+function prep(q){const p={...q};const n=(q.opts||q.items).length;p.view=shuffle([...Array(n).keys()]);return p}
+function start(l,retry){state={retry:!!retry,list:l.map(prep),i:0,score:0,missed:[]};show()}
+function readText(q){let t=txt(q.q);if(q.opts)t+=". "+q.view.map(k=>txt(q.opts[k])).join(". ");if(q.items)t+=". "+q.view.map(k=>txt(q.items[k].t||q.items[k])).join(". ");return t}
+function show(){
+  const q=state.list[state.i],n=state.list.length;
+  state.answered=false;
+  state.sel=q.type==="mc"?null:q.type==="multi"?new Set():q.type==="order"?[]:{};
+  const tagText={mc:"Choose one",multi:"Choose all that apply",order:"Put in order",sort:"Sort"}[q.type];
+  let body="";
+  if(q.type==="mc"||q.type==="multi")body=q.view.map(k=>`<button class="opt" data-k="${k}" aria-pressed="false">${q.opts[k]}</button>`).join("");
+  if(q.type==="order")body=q.view.map(k=>`<button class="opt ord" data-k="${k}" aria-pressed="false"><span class="num"></span><span>${q.items[k]}</span></button>`).join("");
+  if(q.type==="sort")body=q.view.map(k=>`<div class="sortitem" data-k="${k}" role="group" aria-label="${txt(q.items[k].t)}"><div class="t">${q.items[k].t}</div><div class="pick">${q.cats.map((c,ci)=>`<button data-c="${ci}" aria-pressed="false">${c}</button>`).join("")}</div></div>`).join("");
+  app.innerHTML=`<div class="top"><span>Question ${state.i+1} of ${n}</span><span>Score: ${state.score}</span></div>
+  <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="${n}" aria-valuenow="${state.i}"><i style="width:${state.i/n*100}%"></i></div>
+  <div class="card"><div class="tags"><span class="tag story">${S[q.s]}</span><span class="tag">${tagText}</span></div>
+  <h2 class="q" id="qt" tabindex="-1">${q.q}</h2>${q.hint?`<div class="hint">${q.hint}</div>`:""}
+  <button class="btn ghost small" id="say" aria-label="Read the question aloud">🔊 Read aloud</button>
+  <div id="opts">${body}</div><div id="fb"></div>
+  <div class="row"><button class="btn" id="check" disabled>Check</button></div></div>`;
+  document.getElementById("say").onclick=()=>speak(readText(q));
+  document.getElementById("qt").focus({preventScroll:false});
+  wire(q);
+}
+function canCheck(q){
+  if(q.type==="mc")return state.sel!==null;
+  if(q.type==="multi")return state.sel.size>0;
+  if(q.type==="order")return state.sel.length===q.items.length;
+  return Object.keys(state.sel).length===q.items.length;
+}
+function wire(q){
+  const chk=document.getElementById("check"),refresh=()=>{chk.disabled=!canCheck(q)};
+  const opts=[...document.querySelectorAll("#opts .opt")];
+  if(q.type==="mc"||q.type==="multi")opts.forEach(b=>b.onclick=()=>{
+    if(state.answered)return;const k=+b.dataset.k;
+    if(q.type==="mc"){state.sel=k;opts.forEach(x=>{x.classList.toggle("on",x===b);x.setAttribute("aria-pressed",x===b)})}
+    else{state.sel.has(k)?state.sel.delete(k):state.sel.add(k);b.classList.toggle("on");b.setAttribute("aria-pressed",state.sel.has(k))}
+    refresh()});
+  if(q.type==="order")opts.forEach(b=>b.onclick=()=>{
+    if(state.answered)return;const k=+b.dataset.k,pos=state.sel.indexOf(k);
+    if(pos>=0)state.sel.splice(pos);else state.sel.push(k);
+    opts.forEach(x=>{const p=state.sel.indexOf(+x.dataset.k);x.classList.toggle("on",p>=0);x.setAttribute("aria-pressed",p>=0);x.querySelector(".num").textContent=p>=0?p+1:""});
+    refresh()});
+  if(q.type==="sort")document.querySelectorAll(".sortitem").forEach(it=>it.querySelectorAll("button").forEach(b=>b.onclick=()=>{
+    if(state.answered)return;state.sel[it.dataset.k]=+b.dataset.c;
+    it.querySelectorAll("button").forEach(x=>{x.classList.toggle("on",x===b);x.setAttribute("aria-pressed",x===b)});refresh()}));
+  chk.onclick=()=>state.answered?next():grade(q);
+}
+function grade(q){
+  state.answered=true;let ok;
+  const opts=[...document.querySelectorAll("#opts .opt")];
+  if(q.type==="mc"){ok=state.sel===q.a;opts.forEach(b=>{const k=+b.dataset.k;b.disabled=true;b.classList.remove("on");if(k===q.a)b.classList.add("right");else if(k===state.sel)b.classList.add("wrong")})}
+  if(q.type==="multi"){const A=new Set(q.a);ok=A.size===state.sel.size&&[...A].every(x=>state.sel.has(x));
+    opts.forEach(b=>{const k=+b.dataset.k;b.disabled=true;b.classList.remove("on");if(A.has(k))b.classList.add("right");else if(state.sel.has(k))b.classList.add("wrong")})}
+  if(q.type==="order"){ok=state.sel.every((k,p)=>k===p);
+    opts.forEach(b=>{const k=+b.dataset.k,p=state.sel.indexOf(k);b.disabled=true;b.classList.remove("on");b.classList.add(p===k?"right":"wrong");b.querySelector(".num").textContent=(p+1)+(p===k?"":" → "+(k+1))})}
+  if(q.type==="sort"){ok=q.items.every((it,k)=>state.sel[k]===it.c);
+    document.querySelectorAll(".sortitem").forEach(el=>{const k=+el.dataset.k;el.classList.add(state.sel[k]===q.items[k].c?"right":"wrong");
+      el.querySelectorAll("button").forEach(b=>{const c=+b.dataset.c;b.disabled=true;b.classList.remove("on");if(c===q.items[k].c)b.classList.add("ok");else if(c===state.sel[k])b.classList.add("no")})})}
+  if(ok)state.score++;else state.missed.push(q);
+  const extra=!ok&&q.type==="multi"?" You need ALL the right ones and none of the wrong ones.":!ok&&q.type!=="mc"?" ✓ marks the right answer.":"";
+  document.getElementById("fb").innerHTML=`<div class="fb ${ok?"good":"bad"}"><b>${ok?"Correct!":"Not quite."+extra}</b>${q.why}</div>`;
+  live.textContent=(ok?"Correct. ":"Not quite. ")+txt(q.why);
+  const c=document.getElementById("check");c.disabled=false;c.textContent=state.i+1<state.list.length?"Next":"See results";c.focus();
+}
+function next(){try{speechSynthesis.cancel()}catch(e){}state.i++;if(state.i<state.list.length)show();else results()}
+function results(){
+  const n=state.list.length,pct=Math.round(state.score/n*100);
+  if(!state.retry){try{const K="lit-elements-quiz",d=JSON.parse(localStorage.getItem(K)||"{}");
+    ["ped","a","sun"].forEach(s=>{const qs=state.list.filter(q=>q.s===s);if(!qs.length)return;const ok=qs.length-state.missed.filter(q=>q.s===s).length,p=ok/qs.length;
+      d[s]=Math.max(d[s]||0,p>=.9?3:p>=.75?2:p>=.5?1:0)});localStorage.setItem(K,JSON.stringify(d))}catch(e){}}
+  const msg=pct>=90?"You really know it.":pct>=75?"Strong. Go over the ones you missed.":pct>=50?"Getting there. Review the sheets and retry the missed ones.":"Reread the three sheets, then try again.";
+  app.innerHTML=`<div class="card" style="text-align:center"><p class="big">${state.score}/${n}</p><h2 class="q" tabindex="-1" id="res">${pct}%: ${msg}</h2>
+  <div class="row" style="justify-content:center">${state.missed.length?'<button class="btn" id="retry">Retry the ones I missed</button>':""}<button class="btn ghost" id="again">Start over</button></div></div>
+  ${state.missed.length?`<div class="card" style="margin-top:16px"><h2 class="q" style="margin-top:0">Review: what you missed</h2>${state.missed.map(q=>`<div class="miss"><div class="mq">${S[q.s]}: ${q.q}</div>${q.why}</div>`).join("")}</div>`:""}`;
+  document.getElementById("res").focus();
+  const r=document.getElementById("retry");if(r)r.onclick=()=>start(shuffle(state.missed),true);
+  document.getElementById("again").onclick=home;
+}
+home();
+</script>
+</body>
+</html>
