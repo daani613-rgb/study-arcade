@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Story Papers: Every Line</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f1ec;--card:#fff;--ink:#1f2330;--muted:#5f6472;--accent:#8a3b12;--accent2:#fbeee4;--good:#21734a;--goodbg:#e3f3ea;--bad:#a93232;--badbg:#f8e2e0;--line:#dcdde3}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Nunito,system-ui,sans-serif;font-size:17px;line-height:1.5}
+.wrap{max-width:700px;margin:0 auto;padding:20px 16px 90px}
+h1{font-family:Fraunces,serif;font-size:30px;margin:8px 0 4px;color:var(--accent)}
+h2{font-family:Fraunces,serif}
+.sub{color:var(--muted);margin:0 0 18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 2px 0 var(--line);margin-bottom:14px}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;border-radius:12px;padding:12px 18px;font:800 16px Nunito,sans-serif;cursor:pointer;background:var(--accent);color:#fff;text-decoration:none}
+.btn.ghost{background:transparent;color:var(--accent);border:2px solid var(--accent)}
+.btn.small{padding:6px 12px;font-size:14px;border-radius:10px}
+.btn:disabled{opacity:.4;cursor:default}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #f0b400;outline-offset:2px}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;align-items:center}
+.top{display:flex;justify-content:space-between;color:var(--muted);font-size:14px;margin-bottom:8px}
+.bar{height:8px;background:var(--line);border-radius:8px;overflow:hidden;margin-bottom:16px}
+.bar i{display:block;height:100%;background:var(--accent);transition:width .3s}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.tag{font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);background:var(--accent2);border-radius:6px;padding:2px 8px}
+.tag.sec{background:#e8edf8;color:#2f4b8f}
+.q{font-size:19px;font-weight:800;margin:4px 0 8px;font-family:Nunito,sans-serif}
+.q b{color:var(--accent)}
+.def{background:#fff8e1;border-left:4px solid #e0a800;border-radius:8px;padding:8px 12px;margin:8px 0;font-size:15px}
+.opt{display:block;width:100%;text-align:left;background:#fff;border:2px solid var(--line);border-radius:12px;padding:12px 14px;margin:8px 0;font:600 16px Nunito,sans-serif;color:var(--ink);cursor:pointer}
+.opt.on{border-color:var(--accent);background:var(--accent2)}
+.opt.right{border-color:var(--good);background:var(--goodbg)}
+.opt.wrong{border-color:var(--bad);background:var(--badbg)}
+.opt:disabled{cursor:default}
+.fb{margin-top:12px;border-radius:12px;padding:12px 14px;font-size:15px}
+.fb.good{background:var(--goodbg);border-left:5px solid var(--good)}
+.fb.bad{background:var(--badbg);border-left:5px solid var(--bad)}
+.fb>b:first-child{display:block;margin-bottom:4px}
+.big{font-family:Fraunces,serif;font-size:56px;color:var(--accent);margin:0}
+.choose label{display:block;margin:8px 0;font-weight:600}
+.sheet h3{font-size:14px;text-transform:uppercase;letter-spacing:.06em;color:#2f4b8f;margin:18px 0 6px;border-bottom:2px solid var(--line);padding-bottom:4px}
+.field{padding:8px 0;border-bottom:1px solid #eee}
+.field .lab{font-weight:800}
+.field .what{color:var(--muted);font-size:14px}
+.field .val{margin-top:2px}
+.miss{border-top:1px solid var(--line);padding:12px 0;font-size:15px}
+.lib-back{position:fixed;left:max(12px,env(safe-area-inset-left,0px));bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:50;font:700 14px system-ui,sans-serif;padding:8px 14px;border-radius:999px;background:rgba(20,20,40,.82);color:#fff;text-decoration:none}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+</style>
+</head>
+<body>
+<a class="lib-back" href="../">&larr; All games</a>
+<main class="wrap" id="app"></main>
+<div class="sr" aria-live="polite" id="live"></div>
+<script>
+/* The worksheet fields, in the order they appear on the paper */
+const F=[
+ {k:"time",sec:"Setting",lab:"time (historical)",what:"WHEN the story happens."},
+ {k:"geo",sec:"Setting",lab:"location (geographical)",what:"The BIG place: the city, country, or planet."},
+ {k:"spec",sec:"Setting",lab:"location (specifically)",what:"The EXACT spot where the action happens."},
+ {k:"weather",sec:"Setting",lab:"weather",what:"What the sky and the air are like."},
+ {k:"sensory",sec:"Setting",lab:"sensory experiences",what:"What you would see, hear, smell, taste, or feel if you were there."},
+ {k:"mood",sec:"Setting",lab:"mood created by the setting",what:"How the setting makes the READER feel."},
+ {k:"pro",sec:"Characters",lab:"protagonist",what:"The main character. The story follows them."},
+ {k:"ant",sec:"Characters",lab:"antagonist",what:"Whoever or WHATEVER works against the protagonist. It doesn't have to be a person."},
+ {k:"others",sec:"Characters",lab:"other main characters",what:"Other important characters besides the protagonist and antagonist."},
+ {k:"pov",sec:"Characters",lab:"narrative perspective",what:"WHO tells the story. First person = \"I\". Third person = \"he\" or \"she\"."},
+ {k:"internal",sec:"Conflict",lab:"internal conflict",what:"The struggle INSIDE the protagonist's mind: feelings, fears, frustration."},
+ {k:"external",sec:"Conflict",lab:"external conflict",what:"The struggle with something OUTSIDE: other people, society, nature, or the body."},
+ {k:"result",sec:"Conflict",lab:"result of the conflict",what:"How the conflict turns out."},
+ {k:"expo",sec:"Plot",lab:"exposition",what:"The beginning: we meet the characters, the setting, and the situation."},
+ {k:"rising",sec:"Plot",lab:"rising action",what:"Problems build up and the tension grows."},
+ {k:"climax",sec:"Plot",lab:"climax",what:"The turning point: the moment of highest tension."},
+ {k:"falling",sec:"Plot",lab:"falling action",what:"What happens right AFTER the climax."},
+ {k:"resolution",sec:"Plot",lab:"resolution",what:"How the story wraps up at the very end."},
+ {k:"theme",sec:"Theme",lab:"main theme",what:"The life lesson. A message about life, not a summary of what happened."},
+ {k:"conveyed",sec:"Theme",lab:"way the theme is conveyed",what:"HOW the story shows the lesson, through what happens."},
+ {k:"symbols",sec:"Theme",lab:"motifs and symbols",what:"Symbols are things that stand for bigger ideas. Motifs are images or ideas that keep repeating."}
+];
+/* For each field, a field from the SAME story that is easy to confuse with it */
+const NEAR={time:"weather",geo:"spec",spec:"geo",weather:"sensory",sensory:"weather",mood:"sensory",pro:"ant",ant:"pro",others:"ant",internal:"external",external:"internal",result:"resolution",expo:"rising",rising:"climax",climax:"falling",falling:"climax",resolution:"falling",theme:"result",conveyed:"theme",symbols:"theme"};
+const ST={
+ ped:{name:"The Pedestrian",d:{
+  time:"2053, a November evening, about 8:00 p.m.",
+  geo:"A city of three million people",
+  spec:"Residential streets near 11 South Saint James Street",
+  weather:"Cold, misty, windless November night; frost in the air",
+  sensory:"Frosty air, rustling leaves, rusty leaf smell, moonlight, silence",
+  mood:"Eerie, lonely, mysterious, unsettling",
+  pro:"Leonard Mead",
+  ant:"The automated police car / the conformist society",
+  others:"No other major human characters; the citizens stay indoors watching TV",
+  pov:"Third person limited (focuses on Leonard Mead)",
+  internal:"Leonard is isolated from a society that does not share his interests (a minor struggle)",
+  external:"Man vs. society: walking freely is treated as suspicious; the police car questions and detains him",
+  result:"Leonard is taken to a psychiatric center for simply walking; his freedom is lost and the streets are left deserted",
+  expo:"In 2053, Leonard walks at night while everyone else watches television",
+  rising:"The police car stops Leonard and questions his walking, work, marital status, and lack of a television",
+  climax:"The police car orders Leonard inside despite his protests",
+  falling:"Leonard enters the empty car, bound for a psychiatric center; they pass his brightly lit house",
+  resolution:"The car drives off; Leonard's fate is unknown and the streets remain silent",
+  theme:"Conformity and technology can destroy freedom and connection",
+  conveyed:"People stay inside watching TV while Leonard alone enjoys walking; the police car punishes his individuality, showing society's intolerance",
+  symbols:"Walking = freedom; TV = passive conformity; lit house = individuality; empty streets = isolation; police car = social control"}},
+ a:{name:"The Letter A",d:{
+  time:"The 1930s: Christy's early childhood, from infancy to about age six",
+  geo:"Dublin, Ireland",
+  spec:"The Brown family home, especially the kitchen; earlier scenes are in hospitals and clinics",
+  weather:"A cold, gray December afternoon with snow outside",
+  sensory:"Warm firelight, ticking clock, dripping water, crackling logs, bright yellow chalk on dark slate",
+  mood:"Tense and lonely at first, then hopeful and triumphant",
+  pro:"Christy Brown",
+  ant:"His physical limitations and the doctors' low expectations",
+  others:"His mother, his father, Mona, Paddy, and his siblings",
+  pov:"First person: Christy tells his own memories using \"I\"",
+  internal:"He feels trapped and frustrated because he understands others but cannot easily communicate or control his body",
+  external:"Cerebral palsy makes speaking and moving difficult; doctors doubt his abilities",
+  result:"With his mother's encouragement, Christy writes the letter A with his left foot, opening a way to communicate",
+  expo:"Christy describes his difficult birth, his early physical challenges, and the doctors' belief that he was a hopeless case",
+  rising:"His mother refuses to give up on him. At about six, Christy watches his siblings write with chalk and becomes fascinated",
+  climax:"After several attempts, Christy successfully draws the letter A with his left foot",
+  falling:"His family realizes what he has done. His mother is moved to tears, and his father lifts him onto his shoulders",
+  resolution:"The letter A becomes Christy's first written expression and begins a new path toward communication",
+  theme:"Never judge a person's intelligence or potential by physical limitations or appearances",
+  conveyed:"Doctors underestimate Christy, but his mother believes in him; his success with the letter A proves his abilities",
+  symbols:"The yellow chalk and the letter A symbolize communication, achievement, hope, and a new beginning"}},
+ sun:{name:"All Summer in a Day",d:{
+  time:"An unspecified time in the future",
+  geo:"Venus",
+  spec:"An underground school on Venus with huge windows; the children later go into the surrounding jungle",
+  weather:"It rains constantly for seven years; the sun appears for one hour before the rain returns",
+  sensory:"Drumming rain, sudden silence, bright yellow sun, blue sky, warm sunlight, fresh air, then cold rain and thunder",
+  mood:"Gloomy and confining during the rain; joyful and wondrous in the sunshine; then regretful",
+  pro:"Margot",
+  ant:"William and the other children who bully and exclude her",
+  others:"The teacher and the schoolchildren",
+  pov:"Third person: the narrator describes the children and focuses especially on Margot",
+  internal:"Margot feels lonely and isolated because she remembers the sun and knows she is different",
+  external:"The children do not believe Margot and lock her in a closet just before the sun appears",
+  result:"Margot misses the sunlight; the children realize what they have done, feel ashamed, and let her out",
+  expo:"On rainy Venus, a class of children eagerly waits for the sun, which appears only briefly every seven years",
+  rising:"Margot remembers the sun from Earth. The children resent her difference; William leads them in locking her in a closet",
+  climax:"The sun comes out while Margot is still locked away and cannot see it",
+  falling:"The children enjoy the sunshine. When the rain begins again, they remember Margot",
+  resolution:"They return to the closet and quietly let Margot out, aware of the harm they caused",
+  theme:"Bullying and jealousy can lead people to hurt someone who is different, causing regret",
+  conveyed:"The children exclude Margot because she is different; after taking away her chance to see the sun, they recognize their cruelty and feel ashamed",
+  symbols:"The sun symbolizes hope and happiness; endless rain suggests sadness and sameness; the closet represents Margot's isolation"}}
+};
+const KEYS=["ped","a","sun"];
+const FAKE_POV="Second person: the narrator talks to the reader as \"you\"";
+
+const app=document.getElementById("app"),live=document.getElementById("live");
+let state={},voice=null;
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function esc(t){return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;")}
+function pickVoice(){try{const v=speechSynthesis.getVoices();voice=v.find(x=>/en-US/i.test(x.lang))||v.find(x=>/^en/i.test(x.lang))||null}catch(e){}}
+try{pickVoice();speechSynthesis.onvoiceschanged=pickVoice}catch(e){}
+function speak(t){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang="en-US";u.rate=.92;if(voice)u.voice=voice;speechSynthesis.speak(u)}catch(e){}}
+function stopSpeak(){try{speechSynthesis.cancel()}catch(e){}}
+
+function makeQ(sk,f){
+  const right=ST[sk].d[f.k];
+  const others=KEYS.filter(k=>k!==sk).map(k=>ST[k].d[f.k]);
+  const near=f.k==="pov"?FAKE_POV:ST[sk].d[NEAR[f.k]];
+  const opts=[right,...others,near];
+  return {sk,f,opts,order:shuffle([0,1,2,3])};
+}
+function home(){
+  stopSpeak();
+  app.innerHTML=`<h1>The Story Papers: Every Line</h1>
+  <p class="sub">All three Literary Elements papers, line by line: <b>The Pedestrian</b>, <b>The Letter A</b>, and <b>All Summer in a Day</b>.</p>
+  <div class="card"><h2 class="q" style="margin-top:0">Step 1: Study a paper</h2>
+   <p style="margin:0 0 8px">See every line of the paper, with a simple explanation of what each part means.</p>
+   <div class="row">${KEYS.map(k=>`<button class="btn ghost small" data-study="${k}">${ST[k].name}</button>`).join("")}</div></div>
+  <div class="card choose"><h2 class="q" style="margin-top:0">Step 2: Quiz yourself</h2>
+   <p class="hint" style="color:var(--muted);font-size:14px;margin:0 0 6px">Every line of the paper becomes a question. The wrong answers are the same line from the OTHER two stories, or a line from the same story that's easy to mix up (like climax and falling action).</p>
+   ${KEYS.map((k,i)=>`<label><input type="radio" name="c" value="${k}" ${i===0?"checked":""}> ${ST[k].name} (${F.length} questions)</label>`).join("")}
+   <label><input type="radio" name="c" value="all"> All three papers (${F.length*3} questions)</label>
+   <label><input type="checkbox" id="mix"> Mix up the question order</label>
+   <div class="row"><button class="btn" id="go">Start quiz</button></div></div>`;
+  app.querySelectorAll("[data-study]").forEach(b=>b.onclick=()=>study(b.dataset.study));
+  document.getElementById("go").onclick=()=>{
+    const c=document.querySelector("input[name=c]:checked").value;
+    let l=[];(c==="all"?KEYS:[c]).forEach(k=>F.forEach(f=>l.push(makeQ(k,f))));
+    if(document.getElementById("mix").checked)l=shuffle(l);
+    start(l);
+  };
+}
+function study(sk){
+  stopSpeak();const s=ST[sk];let html="",sec="";
+  F.forEach(f=>{if(f.sec!==sec){sec=f.sec;html+=`<h3>${sec}</h3>`}
+    html+=`<div class="field"><div class="lab">${f.lab[0].toUpperCase()+f.lab.slice(1)} <button class="btn ghost small" style="padding:2px 8px" data-say="${f.k}" aria-label="Read ${esc(f.lab)} aloud">🔊</button></div><div class="what">${f.what}</div><div class="val">${esc(s.d[f.k])}</div></div>`});
+  app.innerHTML=`<div class="row" style="margin-top:0"><button class="btn ghost small" id="back">&larr; Back</button></div>
+   <h1 tabindex="-1" id="t">${s.name}</h1><p class="sub">The whole paper. Gray text = what the line means. Black text = the answer for this story.</p>
+   <div class="card sheet">${html}</div>
+   <div class="row"><button class="btn" id="quiz">Quiz me on ${s.name} &rarr;</button></div>`;
+  document.getElementById("t").focus();
+  app.querySelectorAll("[data-say]").forEach(b=>b.onclick=()=>{const f=F.find(x=>x.k===b.dataset.say);speak(f.lab+". "+s.d[f.k])});
+  document.getElementById("back").onclick=home;
+  document.getElementById("quiz").onclick=()=>start(F.map(f=>makeQ(sk,f)));
+}
+function start(l,retry){state={retry:!!retry,list:l,i:0,score:0,missed:[]};show()}
+function show(){
+  const q=state.list[state.i],n=state.list.length,s=ST[q.sk];
+  state.sel=null;state.answered=false;
+  app.innerHTML=`<div class="top"><span>Question ${state.i+1} of ${n}</span><span>Score: ${state.score}</span></div>
+  <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="${n}" aria-valuenow="${state.i}"><i style="width:${state.i/n*100}%"></i></div>
+  <div class="card"><div class="tags"><span class="tag">${s.name}</span><span class="tag sec">${q.f.sec}</span></div>
+  <h2 class="q" id="qt" tabindex="-1">In <i>${s.name}</i>, what is the <b>${q.f.lab}</b>?</h2>
+  <div class="row" style="margin-top:4px"><button class="btn ghost small" id="what">💡 What does that mean?</button><button class="btn ghost small" id="say">🔊 Read aloud</button></div>
+  <div id="def"></div>
+  <div id="opts">${q.order.map(i=>`<button class="opt" data-i="${i}" aria-pressed="false">${esc(q.opts[i])}</button>`).join("")}</div>
+  <div id="fb"></div><div class="row"><button class="btn" id="check" disabled>Check</button></div></div>`;
+  document.getElementById("qt").focus();
+  document.getElementById("what").onclick=()=>{document.getElementById("def").innerHTML=`<div class="def"><b>${q.f.lab[0].toUpperCase()+q.f.lab.slice(1)}:</b> ${q.f.what}</div>`};
+  document.getElementById("say").onclick=()=>speak(`In ${s.name}, what is the ${q.f.lab}? `+q.order.map(i=>q.opts[i]).join(". "));
+  const opts=[...document.querySelectorAll("#opts .opt")],chk=document.getElementById("check");
+  opts.forEach(b=>b.onclick=()=>{if(state.answered)return;state.sel=+b.dataset.i;opts.forEach(x=>{x.classList.toggle("on",x===b);x.setAttribute("aria-pressed",x===b)});chk.disabled=false});
+  chk.onclick=()=>state.answered?next():grade(q,opts);
+}
+function where(q,i){
+  if(i===0)return "";
+  if(i===3)return q.f.k==="pov"?"That one is made up: none of the three stories is in second person.":`That one is the <b>${F.find(f=>f.k===NEAR[q.f.k]).lab}</b> of <i>${ST[q.sk].name}</i>, not the ${q.f.lab}.`;
+  const other=KEYS.filter(k=>k!==q.sk)[i-1];return `That one is the ${q.f.lab} of <i>${ST[other].name}</i>, a different story.`;
+}
+function grade(q,opts){
+  state.answered=true;const ok=state.sel===0;
+  opts.forEach(b=>{const i=+b.dataset.i;b.disabled=true;b.classList.remove("on");if(i===0)b.classList.add("right");else if(i===state.sel)b.classList.add("wrong")});
+  if(ok)state.score++;else state.missed.push(q);
+  const msg=`<b>${ok?"Correct!":"Not quite."}</b>${ok?"":where(q,state.sel)+"<br>"}<span>The <b>${q.f.lab}</b> means: ${q.f.what}</span>`;
+  document.getElementById("fb").innerHTML=`<div class="fb ${ok?"good":"bad"}">${msg}</div>`;
+  live.textContent=ok?"Correct.":"Not quite. The right answer is: "+q.opts[0];
+  const c=document.getElementById("check");c.textContent=state.i+1<state.list.length?"Next":"See results";c.focus();
+}
+function next(){stopSpeak();state.i++;if(state.i<state.list.length)show();else results()}
+function results(){
+  const n=state.list.length,pct=Math.round(state.score/n*100);
+  if(!state.retry){try{const K="story-papers",d=JSON.parse(localStorage.getItem(K)||"{}");
+    KEYS.forEach(k=>{const qs=state.list.filter(q=>q.sk===k);if(!qs.length)return;const ok=qs.length-state.missed.filter(q=>q.sk===k).length,p=ok/qs.length;
+      d[k]=Math.max(d[k]||0,p>=.9?3:p>=.75?2:p>=.5?1:0)});localStorage.setItem(K,JSON.stringify(d))}catch(e){}}
+  const msg=pct>=90?"You know these papers.":pct>=75?"Strong. Study the ones you missed.":pct>=50?"Getting there. Study the paper, then retry the missed ones.":"Go to Study mode first, then try again.";
+  app.innerHTML=`<div class="card" style="text-align:center"><p class="big">${state.score}/${n}</p><h2 class="q" tabindex="-1" id="res">${pct}%: ${msg}</h2>
+  <div class="row" style="justify-content:center">${state.missed.length?'<button class="btn" id="retry">Retry the ones I missed</button>':""}<button class="btn ghost" id="again">Back to start</button></div></div>
+  ${state.missed.length?`<div class="card"><h2 class="q" style="margin-top:0">What you missed</h2>${state.missed.map(q=>`<div class="miss"><b>${ST[q.sk].name}, ${q.f.lab}:</b><br>${esc(q.opts[0])}</div>`).join("")}</div>`:""}`;
+  document.getElementById("res").focus();
+  const r=document.getElementById("retry");if(r)r.onclick=()=>start(shuffle(state.missed.map(q=>makeQ(q.sk,q.f))),true);
+  document.getElementById("again").onclick=home;
+}
+home();
+</script>
+</body>
+</html>
