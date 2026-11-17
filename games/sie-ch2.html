@@ -94,8 +94,8 @@ h2.section{font-size:.95rem;font-weight:700;color:var(--muted);margin:6px 0 -2px
 .term .t-en{font-size:1.45rem}
 .t-pr{color:var(--muted);font-size:.95rem}
 .t-def{margin:0;font-family:var(--en);direction:ltr;text-align:left;font-weight:500;background:var(--bg);border-radius:10px;padding:8px 10px}
-.math{unicode-bidi:isolate;direction:ltr}.story .math{white-space:nowrap}.row .pill{white-space:normal;max-width:100%;overflow-wrap:anywhere}.dot{min-height:44px}
-.story table,.grid4{border-collapse:collapse;width:100%;font-size:.9rem;margin:6px 0}.story th,.story td,.grid4 td{border:1px solid var(--edge);padding:6px;text-align:center;vertical-align:top}.story th{font-weight:700}.grid4 td.hit{outline:3px solid var(--gold);font-weight:700}
+.math{unicode-bidi:isolate;direction:ltr}.story .math,.fb .math{white-space:nowrap}h1[tabindex="-1"]:focus:not(:focus-visible){outline:none}.row .pill{white-space:normal;max-width:100%;overflow-wrap:anywhere}.dot{min-height:44px}
+.story table,.grid4{border-collapse:collapse;width:100%;font-size:.9rem;margin:6px 0}.story th,.story td,.grid4 td{border:1px solid var(--edge);padding:6px;text-align:center;vertical-align:top;overflow-wrap:anywhere}.story table{table-layout:fixed}@media (max-width:360px){.story table{font-size:.8rem}.story th,.story td{padding:4px 2px}}.story th{font-weight:700}.grid4 td.hit{outline:3px solid var(--gold);font-weight:700}
 body:not(.athome) .lib-back{display:none}.lib-back{min-height:44px;display:inline-flex;align-items:center}.math .mp{white-space:nowrap}
 .lesson small:not([lang]){direction:rtl;font-family:var(--he)}
 .term .t-hint{margin:0;font-size:.95rem;color:var(--gold)}
@@ -142,7 +142,7 @@ const GAPS=[1,3,7];
 Object.keys(S.miss).forEach(k=>{if(typeof S.miss[k]!=="object")S.miss[k]={b:0,due:today()}});
 function markMiss(term){S.miss[term]={b:0,due:today()};save()}
 function markHit(term){const m=S.miss[term];if(!m||m.due>today())return;if(m.b>=GAPS.length)delete S.miss[term];else{m.due=today()+GAPS[m.b];m.b++}save()}
-const bidi=h=>String(h).replace(/[A-Za-z][A-Za-z0-9 .'\/&$%-]*[A-Za-z0-9%]/g,m=>`<bdi lang="en">${m}</bdi>`);
+const bidi=h=>String(h).replace(/(\d+½)/g,"\u2066$1\u2069").replace(/[A-Za-z][A-Za-z0-9 .'\/&$%-]*[A-Za-z0-9%]/g,m=>`<bdi lang="en">${m}</bdi>`);
 const termCard=(t,li)=>{const w=W[t[0]]||{};return `<div class="term"><div class="t-top">${sayBtn(t[0])}<span class="t-en" lang="en">${t[0]}</span></div>
   ${w.pr?`<span class="t-pr">הגייה: ${w.pr}</span>`:""}${w.def?`<p class="t-def" lang="en" dir="ltr">${w.def}</p>`:""}
   <span class="t-he">${bidi(t[1])}${li!=null?` <span class="muted" style="font-weight:400;font-size:.85rem">(שיעור ${li+1})</span>`:""}</span><p>${bidi(t[2])}</p>${w.hint?`<p class="t-hint">💡 ${bidi(w.hint)}</p>`:""}</div>`};
@@ -223,8 +223,9 @@ function wordItems(list){
       if(od.length>=2)items.push({q:`<div class="bigterm">${sayBtn(t[0])}<span lang="en">${t[0]}</span></div><p class="muted" dir="ltr" lang="en" style="margin:0;text-align:center">Which definition fits this term?</p>`,qHe:t[1],term:t[0],
         opts:shuffle([{h:`<span lang="en">${w.def}</span>`,tr:t[1],ok:1},...od.map(o=>({h:`<span lang="en">${W[o[0]].def}</span>`,tr:o[1]}))]),why:`${t[1]}: ${t[2]}`,say:t[0]});
     }
-    items.push({q:`<div class="bigterm">${sayBtn(t[0])}<span lang="en">${t[0]}</span></div><p class="muted" style="margin:0;text-align:center">מה הפירוש?</p>`,term:t[0],
-      opts:shuffle([{h:t[1],ok:1},...distract(t,3,x=>x[1]).map(o=>({h:o[1]}))]).map(o=>({...o,he:1})),why:`${t[1]}: ${t[2]}`,say:t[0]});
+    const heC=h=>String(h).replace(/\s*\([^)]*\)/g,"").trim();
+    if(!/[A-Za-z0-9]/.test(heC(t[1])))items.push({q:`<div class="bigterm">${sayBtn(t[0])}<span lang="en">${t[0]}</span></div><p class="muted" style="margin:0;text-align:center">מה הפירוש?</p>`,term:t[0],
+      opts:shuffle([{h:heC(t[1]),ok:1},...distract(t,8,x=>heC(x[1])).filter(o=>!/[A-Za-z0-9]/.test(heC(o[1]))).slice(0,3).map(o=>({h:heC(o[1])}))]).map(o=>({...o,he:1})),why:`${t[1]}: ${t[2]}`,say:t[0]});
   });
   return shuffle(items);
 }
@@ -312,7 +313,7 @@ function checks(li,k,right){
   $("tr").onclick=()=>{$("heq").hidden=!$("heq").hidden;app.querySelectorAll(".opt .tr").forEach(x=>x.hidden=$("heq").hidden);$("tr").textContent=$("heq").hidden?"הצג עברית":"הסתר עברית"};
   app.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{if(done)return;done=true;const ok=order[+b.dataset.i]===q.a;
     app.querySelectorAll(".opt").forEach(x=>{if(order[+x.dataset.i]===q.a)x.classList.add("ok")});if(!ok)b.classList.add("no");
-    const f=$("fb");f.className="fb "+(ok?"ok":"no");f.textContent=(ok?"✓ נכון. ":"✗ לא נכון. ")+q.why;$("go").hidden=false;$("go").focus();
+    const f=$("fb");f.className="fb "+(ok?"ok":"no");f.innerHTML=(ok?"✓ נכון. ":"✗ לא נכון. ")+mathLtr(bidi(q.why));$("go").setAttribute("aria-describedby","fb");$("go").hidden=false;$("go").focus();
     $("go").onclick=()=>{const r=right+(ok?1:0);k<Lz.checks.length-1?checks(li,k+1,r):lessonEnd(li,r)}});
   focusPanel();
 }
@@ -402,6 +403,35 @@ const CF={
  ocash:{t:"סילוק במזומן של אופציית מדד",f:"Cash paid on exercise = in-the-money amount × multiplier",x:"3 points in the money × 100 = $300",g(){const L=Rn([2150,2340,2480,2610,2790]),call=Math.random()<.5,d=Rn([5,8,12,15,20,25]),K=call?L-d:L+d;
   return {en:`An index ${call?"call":"put"} with a strike of ${K} and a multiplier of 100 is exercised when the index is at ${L}. How much cash does the assigned writer pay?`,he:`אופציית ${call?"call":"put"} על מדד, עם מחיר מימוש ${K} ומכפיל 100, ממומשת כשהמדד ב-${L}. כמה מזומן משלם הכותב שקיבל הקצאה?`,
   ok:usd(d*100),bad:[usd(d),usd(d*10),usd((d+3)*100),usd(Math.max(1,d-2)*100),usd((d+7)*100)],why:`אופציה על מדד מסולקת במזומן. שלב 1: כמה היא בתוך הכסף: ${call?`${L} − ${K}`:`${K} − ${L}`} = ${d} נקודות. שלב 2: כפול המכפיל: ${d} × 100 = ${usd(d*100)}.`}}},
+ /* chapter 4: packaged products */
+ f4nav:{t:"NAV למניה",f:"NAV per share = (total assets − total liabilities) ÷ shares outstanding",x:"($100M − $10M) ÷ 9M = $10",g(){const sh=Rn([2,3,5,6,8]),nav=Rn([11,12.5,14,16,24,30]),L=Rn([1,2,3,6]),A=nav*sh+L;
+  return {en:`A fund has total assets of $${A} million, liabilities of $${L} million and ${sh} million shares outstanding. What is the NAV per share?`,he:`לקרן נכסים של ${A} מיליון דולר, התחייבויות של ${L} מיליון ו-${sh} מיליון מניות. מה ה-NAV למניה?`,
+  ok:usd(nav),bad:[usd(A/sh),usd((A+L)/sh),usd(nav-1),usd(nav-.5),usd((A-L)/(sh+1)),usd(nav+1)],why:`שלב 1: נכסים פחות התחייבויות: ${A} − ${L} = ${A-L} מיליון. שלב 2: חלקי מספר המניות: ${A-L} ÷ ${sh} = ${usd(nav)}. טעות נפוצה: לשכוח את ההתחייבויות (${A} ÷ ${sh} = ${usd(A/sh)}).`}}},
+ f4pop:{t:"מחיר ההצעה (POP)",f:"POP = NAV ÷ (1 − sales charge %), because the charge is a percent of POP",x:"NAV $10, 5% → $10 ÷ 0.95 = $10.53",g(){const ld=Rn([2.5,3,4.5,5.75,6,7.5]),nav=Rn([11,13.5,16,21,23.5,28,33]),pop=r2(nav/(1-ld/100)),v=Math.random()<.6;
+  if(v)return {en:`A fund's NAV is $${nav.toFixed(2)} and its sales charge is ${ld}% of the public offering price. What is the POP?`,he:`ה-NAV של קרן הוא ${nav.toFixed(2)} דולר, ודמי המכירה ${ld}% ממחיר ההצעה לציבור. מה ה-POP?`,
+   ok:usd(nav/(1-ld/100)),bad:[usd(nav*(1+ld/100)),usd(nav*(1-ld/100)),usd(nav),usd(nav/(1-ld/50)),usd(nav+ld/100),usd(nav*(1+ld/200))],why:`האחוז מחושב מה-POP, ולכן ה-NAV הוא מה שנשאר: ${100-ld}% מה-POP. שלב 1: 1 − ${(ld/100).toFixed(4).replace(/0+$/,"")} = ${(1-ld/100).toFixed(4).replace(/0+$/,"")}. שלב 2: POP = ${nav.toFixed(2)} ÷ ${(1-ld/100).toFixed(4).replace(/0+$/,"")} = ${usd(nav/(1-ld/100))}. טעות נפוצה: להכפיל ב-${(1+ld/100).toFixed(4).replace(/0+$/,"")}.`};
+  return {en:`A fund's POP is $${pop.toFixed(2)} and its NAV is $${nav.toFixed(2)}. What is the sales charge as a percentage of the POP?`,he:`ה-POP של קרן הוא ${pop.toFixed(2)} דולר, וה-NAV שלה ${nav.toFixed(2)} דולר. מה דמי המכירה באחוזים מה-POP?`,
+   ok:pc((pop-nav)/pop*100),bad:[pc((pop-nav)/nav*100),pc((pop-nav)*10)].concat(shuffle([pc(ld+1.25),pc(Math.max(1,ld-.75)),pc(ld+.5),pc(Math.max(1,ld-1.5))]).slice(0,2)),why:`שלב 1: דמי המכירה בדולרים: ${pop.toFixed(2)} − ${nav.toFixed(2)} = ${usd(pop-nav)}. שלב 2: חלקי ה-POP (לא ה-NAV): ${usd(pop-nav)} ÷ ${usd(pop)} = ${pc((pop-nav)/pop*100)}.`}}},
+ f4net:{t:"כמה מושקע אחרי דמי כניסה",f:"Amount invested = amount paid − (amount paid × front-end load %)",x:"$10,000 with a $500 load → $9,500 invested",g(){const P=Rn([8000,12000,15000,20000,40000,60000]),ld=Rn([2,3,4.5,5,5.5]),fee=P*ld/100;
+  return {en:`An investor sends $${nm(P)} to buy shares of a fund with a ${ld}% front-end load. How much is actually invested in shares?`,he:`משקיע שולח ${nm(P)} דולר לקנות מניות של קרן עם דמי כניסה של ${ld}%. כמה מושקע בפועל במניות?`,
+  ok:usd(P-fee),bad:[usd(P),usd(P+fee),usd(P-2*fee),usd(P/(1+ld/100)),usd(P-fee/2),usd(P-1.5*fee)],why:`דמי הכניסה יורדים מהסכום ששולם. שלב 1: ${nm(P)} × ${ld}% = ${usd(fee)}. שלב 2: ${nm(P)} − ${usd(fee)} = ${usd(P-fee)}.`}}},
+ f4disc:{t:"פרמיה או דיסקאונט בקרן סגורה",f:"Market price above NAV = premium; below NAV = discount; difference = |price − NAV|",x:"NAV $20, price $18 → discount of $2",g(){const nav=Rn([9,11,12.5,16,22,26]),d=Rn([.3,.45,.6,.9,1.2,1.5]),prem=Math.random()<.35,px=r2(prem?nav+d:nav-d);
+  return {en:`A closed-end fund has an NAV of $${nav.toFixed(2)}, and its shares trade at $${px.toFixed(2)}. The shares trade at:`,he:`לקרן סגורה NAV של ${nav.toFixed(2)} דולר, והמניות שלה נסחרות ב-${px.toFixed(2)} דולר. המניות נסחרות ב:`,
+  ok:`A ${prem?"premium":"discount"} of ${usd(d)}`,bad:[`A ${prem?"discount":"premium"} of ${usd(d)}`,`A ${prem?"premium":"discount"} of ${usd(d+.2)}`,`A ${prem?"discount":"premium"} of ${usd(Math.max(.1,d-.15))}`,`A ${prem?"premium":"discount"} of ${usd(Math.max(.1,d-.2))}`,`A ${prem?"discount":"premium"} of ${usd(d+.25)}`],why:`המחיר ${prem?"מעל":"מתחת ל"}-NAV, ולכן זה ${prem?"פרמיה":"דיסקאונט"}. הפרש: ${prem?`${px.toFixed(2)} − ${nav.toFixed(2)}`:`${nav.toFixed(2)} − ${px.toFixed(2)}`} = ${usd(d)}.`}}},
+ f4exp:{t:"עלות יחס ההוצאות",f:"Yearly cost ≈ amount invested × expense ratio",x:"$20,000 × 0.80% = $160",g(){const B=Rn([10000,15000,25000,30000,50000,80000]),er=Rn([.25,.4,.5,.75,.9,1.1,1.25]),c=B*er/100;
+  return {en:`A fund's expense ratio is ${er}%. An investor holds $${nm(B)} in the fund for a year. About how much do operating expenses cost that year?`,he:`יחס ההוצאות של קרן הוא ${er}%. משקיע מחזיק ${nm(B)} דולר בקרן במשך שנה. בערך כמה עולות ההוצאות השנתיות?`,
+  ok:usd(c),bad:[usd(B*er/10),usd(B*er/1000),usd(B*(er+.25)/100),usd(B*Math.max(.1,er-.2)/100),usd((B+5000)*er/100),usd(Math.max(1000,B-5000)*er/100)],why:`שלב 1: ${er}% = ${+(er/100).toFixed(4)}. שלב 2: ${nm(B)} × ${+(er/100).toFixed(4)} = ${usd(c)}. העלות לא נגבית כחיוב נפרד: היא יורדת מתוך שווי הקרן.`}}},
+ f4surr:{t:"עמלת פדיון מוקדם",f:"Surrender charge = % for that contract year × amount subject to the charge (amount withdrawn − free withdrawal)",x:"7% schedule example: $10,000 in year 1 → $700",g(){const y=Rn([1,2,3,4,5,6]),pct=8-y,V=Rn([40000,50000,60000,80000]),W=Rn([6000,9000,12000,15000,20000]),free=Math.random()<.5,fa=free?V*.1:0,sub=Math.max(0,W-fa),c=sub*pct/100;
+  return {en:`A variable annuity's surrender charge starts at 7% in year 1 and falls 1% each year. In year ${y}, the owner withdraws $${nm(W)} from a contract worth $${nm(V)}. ${free?"The contract allows 10% of its value each year free of surrender charges.":"There is no free withdrawal amount."} What is the surrender charge?`,he:`עמלת הפדיון המוקדם של אנונה משתנה מתחילה ב-7% בשנה הראשונה ויורדת ב-1% כל שנה. בשנה ${y} הבעלים מושך ${nm(W)} דולר מחוזה ששווה ${nm(V)} דולר. ${free?"החוזה מאפשר למשוך 10% מהשווי כל שנה בלי עמלה.":"אין סכום משיכה חופשי."} מה עמלת הפדיון?`,
+  ok:usd(c),bad:[usd(W*pct/100),usd(Math.max(sub,1000)*(pct+1)/100),usd(W*7/100),usd(Math.max(sub,1000)*Math.max(1,pct-1)/100),usd(V*pct/100),usd(fa*pct/100||W*(pct+2)/100)],why:`שלב 1: האחוז בשנה ${y}: 7 − ${y-1} = ${pct}%. שלב 2: ${free?(W<=fa?`הסכום החופשי: 10% × ${nm(V)} = ${usd(fa)}. כל המשיכה (${usd(W)}) בתוך הסכום החופשי, ולכן אין עמלה.`:`הסכום החופשי: 10% × ${nm(V)} = ${usd(fa)}. חייב בעמלה: ${nm(W)} − ${usd(fa)} = ${usd(sub)}. שלב 3: ${usd(sub)} × ${pct}% = ${usd(c)}.`):`כל ${usd(W)} חייבים בעמלה. שלב 3: ${usd(sub)} × ${pct}% = ${usd(c)}.`}`}}},
+ f4tax:{t:"מס על משיכה מאנונה",f:"Before annuitization, earnings come out first and are taxed as ordinary income; before 59½, +10% on the taxable part",x:"Paid $40,000, worth $52,000, withdraw $15,000 → $12,000 taxable",g(){const C=Rn([20000,25000,50000,60000]),gain=Rn([4000,6000,10000,15000]),V=C+gain,W=Rn([3000,7000,9000,18000,20000]),tx=Math.min(W,gain),age=Rn([45,48,55,57,62,66]),pen=age<59.5,askPen=pen&&Math.random()<.5;
+  if(askPen)return {en:`A ${age}-year-old paid $${nm(C)} into a nonqualified variable annuity now worth $${nm(V)}. She withdraws $${nm(W)} before annuitizing. No exception applies. What is the 10% additional tax?`,he:`בת ${age} שילמה ${nm(C)} דולר לאנונה משתנה שנקנתה בכסף אחרי מס, והיא שווה עכשיו ${nm(V)} דולר. היא מושכת ${nm(W)} לפני שלב קבלת הקצבה. אין חריג. מה המס הנוסף של 10%?`,
+   ok:usd(tx*.1),bad:[usd(W*.1),usd(gain*.1),usd(W*gain/V*.1),usd(V*.1)].concat(W>gain?[usd((W-gain)*.1)]:[usd(tx*.1+200)]),why:`שלב 1: הרווח: ${nm(V)} − ${nm(C)} = ${nm(gain)}. שלב 2: הרווחים יוצאים קודם, אז החלק החייב במס: ${usd(tx)}${W>gain?` (השאר, ${usd(W-gain)}, הוא החזר של הכסף שלה)`:""}. שלב 3: היא מתחת ל-59½: 10% × ${usd(tx)} = ${usd(tx*.1)}.`};
+  return {en:`A ${age}-year-old paid $${nm(C)} into a nonqualified variable annuity now worth $${nm(V)}. She withdraws $${nm(W)} before annuitizing. How much of the withdrawal is taxable as ordinary income?`,he:`בת ${age} שילמה ${nm(C)} דולר לאנונה משתנה שנקנתה בכסף אחרי מס, והיא שווה עכשיו ${nm(V)} דולר. היא מושכת ${nm(W)} לפני שלב קבלת הקצבה. כמה מהמשיכה חייב במס כהכנסה רגילה?`,
+   ok:usd(tx),bad:[usd(0),usd(W),usd(gain),usd(W*gain/V),usd(Math.max(0,W-gain))],why:`שלב 1: הרווח בחוזה: ${nm(V)} − ${nm(C)} = ${nm(gain)}. שלב 2: לפני שלב קבלת הקצבה, הרווחים יוצאים קודם. היא מושכת ${nm(W)}, ולכן החלק החייב במס הוא ${W>gain?`כל הרווח, ${usd(gain)}. השאר הוא החזר של הכסף שלה, בלי מס`:`כל הסכום, ${usd(W)}, כי הוא כולו מתוך הרווח`}.${pen?" ובגלל שהיא מתחת ל-59½, יש גם מס נוסף של 10% על החלק הזה.":""}`}}},
+ f4roa:{t:"breakpoint עם זכות צבירה",f:"With ROA, existing holdings + new purchase decide the breakpoint level",x:"Example schedule: under $50,000 5%; $50,000+ 4%; $100,000+ 3%",g(){const mode=Rn(["same","one","one","two"]),buy=mode==="one"&&Math.random()<.5?Rn([55000,70000,85000]):Rn([15000,20000,30000,40000]),have=mode==="same"?Rn([5000,10000]):mode==="two"?100000-buy+Rn([0,5000,10000]):(buy>=50000?100000:50000)-buy+Rn([0,5000,10000,15000]),tot=have+buy,r=tot>=100000?3:tot>=50000?4:5;
+  return {en:`A fund's example schedule: under $50,000, 5%; $50,000 to $99,999, 4%; $100,000 or more, 3%. An investor already holds $${nm(have)} in the fund family and buys $${nm(buy)} more. With rights of accumulation, what sales charge rate applies to the new purchase?`,he:`טבלת דוגמה של קרן: עד 50,000 דולר: 5%; מ-50,000 עד 99,999: 4%; מ-100,000: 3%. למשקיע כבר יש ${nm(have)} דולר במשפחת הקרנות, והוא קונה עוד ${nm(buy)}. עם זכות צבירה, איזה שיעור דמי מכירה חל על הקנייה החדשה?`,
+  ok:r+"%",n:2,bad:["5%","4%","3%"],why:`עם ROA סופרים גם את מה שכבר יש: ${nm(have)} + ${nm(buy)} = ${nm(tot)}. לפי הטבלה: ${tot>=100000?"100,000 ומעלה, ולכן 3%":tot>=50000?"בין 50,000 ל-99,999, ולכן 4%":"מתחת ל-50,000, ולכן 5%"}.`}}},
  /* chapter 1 */
  cumvote:{t:"הצבעה מצטברת ורגילה",f:"Cumulative: total votes = shares × seats, any split. Statutory: at most (shares) votes per candidate",x:"500 shares × 4 seats = 2,000 votes",g(){const s=Rn([100,200,300,500,1000,2500,10000]),k=Rn([3,4,5,6]),v=Rn([0,1,2]);
   const base=`שלב 1: כל מניה נותנת קול אחד לכל מושב פנוי. שלב 2: ${nm(s)} מניות × ${k} מושבים = ${nm(s*k)} קולות בסך הכל, בשתי השיטות. שלב 3: ההבדל הוא איך מחלקים: `;
@@ -421,14 +451,14 @@ const CF={
   return {en:`An affiliate wants to sell under Rule 144. The company has ${nm(O)} shares outstanding. The stock is listed on an exchange, and its average weekly reported trading volume over the 4 weeks before the Form 144 filing was ${nm(V)} shares. What is the most the affiliate may sell in a 3-month period?`,he:`בעל שליטה רוצה למכור לפי Rule 144. לחברה ${nm(O)} מניות במחזור. המניה רשומה למסחר בבורסה, ומחזור המסחר השבועי הממוצע ב-4 השבועות האחרונים היה ${nm(V)} מניות. מה הכמות המקסימלית שמותר לו למכור בתקופה של 3 חודשים?`,
   ok:nm(Math.max(one,V))+" shares",bad:[nm(Math.min(one,V))+" shares",nm(4*V)+" shares",nm(one+V)+" shares",nm(O/10)+" shares",nm(Math.max(one,V)/2)+" shares"],why:`שלב 1: 1% מהמניות במחזור = ${nm(O)} × 1% = ${nm(one)}. שלב 2: המחזור השבועי הממוצע = ${nm(V)} (ממוצע לשבוע, לא סכום של 4 שבועות). שלב 3: לוקחים את הגדול מבין השניים: ${nm(Math.max(one,V))}.`}}}
 };
-const mathLtr=h=>String(h).replace(/(?:[−+×÷] ?)?[$\d(](?:[\d$.,%\s×÷−+=()]*[\d%)])?(?: = <b>[$\d.,%]+<\/b>)?/g,m=>/[×÷−+=]/.test(m)?`<bdi dir="ltr" class="math">${m.trim().split(/ (?==)/).map(x=>`<span class="mp">${x}</span>`).join(" ")}</bdi>${/\s$/.test(m)?" ":""}`:m);
+const mathLtr=h=>String(h).replace(/(?:\b[A-Z]{2,5} = )?(?:[−+×÷] ?)?[$\d(](?:[\d$.,%\s×÷−+=()]*[\d%)])?(?: = <b>[$\d.,%]+<\/b>)?/g,m=>/[×÷−+=]/.test(m)?`<bdi dir="ltr" class="math">${m.trim().split(/ (?==)/).map(x=>`<span class="mp">${x}</span>`).join(" ")}</bdi>${/\s$/.test(m)?" ":""}`:m);
 function calcItem(k){let g,b,tries=0;do{g=CF[k].g();const must=(g.must||[]).filter(x=>x!==g.ok);b=[...must,...shuffle([...new Set(g.bad)].filter(x=>x!==g.ok&&!must.includes(x)))].slice(0,g.n||3);tries++}while(tries<30&&b.length<(g.n||3));
-  return {q:`<p class="q enq" lang="en">${g.en}</p>`,qHe:g.he,opts:shuffle([{h:g.ok,ok:1},...b.map(h=>({h}))]),why:mathLtr(bidi(g.why)),regen:()=>calcItem(k)}}
+  return {q:`<p class="q enq" lang="en">${g.en}</p>`,qHe:g.he,opts:shuffle([{h:g.ok,ok:1},...b.map(h=>({h}))]),why:mathLtr(bidi(g.why.replace(/\s(שלב \d+:)/g,"<br>$1"))),regen:()=>calcItem(k)}}
 function calcHome(){
   toTop();const K=D.calcs.filter(k=>CF[k]);
   app.innerHTML=`<div class="row"><button class="btn soft" id="back">→ לתפריט</button><span class="pill">תרגול חישובים</span></div>
    <div class="panel"><h2>תרגול חישובים</h2><p class="muted" style="margin:0">בכל סבב המספרים חדשים, כדי לתרגל את הנוסחה ולא לזכור תשובה. אחרי כל שאלה מופיע פתרון צעד אחר צעד עם המספרים של השאלה.</p>
-   ${K.map(k=>`<div class="term"><span class="t-he">${CF[k].t}</span><p class="t-def" lang="en" dir="ltr">${CF[k].f}</p><p class="muted" lang="en" dir="ltr" style="margin:0">Example: ${CF[k].x}</p></div>`).join("")}
+   ${K.map(k=>`<div class="term"><span class="t-he">${CF[k].t}</span><p class="t-def" lang="en" dir="ltr">${CF[k].f}</p><p class="muted" lang="en" dir="ltr" style="margin:0">${/^Example/.test(CF[k].x)?"":"Example: "}${CF[k].x}</p></div>`).join("")}
    <button class="btn" id="go">התחל סבב (${K.length*2} שאלות) ←</button></div>`;
   $("back").onclick=home;$("go").onclick=()=>runDrill(shuffle(K.flatMap(k=>[calcItem(k),calcItem(k)])),"תרגול חישובים",r=>{S.calc=r;save()},calcHome,"לרשימת הנוסחאות");focusPanel();
 }
@@ -511,7 +541,7 @@ function result(Q,ans,ms){
   <div class="panel"><h3>סקירת כל השאלות</h3><div class="review">${Q.map((e,k)=>{const q=D.exam[e.i],ok=ans[k]===q.a;
     return `<div class="rv${ok?"":" wrong"}"><span class="rv-lab">${ok?"✓ נכון":"✗ טעות"}</span><p class="rv-en" lang="en" dir="ltr">${q.en}</p>
      ${ok?"":`<span class="rv-lab">התשובה שלך</span><p class="rv-en" lang="en" dir="ltr">${ans[k]==null?"(no answer)":q.o[ans[k]][0]}</p>`}
-     <span class="rv-lab">התשובה הנכונה</span><p class="rv-en" lang="en" dir="ltr">${q.o[q.a][0]}</p><span>${q.why}</span></div>`}).join("")}</div></div>`;
+     <span class="rv-lab">התשובה הנכונה</span><p class="rv-en" lang="en" dir="ltr">${q.o[q.a][0]}</p><span>${mathLtr(bidi(q.why))}</span></div>`}).join("")}</div></div>`;
   $("home").onclick=home;$("again").onclick=exam;
   if($("pw"))$("pw").onclick=()=>{const its=wordItems(toPractice);const defs=its.filter(it=>it.qHe!==undefined&&/Which term/.test(it.q));runDrill(defs.length?defs:its,"מילים מהטעויות במבחן",null,home)};
   focusPanel();
