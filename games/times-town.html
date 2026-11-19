@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}
+.lib-back{position:fixed;left:max(12px,env(safe-area-inset-left,0px));bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:50;font:700 14px system-ui,sans-serif;padding:8px 14px;border-radius:999px;background:rgba(20,20,40,.82);color:#fff;text-decoration:none}</style>
+</head><body>
+<a class="lib-back" href="../">&larr; All games</a>
+<title>Times Town</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@600;700;800&family=Frank+Ruhl+Libre:wght@500;700&display=swap">
+<style>
+/* Layout: a desert journey through Mitzrayim, 5 stations (pasuk words + each makkah), then the real 25-question test */
+:root{
+  --bg:#f6ead2; --card:#fffaf0; --ink:#2b2140; --muted:#6c6280; --line:#e6d3ad;
+  --accent:#2f6fd6; --accent-soft:#dbe7fb; --good:#1f9a5b; --good-soft:#d5f3e3; --bad:#d63b3b; --bad-soft:#fbe0de; --sun:#f0a92b; --hl:#d6336c;
+  --display:"Baloo 2","Trebuchet MS",system-ui,sans-serif; --body:"Nunito","Segoe UI",system-ui,sans-serif; --heb:"Frank Ruhl Libre","Times New Roman",serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#1c1712; --card:#2a2219; --ink:#f3eadb; --muted:#b8a990; --line:#45392a;
+  --accent:#7fa8f0; --accent-soft:#25344f; --good:#4fd18b; --good-soft:#173d2a; --bad:#ff6b6b; --bad-soft:#4a1d1d; --sun:#f5be55; --hl:#ff7aa8; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1c1712; --card:#2a2219; --ink:#f3eadb; --muted:#b8a990; --line:#45392a;
+  --accent:#7fa8f0; --accent-soft:#25344f; --good:#4fd18b; --good-soft:#173d2a; --bad:#ff6b6b; --bad-soft:#4a1d1d; --sun:#f5be55; --hl:#ff7aa8; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:18px;line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 40px}
+.wrap{max-width:620px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1,h2,h3{font-family:var(--display);margin:0;line-height:1.1;text-wrap:balance}
+h1{font-size:2rem} h2{font-size:1.55rem} h3{font-size:1.2rem}
+button{font:inherit;color:inherit}
+button:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
+.hb{font-family:var(--heb);font-weight:700;font-size:1.15em;unicode-bidi:isolate;direction:rtl}
+.guide{display:flex;gap:12px;align-items:flex-start}
+.guide .face{font-size:3rem;line-height:1;flex:none}
+.bubble{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:12px 14px;font-weight:700;min-width:0}
+.panel{background:var(--card);border:2px solid var(--line);border-radius:22px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.btn{font-family:var(--display);font-weight:700;font-size:1.15rem;border:0;border-radius:16px;padding:12px 20px;cursor:pointer;background:var(--accent);color:#fff;box-shadow:0 4px 0 color-mix(in srgb,var(--accent) 55%,#000)}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 color-mix(in srgb,var(--accent) 55%,#000)}
+.btn.soft{background:var(--card);color:var(--ink);border:2px solid var(--line);box-shadow:none}
+.btn:disabled{opacity:.4;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.pill{font-family:var(--display);font-weight:700;background:var(--accent-soft);border-radius:999px;padding:3px 12px;font-variant-numeric:tabular-nums}
+.stations{display:flex;flex-direction:column;gap:12px}
+.station{display:flex;align-items:center;gap:14px;background:var(--card);border:2px solid var(--line);border-radius:22px;padding:12px 16px;cursor:pointer;text-align:left;width:100%}
+.station .ico{font-size:2.2rem;width:58px;height:58px;display:grid;place-items:center;background:var(--bg);border-radius:16px;flex:none}
+.station .txt{flex:1;min-width:0}
+.station small{display:block;color:var(--muted);font-weight:700;font-size:.9rem}
+.stars{font-size:1.05rem;letter-spacing:2px;white-space:nowrap}
+.station.final{background:var(--accent);border-color:var(--accent);color:#fff}
+.station.final small{color:#fff;opacity:.9}
+.station.final .ico{background:rgba(255,255,255,.22)}
+.learn{display:flex;flex-direction:column;gap:12px}
+.picbox{background:var(--bg);border-radius:18px;padding:14px;display:grid;place-items:center;min-height:120px;text-align:center}
+.emo{font-size:3.8rem;line-height:1.15;letter-spacing:6px;text-align:center}
+.bigheb{font-family:var(--heb);font-size:2.6rem;font-weight:700;direction:rtl;line-height:1.3}
+.bigheb .p1{color:var(--hl)} .bigheb .p2{color:var(--accent)}
+.legend{display:flex;flex-direction:column;gap:4px;font-weight:800;font-size:1rem;margin-top:6px}
+.legend .p1{color:var(--hl)} .legend .p2{color:var(--accent)}
+.word{font-family:var(--display);font-size:1.9rem;font-weight:800;color:var(--accent);line-height:1.1}
+.say{font-size:1.15rem;font-weight:800;margin:0}
+.ex{margin:0;background:var(--good-soft);border-radius:14px;padding:10px 12px;font-weight:700}
+.he{margin:0;color:var(--muted);font-weight:700;direction:rtl;text-align:right}
+.animals{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;width:100%}
+.animals div{display:flex;flex-direction:column;align-items:center;font-weight:800;font-size:.85rem}
+.animals span{font-size:2.3rem}
+.dots{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.dots i{width:10px;height:10px;border-radius:50%;background:var(--line)}
+.dots i.on{background:var(--accent)}
+.q{font-size:1.25rem;font-weight:800;margin:0}
+.tag{align-self:flex-start;font-family:var(--display);font-weight:700;background:var(--sun);color:#2b1d00;border-radius:999px;padding:2px 12px;font-size:.95rem}
+.big-item{display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--bg);border-radius:18px;padding:14px;text-align:center}
+.big-item .emo{font-size:3.6rem}
+.bins{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.bin{border:3px solid var(--line);background:var(--card);border-radius:18px;padding:12px 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;font-family:var(--display);font-weight:700;font-size:1.1rem;line-height:1.15}
+.bin span{font-size:2.2rem}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{border:3px solid var(--line);background:var(--card);border-radius:16px;padding:11px 14px;text-align:left;font-weight:800;cursor:pointer;font-size:1.05rem;display:flex;gap:8px;align-items:baseline}
+.opt .l{font-family:var(--display);color:var(--accent);flex:none}
+.opt.pick{border-color:var(--sun);background:color-mix(in srgb,var(--sun) 22%,var(--card))}
+.opt.ok,.bin.ok{border-color:var(--good);background:var(--good-soft)}
+.opt.no,.bin.no{border-color:var(--bad);background:var(--bad-soft)}
+.shake{animation:shake .35s}
+.tiles{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.tile{border:3px solid var(--line);background:var(--card);border-radius:16px;padding:8px 10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;min-width:100px;max-width:150px;font-weight:800;font-size:.92rem;text-align:center}
+.tile span{font-size:2.4rem}
+.tile.used{opacity:.25;cursor:default}
+.tile.no{border-color:var(--bad)}
+.seq{display:flex;gap:8px;justify-content:center;min-height:70px;background:var(--bg);border-radius:16px;padding:8px;flex-wrap:wrap;align-items:center}
+.seq span{font-size:2.4rem}
+.seq .arrow{font-size:1.3rem;color:var(--muted)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.col{display:flex;flex-direction:column;gap:8px;min-width:0}
+.mt{border:3px solid var(--line);background:var(--card);border-radius:14px;padding:10px;font-weight:800;cursor:pointer;min-height:54px;font-size:1.05rem;text-align:center}
+.mt.sel{border-color:var(--sun);background:color-mix(in srgb,var(--sun) 25%,var(--card))}
+.mt.done{border-color:var(--good);background:var(--good-soft);cursor:default}
+.mt.no{border-color:var(--bad);background:var(--bad-soft)}
+.fb{font-weight:800;margin:0;min-height:1.4em;padding:10px 12px;border-radius:14px}
+.fb.ok{background:var(--good-soft)}
+.fb.no{background:var(--bad-soft)}
+.fb:empty{padding:0}
+.bar{height:12px;background:var(--bg);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--good);transition:width .3s}
+.huge{font-family:var(--display);font-size:3.6rem;font-weight:800;line-height:1;text-align:center;font-variant-numeric:tabular-nums}
+.bigstars{font-size:3rem;text-align:center;letter-spacing:6px}
+.miss{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+.miss li{background:var(--bad-soft);border-radius:14px;padding:10px 12px;font-weight:700}
+.miss b{display:block}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@keyframes pop{0%{transform:scale(.7);opacity:0}100%{transform:scale(1);opacity:1}}
+.pop{animation:pop .3s ease-out}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (max-width:420px){.emo{font-size:3rem}.bigheb{font-size:2.1rem}.animals span{font-size:1.9rem}}
+</style>
+
+<div class="wrap" id="app"></div>
+
+<style>
+/* additions for Bo: fill-in sentences, typing, Hebrew phrase card */
+.hphrase{font-family:var(--heb);font-weight:700;font-size:1.6rem;direction:rtl;text-align:center;line-height:1.5}
+.esent{font-size:1.15rem;font-weight:700;text-align:center;margin:0}
+.esent .gap{display:inline-block;min-width:4.5em;border-bottom:3px solid var(--accent);margin:0 4px;color:var(--accent)}
+.key{color:var(--hl);text-decoration:underline;text-underline-offset:4px}body{padding-bottom:80px}
+.typein{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.typein input{font:inherit;font-size:1.2rem;font-weight:700;padding:10px 14px;border-radius:14px;border:2px solid var(--line);background:var(--card);color:var(--ink);min-width:0;width:12em;text-align:center}
+.typein input:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+.bank{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.bank button{font:inherit;font-weight:700;border:2px dashed var(--line);background:var(--card);border-radius:12px;padding:6px 12px;cursor:pointer;min-height:44px}
+.saybtn{border:2px solid var(--line);background:var(--card);border-radius:999px;min-width:44px;min-height:44px;cursor:pointer;font-size:1.1rem}
+.mini{display:flex;flex-direction:column;gap:8px}
+.mini .ln{display:grid;grid-template-columns:1fr;gap:2px;border-bottom:1px dashed var(--line);padding-bottom:6px}
+.mini .ln .h{font-family:var(--heb);font-weight:700;font-size:1.2rem;direction:rtl;text-align:right}
+.mini .ln .e{font-weight:700}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
+<style>
+.scene{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;align-items:center;padding:10px;border-radius:16px;background:var(--bg);min-height:90px}
+.grp{display:inline-flex;flex-wrap:wrap;gap:2px;justify-content:center;align-items:center;border:2px dashed var(--line);border-radius:12px;padding:4px 6px;font-size:1.15rem;line-height:1.2;background:var(--card)}
+.grp small{display:block;width:100%;text-align:center;font-size:.75rem;font-weight:800;color:var(--muted)}
+.story{font-size:1.15rem;font-weight:700;line-height:1.55;margin:0}
+.story mark{background:#ffe9a8;color:inherit;border-radius:6px;padding:0 3px}
+.eq{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center;font-size:1.5rem;font-weight:900}
+.slot{min-width:64px;min-height:56px;border:3px dashed var(--accent);border-radius:14px;background:var(--card);font:inherit;font-size:1.5rem;font-weight:900;color:var(--ink);cursor:pointer;padding:0 8px}
+.slot.full{border-style:solid}
+.slot.ans{border-color:var(--sun)}
+.tiles2{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.tl{min-width:56px;min-height:52px;border:2px solid var(--line);border-radius:14px;background:var(--card);font:inherit;font-size:1.35rem;font-weight:900;cursor:pointer;color:var(--ink)}
+.tl.op{background:#e7f0ff}
+.tl:disabled{opacity:.35}
+.ask{display:grid;gap:10px}
+.ask .opt{justify-content:center}
+.ansin{font:inherit;font-size:1.5rem;font-weight:900;width:6em;text-align:center;padding:8px;border-radius:14px;border:2px solid var(--line);background:var(--card);color:var(--ink)}
+.steps{display:flex;flex-direction:column;gap:6px}
+.steps .done{background:#e3f7ea;border-radius:12px;padding:6px 10px;font-weight:800;font-size:1.1rem;text-align:center}
+.notebook{background:#fffef5;border:2px solid #e6dfb8;border-radius:14px;padding:12px;font-family:"Comic Sans MS","Segoe Print",cursive,var(--body);font-size:1.2rem;line-height:1.7;color:#222}
+.clue{display:flex;gap:10px;align-items:center;font-weight:700}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+<style>
+/* Times Town additions */
+.bld{display:inline-grid;gap:3px;padding:8px;border-radius:10px 10px 4px 4px;background:#5b6b8c;justify-content:center}
+.bld i{width:var(--w,18px);height:var(--w,18px);border-radius:3px;background:#2d3550;display:block}
+.bld i.on{background:#ffd54a}.bld i.b{background:#4fa3ff}.bld i.o{background:#ff9f43}.bld i.g{background:#7ed957}.bld i.x{background:#2d3550;outline:2px dashed #ff6b6b;outline-offset:-2px}
+.bld.roof{position:relative;margin-top:14px}
+.bld.roof::before{content:"";position:absolute;left:50%;top:-14px;transform:translateX(-50%);border:14px solid transparent;border-bottom-color:#a14a4a;border-top:0;width:70%}
+.center{display:flex;flex-direction:column;align-items:center;gap:10px}
+.ctrl{display:flex;align-items:center;gap:8px;font-weight:800}
+.ctrl button{min-width:48px;min-height:48px;border-radius:14px;border:2px solid var(--line);background:var(--card);font:inherit;font-size:1.4rem;font-weight:900;color:var(--ink);cursor:pointer}
+.big{font-size:2rem;font-weight:900;text-align:center;margin:0}
+.leg{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;font-weight:800}
+.leg span{display:inline-flex;align-items:center;gap:6px}.leg i{width:16px;height:16px;border-radius:4px;display:inline-block}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:300px;margin:0 auto;width:100%}
+.pad button{min-height:56px;border-radius:14px;border:2px solid var(--line);background:var(--card);font:inherit;font-size:1.5rem;font-weight:900;color:var(--ink);cursor:pointer}
+.pad .ok{background:var(--accent);color:#fff;border-color:var(--accent)}
+.disp{min-height:64px;min-width:140px;border:3px solid var(--accent);border-radius:16px;background:var(--card);font-size:2rem;font-weight:900;display:flex;align-items:center;justify-content:center;margin:0 auto;padding:0 14px}
+.town{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;align-items:flex-end;padding:12px;border-radius:16px;background:linear-gradient(#cfe6ff,#eaf4ff 70%,#9fd27a 70%)}
+.town .t{display:flex;flex-direction:column;align-items:center;font-weight:900;font-size:.8rem}
+.plates{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.plate{min-width:84px;min-height:64px;border-radius:50%;background:#fff;border:3px solid #e2d6b8;display:flex;flex-wrap:wrap;gap:2px;align-items:center;justify-content:center;padding:6px;font-size:1.2rem}
+.pile{font-size:1.3rem;text-align:center;max-width:320px;line-height:1.3}
+.tri{display:grid;grid-template-columns:1fr 1fr;gap:6px;max-width:260px;margin:0 auto;text-align:center;font-weight:900;font-size:1.2rem}
+.tri .top{grid-column:1/3;font-size:1.8rem;color:var(--hl)}
+.area{display:grid;gap:3px;margin:0 auto}
+.area div{border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:900;padding:8px;min-height:54px;text-align:center}
+.area .hd{background:transparent;min-height:auto;color:var(--muted)}
+.c1{background:#d9ecff}.c2{background:#ffe3c7}.c3{background:#dff5d3}.c4{background:#f3dcff}
+.stepbox{display:flex;flex-direction:column;gap:8px}
+.stepline{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px;font-size:1.3rem;font-weight:900}
+.stepline input{width:5em;font:inherit;text-align:center;padding:6px;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink)}
+.stepline input.good{border-color:var(--good);background:#e3f7ea}
+.stepline input.bad{border-color:var(--bad)}
+.tip{background:#fff6d6;border-radius:14px;padding:10px 12px;font-weight:700}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+<script>
+/* ============ data: fact families in the research order: 2,5,10 first, then 0/1 and squares, then derived facts ============ */
+const FAM=[
+ {n:2,name:"Twos",ico:"👯",rule:"×2 is a DOUBLE.",how:m=>`2 × ${m} is double ${m}: ${m} + ${m} = ${2*m}`,split:m=>[[1,"b"],[1,"o"]]},
+ {n:10,name:"Tens",ico:"🔟",rule:"×10: put a 0 at the end.",how:m=>`${m} × 10 = ${m} with a zero = ${10*m}`,split:m=>[[10,"b"]]},
+ {n:5,name:"Fives",ico:"🖐️",rule:"×5 is HALF of ×10.",how:m=>`${m} × 10 = ${10*m}. Half of ${10*m} is ${5*m}. So 5 × ${m} = ${5*m}`,split:m=>[[5,"b"],[5,"x"]]},
+ {n:1,name:"Ones, zeros and squares",ico:"🟦",rule:"×1 stays the same. ×0 is always 0. A square is a number times itself: 3 × 3, 4 × 4…",how:m=>`1 × ${m} = ${m}. Anything × 0 = 0.`,split:m=>[[1,"b"]],special:"sq"},
+ {n:4,name:"Fours",ico:"🍀",rule:"×4: double, then double again.",how:m=>`Double ${m} = ${2*m}. Double again = ${4*m}. So 4 × ${m} = ${4*m}`,split:m=>[[2,"b"],[2,"o"]]},
+ {n:3,name:"Threes",ico:"🔺",rule:"×3: double, plus one more group.",how:m=>`2 × ${m} = ${2*m}, plus one more ${m} = ${3*m}`,split:m=>[[2,"b"],[1,"o"]]},
+ {n:6,name:"Sixes",ico:"🎲",rule:"×6: the fives, plus one more group.",how:m=>`5 × ${m} = ${5*m}, plus one more ${m} = ${6*m}`,split:m=>[[5,"b"],[1,"o"]]},
+ {n:9,name:"Nines",ico:"9️⃣",rule:"×9: the tens, minus one group.",how:m=>`10 × ${m} = ${10*m}, minus one ${m} = ${9*m}`,split:m=>[[9,"b"],[1,"x"]]},
+ {n:8,name:"Eights",ico:"🎱",rule:"×8: double the fours.",how:m=>`4 × ${m} = ${4*m}. Double it = ${8*m}`,split:m=>[[4,"b"],[4,"o"]]},
+ {n:7,name:"Sevens",ico:"🌈",rule:"×7: the fives plus the twos.",how:m=>`5 × ${m} = ${5*m}, and 2 × ${m} = ${2*m}. ${5*m} + ${2*m} = ${7*m}`,split:m=>[[5,"b"],[2,"o"]]}
+];
+
+/* ============ engine helpers ============ */
+const app=document.getElementById("app");
+const $=id=>document.getElementById(id);
+const R=a=>a[Math.random()*a.length|0];
+const RI=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const toTop=()=>window.scrollTo({top:0,behavior:reduce?"auto":"smooth"});
+const shk=el=>{if(reduce||!el)return;el.classList.add("shake");setTimeout(()=>el.classList.remove("shake"),400)};
+const focusMain=()=>{const p=app.querySelector(".panel");if(p){p.tabIndex=-1;p.focus({preventScroll:true})}};
+const nf=n=>Number(n).toLocaleString("en-US");
+const PRAISE=["Awesome!","Great job!","You got it!","Super!","Yasher koach!","Builder power! 💪"];
+let S={};try{S=JSON.parse(localStorage.getItem("timestown")||"{}")}catch(e){}
+S.fam=S.fam||{};S.miss=S.miss||{};S.basics=S.basics||{};S.big=S.big||{};
+const save=()=>{try{localStorage.setItem("timestown",JSON.stringify(S))}catch(e){}};
+const key=(a,b)=>a<b?a+"x"+b:b+"x"+a;
+
+/* a building: rows = floors, cols = windows per floor; colors per row group */
+function bld(rows,cols,opts={}){
+  const w=opts.w||Math.max(8,Math.min(22,Math.floor(260/Math.max(cols,1))-3));
+  const groups=opts.groups||[[rows,opts.cls||"on"]];let rowCls=[];groups.forEach(([n,c])=>{for(let i=0;i<n;i++)rowCls.push(c)});
+  let cells="";for(let r=0;r<rows;r++)for(let c=0;c<cols;c++)cells+=`<i class="${rowCls[r]||"on"}"></i>`;
+  return `<div class="bld roof" style="--w:${w}px;grid-template-columns:repeat(${cols},${w}px)" role="img" aria-label="${rows} floors with ${cols} windows each">${cells}</div>`;
+}
+
+/* on-screen number pad answer: calls back with true/false */
+function pad(box,answer,onRight,onWrong,opts={}){
+  const d=document.createElement("div");d.className="center";let v="";
+  d.innerHTML=`<div class="disp" id="disp" aria-live="polite" aria-label="your answer">&nbsp;</div>
+   <div class="pad">${[1,2,3,4,5,6,7,8,9].map(n=>`<button data-n="${n}">${n}</button>`).join("")}<button data-n="del" aria-label="delete">⌫</button><button data-n="0">0</button><button data-n="ok" class="ok" aria-label="check">✓</button></div>`;
+  box.append(d);const disp=d.querySelector("#disp");let locked=false;
+  const show=()=>disp.textContent=v===""?" ":nf(v);
+  const press=n=>{if(locked)return;if(n==="del"){v=v.slice(0,-1)}else if(n==="ok"){if(v==="")return;if(Number(v)===answer){locked=true;disp.style.borderColor="var(--good)";onRight()}else{shk(disp);onWrong(Number(v));v="";}}else if(v.length<6){v+=n}show()};
+  d.querySelectorAll("button").forEach(b=>b.onclick=()=>press(b.dataset.n));
+  const kb=e=>{if(!document.body.contains(d)){document.removeEventListener("keydown",kb);return}if(/^[0-9]$/.test(e.key))press(e.key);else if(e.key==="Backspace")press("del");else if(e.key==="Enter")press("ok")};
+  document.addEventListener("keydown",kb);
+  return d;
+}
+const fbEl=()=>{const p=document.createElement("p");p.className="fb";p.setAttribute("role","status");p.setAttribute("aria-live","polite");return p};
+const setFb=(p,ok,t)=>{p.className="fb "+(ok?"ok":"no");p.innerHTML=t};
+
+/* ============ HOME: the town ============ */
+function home(){
+  const famDone=FAM.filter(f=>S.fam[f.n]).length;
+  const town=FAM.map(f=>{const st=S.fam[f.n]||0;const r=Math.min(f.n===1?2:Math.ceil(f.n/2)+1,6),c=2;return `<div class="t">${bld(r,c,{cls:st?"on":"x",w:9})}<span>${f.n===1?"1·0·□":"×"+f.n}</span></div>`}).join("");
+  app.innerHTML=`<div class="guide"><div class="face" aria-hidden="true">👷</div><div class="bubble">Hi! I'm Benny the Builder. In Times Town, every multiplication is a BUILDING: floors × windows. Learn each family of facts and its building lights up!</div></div>
+  <div class="row"><h1 tabindex="-1">Times Town</h1><span class="pill">${famDone} / ${FAM.length} lit</span></div>
+  <div class="town" aria-label="Your town: ${famDone} of ${FAM.length} buildings lit">${town}</div>
+  <div class="stations">
+   <button class="station" id="b1"><div class="ico" aria-hidden="true">🏗️</div><div class="txt"><h3>1. What is ×?</h3><small>Build buildings and see the secret of multiplication</small></div><span class="stars">${S.basics.mul?"⭐":"☆"}</span></button>
+   <button class="station" id="b2"><div class="ico" aria-hidden="true">🍪</div><div class="txt"><h3>2. What is ÷?</h3><small>Share fairly, and find the missing side</small></div><span class="stars">${S.basics.div?"⭐":"☆"}</span></button>
+   <button class="station" id="b3"><div class="ico" aria-hidden="true">💡</div><div class="txt"><h3>3. Light up the town</h3><small>Learn one family at a time, with a trick for each</small></div><span class="pill">${famDone}/${FAM.length}</span></button>
+   <button class="station" id="b4"><div class="ico" aria-hidden="true">🎯</div><div class="txt"><h3>4. Daily mix</h3><small>Your tricky facts come back until they're easy${Object.keys(S.miss).length?" · "+Object.keys(S.miss).length+" to fix":""}</small></div></button>
+   <button class="station final" id="b5"><div class="ico" aria-hidden="true">🏙️</div><div class="txt"><h3>5. Skyscrapers: Grade 4</h3><small>Big numbers: × by 10s and 100s, break apart, 2-digit × 2-digit, ÷ with leftovers</small></div><span class="pill">${Object.keys(S.big).length}/5</span></button>
+  </div>`;
+  $("b1").onclick=whatMul;$("b2").onclick=whatDiv;$("b3").onclick=famMenu;$("b4").onclick=()=>mix(0,0);$("b5").onclick=bigMenu;
+}
+const header=(t,back)=>`<div class="row"><button class="btn soft" id="back">← Town</button><span class="pill">${t}</span></div>`;
+
+/* ============ 1. What is ×? ============ */
+function whatMul(){
+  let r=3,c=4,turned=false;toTop();
+  const draw=()=>{$("bv").innerHTML=bld(turned?c:r,turned?r:c);$("lab").innerHTML=`${turned?c:r} floors × ${turned?r:c} windows = <b>${r*c}</b> windows`;$("rr").textContent=r;$("cc").textContent=c};
+  app.innerHTML=header("🏗️ What is ×?")+`<div class="panel pop"><h2>Build a building!</h2>
+   <p style="margin:0">A building with <b>3 floors</b> and <b>4 windows on each floor</b>. How many windows? You could count them all… or say <b>3 × 4</b>: "3 groups of 4".</p>
+   <div class="center"><div id="bv"></div><p class="big" id="lab"></p></div>
+   <div class="row" style="justify-content:center;gap:16px"><div class="ctrl">Floors <button id="r-" aria-label="fewer floors">−</button><span id="rr"></span><button id="r+" aria-label="more floors">+</button></div>
+    <div class="ctrl">Windows <button id="c-" aria-label="fewer windows">−</button><span id="cc"></span><button id="c+" aria-label="more windows">+</button></div></div>
+   <button class="btn soft" id="turn">🔄 Turn the building on its side</button>
+   <p class="tip" id="tipT">💡 Try it: turn the building. The number of windows stays the same! So <b>3 × 4 = 4 × 3</b>. If you know one, you know the other: that cuts the facts to learn in half!</p>
+   <button class="btn" id="go">I get it, quiz me! →</button></div>`;
+  $("back").onclick=home;
+  $("r-").onclick=()=>{if(r>1){r--;draw()}};$("r+").onclick=()=>{if(r<9){r++;draw()}};$("c-").onclick=()=>{if(c>1){c--;draw()}};$("c+").onclick=()=>{if(c<10){c++;draw()}};
+  $("turn").onclick=()=>{turned=!turned;draw()};draw();
+  $("go").onclick=()=>quickQuiz("mul");focusMain();
+}
+function quickQuiz(kind){
+  let i=0,mist=0;const N=6;
+  const q=()=>{const a=RI(2,6),b=RI(2,7);toTop();
+    app.innerHTML=header(kind==="mul"?"🏗️ Quiz":"🍪 Quiz")+`<div class="panel pop" id="pn"><div class="bar" aria-hidden="true"><i style="width:${i/N*100}%"></i></div></div>`;$("back").onclick=home;const pn=$("pn");
+    if(kind==="mul"){
+      if(i%2===0){pn.insertAdjacentHTML("beforeend",`<p class="q">How many windows? Use multiplication!</p><div class="center">${bld(a,b)}<p class="big">${a} × ${b} = ?</p></div>`);
+        const f=fbEl();pad(pn,a*b,()=>{setFb(f,true,`✅ ${a} floors × ${b} windows = ${a*b}`);nextBtn(pn)},()=>{mist++;setFb(f,false,`Count one floor: ${b}. Now count by ${b}s, ${a} times.`)});pn.append(f)}
+      else{const opts=shuffle([`${a} × ${b}`,`${a} + ${b}`,`${a+1} × ${b}`]);pn.insertAdjacentHTML("beforeend",`<p class="q">Which multiplication matches this building?</p><div class="center">${bld(a,b)}</div><div class="opts">${opts.map(o=>`<button class="opt"><span>${o}</span></button>`).join("")}</div>`);
+        const f=fbEl();pn.append(f);pn.querySelectorAll(".opt").forEach(o=>o.onclick=()=>{if(o.textContent===`${a} × ${b}`){o.classList.add("ok");pn.querySelectorAll(".opt").forEach(x=>x.disabled=true);setFb(f,true,`✅ ${a} floors, ${b} windows each: ${a} × ${b}`);nextBtn(pn)}else{mist++;o.classList.add("no");shk(o);setFb(f,false,"Count the floors, then the windows on ONE floor.")}})}
+    }else{
+      const t=a*b;
+      if(i%2===0){pn.insertAdjacentHTML("beforeend",`<p class="q">${t} cookies, shared fairly on ${a} plates. How many on each plate?</p><div class="pile">${"🍪".repeat(t)}</div><p class="big">${t} ÷ ${a} = ?</p>`);
+        const f=fbEl();pad(pn,b,()=>{setFb(f,true,`✅ ${t} ÷ ${a} = ${b}, because ${a} × ${b} = ${t}`);nextBtn(pn)},()=>{mist++;setFb(f,false,`Think of the building: ${a} floors, and ${t} windows in all. How many windows on each floor? ${a} × ? = ${t}`)});pn.append(f)}
+      else{pn.insertAdjacentHTML("beforeend",`<p class="q">This building has <b>${t} windows</b> and <b>${a} floors</b>. How many windows on each floor?</p><div class="center">${bld(a,b,{cls:"x"})}<p class="big">${a} × ? = ${t}</p></div>`);
+        const f=fbEl();pad(pn,b,()=>{setFb(f,true,`✅ ${a} × ${b} = ${t}, so ${t} ÷ ${a} = ${b}`);nextBtn(pn)},()=>{mist++;setFb(f,false,`Count by ${a}s until you reach ${t}. How many jumps?`)});pn.append(f)}
+    }focusMain()};
+  const nextBtn=pn=>{const b=document.createElement("button");b.className="btn";b.textContent=i<N-1?"Next →":"Finish 🎉";pn.append(b);b.focus();b.onclick=()=>{i++;i<N?q():done()}};
+  const done=()=>{S.basics[kind]=1;save();toTop();app.innerHTML=`<div class="panel pop" style="text-align:center;align-items:center"><div class="bigstars">${mist<=1?"⭐⭐⭐":mist<=3?"⭐⭐☆":"⭐☆☆"}</div><h2>${kind==="mul"?"You know what × means!":"You know what ÷ means!"}</h2>
+    <div class="row" style="justify-content:center"><button class="btn soft" id="h">Town</button><button class="btn" id="n">${kind==="mul"?"Next: What is ÷? →":"Light up the town →"}</button></div></div>`;$("h").onclick=home;$("n").onclick=kind==="mul"?whatDiv:famMenu;focusMain()};
+  q();
+}
+
+/* ============ 2. What is ÷? (fair sharing, then the missing side) ============ */
+function whatDiv(){
+  toTop();let dealt=0;const T=12,P=3;
+  app.innerHTML=header("🍪 What is ÷?")+`<div class="panel pop"><h2>Share fairly</h2>
+   <p style="margin:0"><b>12 cookies</b>, <b>3 plates</b>. Every plate must get the SAME amount. Tap "Deal" to give one cookie to each plate, again and again.</p>
+   <div class="pile" id="pile">${"🍪".repeat(T)}</div>
+   <div class="plates">${Array(P).fill(0).map((_,i)=>`<div class="plate" id="pl${i}" aria-label="plate ${i+1}"></div>`).join("")}</div>
+   <button class="btn" id="deal">Deal one to each plate 🍪</button><p class="fb" id="dfb" role="status" aria-live="polite"></p><div id="more"></div></div>`;
+  $("back").onclick=home;
+  $("deal").onclick=()=>{if(dealt>=T)return;for(let i=0;i<P;i++){$("pl"+i).insertAdjacentHTML("beforeend","🍪")}dealt+=P;$("pile").textContent="🍪".repeat(T-dealt)||"(empty!)";
+    if(dealt>=T){$("deal").disabled=true;setFb($("dfb"),true,"Each plate got <b>4</b>! So <b>12 ÷ 3 = 4</b>.");
+      $("more").innerHTML=`<h3 style="margin:8px 0">Now look: it's a building!</h3><p style="margin:0">Put the plates on top of each other: 3 floors, 4 windows each. <b>Division is a building where one side is missing.</b> You know the total and one side, and you find the other side.</p>
+       <div class="center">${bld(3,4,{groups:[[1,"b"],[1,"o"],[1,"g"]]})}</div>
+       <div class="tri" aria-label="fact family of 3, 4 and 12"><div class="top">12</div><div>3</div><div>4</div></div>
+       <p class="tip">💡 One family, four facts: <b>3 × 4 = 12</b>, <b>4 × 3 = 12</b>, <b>12 ÷ 3 = 4</b>, <b>12 ÷ 4 = 3</b>. So every × fact you learn gives you two ÷ facts for free!</p>
+       <button class="btn" id="go">Quiz me! →</button>`;$("go").onclick=()=>quickQuiz("div")}else setFb($("dfb"),true,`Each plate has ${dealt/P}. Keep dealing!`)};
+  focusMain();
+}
+
+/* ============ 3. Families ============ */
+function famMenu(){toTop();
+  app.innerHTML=header("💡 Light up the town")+`<div class="guide"><div class="face" aria-hidden="true">👷</div><div class="bubble">Go in order! The first ones are the easiest, and the later tricks USE them. Each family has a secret trick.</div></div>
+   <div class="stations">${FAM.map((f,i)=>{const st=S.fam[f.n]||0;return `<button class="station" data-i="${i}"><div class="ico" aria-hidden="true">${f.ico}</div><div class="txt"><h3>${f.n===1?"×1, ×0 and squares":"The ×"+f.n+" building"}</h3><small>${f.rule}</small></div><span class="stars" aria-label="${st} of 3 stars">${"⭐".repeat(st)+"☆".repeat(3-st)}</span></button>`}).join("")}</div>`;
+  $("back").onclick=home;app.querySelectorAll(".station[data-i]").forEach(b=>b.onclick=()=>famLearn(+b.dataset.i));focusMain();
+}
+function famLearn(fi){
+  const f=FAM[fi];toTop();const m=f.n===1?6:(f.n===10?4:R([6,7,8]));
+  let pic;
+  if(f.special==="sq")pic=`<div class="row" style="justify-content:center;gap:14px;align-items:flex-end">${bld(1,6,{cls:"b"})}${bld(3,3,{cls:"g"})}${bld(4,4,{cls:"o"})}</div><p style="margin:0;text-align:center;font-weight:800">1 × 6 = 6 · 3 × 3 = 9 · 4 × 4 = 16</p>`;
+  else if(f.n===5)pic=`<div class="center">${bld(10,m,{groups:[[5,"b"],[5,"x"]]})}<div class="leg"><span><i style="background:#4fa3ff"></i>5 × ${m} = ${5*m}</span><span><i style="background:#2d3550;outline:2px dashed #ff6b6b"></i>the other half</span></div></div>`;
+  else if(f.n===9)pic=`<div class="center">${bld(10,m,{groups:[[9,"b"],[1,"x"]]})}<div class="leg"><span><i style="background:#4fa3ff"></i>9 × ${m} = ${9*m}</span><span><i style="background:#2d3550;outline:2px dashed #ff6b6b"></i>take away 1 floor of ${m}</span></div></div>`;
+  else{const g=f.split(m);pic=`<div class="center">${bld(f.n,m,{groups:g})}${g.length>1?`<div class="leg">${g.map(([n,c])=>`<span><i style="background:${c==="b"?"#4fa3ff":"#ff9f43"}"></i>${n} × ${m} = ${n*m}</span>`).join("")}</div>`:""}</div>`}
+  app.innerHTML=header(f.ico+" ×"+(f.n===1?"1·0·□":f.n))+`<div class="panel pop"><h2>${f.n===1?"×1, ×0 and squares":"The ×"+f.n+" trick"}</h2>
+   <p class="tip" style="font-size:1.15rem">💡 ${f.rule}</p>${pic}<p class="big" style="font-size:1.3rem">${f.how(m)}</p>
+   ${f.n===9?`<p class="tip">🖐️ Bonus: in 9 × something, the two digits of the answer add up to 9: 9 × 6 = 54 (5 + 4 = 9).</p>`:""}
+   ${f.n===10?`<p class="tip">Why? 10 × 4 means 4 tens. Four tens = 40.</p>`:""}
+   <button class="btn" id="go">Practice the ×${f.n===1?"1, ×0 and squares":f.n} facts →</button></div>`;
+  $("back").onclick=famMenu;$("go").onclick=()=>famPractice(fi);focusMain();
+}
+function factsFor(f){
+  if(f.special==="sq")return shuffle([[1,RI(2,9)],[1,RI(2,9)],[RI(2,9),0],[0,RI(2,9)],[3,3],[4,4],[6,6],[7,7],[8,8],[9,9]]);
+  const ms=shuffle([2,3,4,5,6,7,8,9,10].filter(x=>x!==f.n||true)).slice(0,8);
+  return ms.map(m=>Math.random()<.5?[f.n,m]:[m,f.n]);
+}
+function famPractice(fi){
+  const f=FAM[fi],list=factsFor(f);const items=[];
+  list.forEach(([a,b],k)=>{items.push({a,b,div:false});if(k%3===2&&a*b>0&&a>0&&b>0)items.push({a,b,div:true})});
+  let i=0,mist=0;const N=items.length;
+  const q=()=>{const it=items[i],P=it.a*it.b;toTop();
+    const fn=it.a===f.n?it.b:it.a; /* the other factor */
+    app.innerHTML=header(f.ico+" "+(i+1)+" / "+N)+`<div class="panel pop" id="pn"><div class="bar" aria-hidden="true"><i style="width:${i/N*100}%"></i></div>
+     <p class="big">${it.div?`${P} ÷ ${it.a} = ?`:`${it.a} × ${it.b} = ?`}</p></div>`;$("back").onclick=famMenu;const pn=$("pn");
+    const f2=fbEl();let wrong=0;
+    pad(pn,it.div?it.b:P,()=>{setFb(f2,true,`✅ ${PRAISE[Math.random()*PRAISE.length|0]} ${it.div?`${P} ÷ ${it.a} = ${it.b} (because ${it.a} × ${it.b} = ${P})`:`${it.a} × ${it.b} = ${P}`}`);if(!wrong)S.miss[key(it.a,it.b)]&&delete S.miss[key(it.a,it.b)];save();
+      const b=document.createElement("button");b.className="btn";b.textContent=i<N-1?"Next →":"Finish 🎉";pn.append(b);b.focus();b.onclick=()=>{i++;i<N?q():done()}},
+     ()=>{mist++;wrong++;S.miss[key(it.a,it.b)]=1;save();
+      if(it.div)setFb(f2,false,`Turn it into ×: ${it.a} × ? = ${P}. ${wrong>1?`Use the trick: ${f.n===1?"":f.how(it.b)}`:""}`);
+      else{const show=f.special==="sq"?(it.a===it.b?`${it.a} × ${it.a}: a square building, ${it.a} floors of ${it.a}.`:f.how(Math.max(it.a,it.b))):f.how(fn);
+        setFb(f2,false,wrong>1?`Use the trick: ${show}`:"Not yet. Remember the trick: "+f.rule);
+        if(wrong>1&&!pn.querySelector(".bld")&&f.special!=="sq"){pn.querySelector(".big").insertAdjacentHTML("afterend",`<div class="center">${bld(f.n,fn,{groups:f.n===5||f.n===9?[[f.n,"b"]]:f.split(fn)})}</div>`)}}});
+    pn.append(f2);focusMain()};
+  const done=()=>{const st=mist===0?3:mist<=2?2:1;S.fam[f.n]=Math.max(S.fam[f.n]||0,st);save();toTop();const nx=fi<FAM.length-1;
+    app.innerHTML=`<div class="panel pop" style="text-align:center;align-items:center"><div class="bigstars" aria-label="${st} of 3 stars">${"⭐".repeat(st)+"☆".repeat(3-st)}</div>
+     <h2>The ×${f.n===1?"1·0·□":f.n} building is lit! 💡</h2><div class="center">${bld(Math.min(f.n===1?3:f.n,6),4,{cls:"on"})}</div>
+     <p style="margin:0;font-weight:700">${mist===0?"No mistakes. Amazing!":"Mistakes: "+mist+". Your tricky facts will come back in the Daily mix."}</p>
+     <div class="row" style="justify-content:center"><button class="btn soft" id="again">Again</button><button class="btn soft" id="t">Town</button>${nx?`<button class="btn" id="n">Next: ×${FAM[fi+1].n===1?"1·0·□":FAM[fi+1].n} →</button>`:""}</div></div>`;
+    $("again").onclick=()=>famPractice(fi);$("t").onclick=home;if($("n"))$("n").onclick=()=>famLearn(fi+1);focusMain()};
+  q();
+}
+
+/* ============ 4. Daily mix: tricky facts first, then facts from lit families ============ */
+function mix(i,streak){
+  const lit=FAM.filter(f=>S.fam[f.n]&&f.n>1).map(f=>f.n);
+  const missed=Object.keys(S.miss).map(k=>k.split("x").map(Number));
+  let a,b;
+  if(missed.length&&Math.random()<.6)[a,b]=R(missed);
+  else if(lit.length){a=R(lit);b=RI(2,10)}
+  else{a=R([2,5,10]);b=RI(2,10)}
+  if(Math.random()<.5)[a,b]=[b,a];
+  const div=Math.random()<.35&&a>0&&b>0,P=a*b,ans=div?b:P;
+  const f=FAM.find(x=>x.n===a)||FAM.find(x=>x.n===b);const other=f&&f.n===a?b:a;
+  toTop();app.innerHTML=header("🎯 Daily mix · 🔥 "+streak)+`<div class="panel pop" id="pn">
+   ${!lit.length&&!missed.length?`<p class="tip">Tip: light up some buildings first. For now, here are 2s, 5s and 10s.</p>`:""}
+   <p class="big">${div?`${P} ÷ ${a} = ?`:`${a} × ${b} = ?`}</p></div>`;$("back").onclick=home;const pn=$("pn");const fb=fbEl();let wrong=0;
+  pad(pn,ans,()=>{if(!wrong)delete S.miss[key(a,b)];save();const s=wrong?0:streak+1;if(s>(S.best||0))S.best=s,save();
+    setFb(fb,true,`✅ ${div?`${P} ÷ ${a} = ${b}`:`${a} × ${b} = ${P}`}${s&&s%5===0?` · 🔥 ${s} in a row!`:""}`);
+    const nb=document.createElement("button");nb.className="btn";nb.textContent="Next →";pn.append(nb);nb.focus();nb.onclick=()=>mix(i+1,s)},
+   ()=>{wrong++;S.miss[key(a,b)]=1;save();setFb(fb,false,div?`Turn it into ×: ${a} × ? = ${P}`:(f&&f.n>1?`Trick: ${f.how(other)}`:`${a} groups of ${b}. Count by ${b}s.`))});
+  pn.append(fb);
+  pn.insertAdjacentHTML("beforeend",`<p style="margin:0;text-align:center" class="muted">Best streak: ${S.best||0} · Tricky facts left: ${Object.keys(S.miss).length}</p>`);
+  focusMain();
+}
+
+/* ============ 5. Skyscrapers: grade 4 ============ */
+const BIG=[
+ {id:"tens",ico:"0️⃣",title:"× by 10s and 100s",sub:"3 × 40 is just 3 × 4 with a zero"},
+ {id:"one",ico:"🧱",title:"Break it apart (× 1 digit)",sub:"4 × 236 = 4 × 200 + 4 × 30 + 4 × 6"},
+ {id:"two",ico:"🟪",title:"2-digit × 2-digit",sub:"The 4-room area model"},
+ {id:"div",ico:"🍪",title:"Big ÷ by place value",sub:"84 ÷ 4: share the tens, then the ones"},
+ {id:"rem",ico:"🧺",title:"÷ with leftovers",sub:"29 ÷ 4 = 7 R1, and how to check it"}
+];
+function bigMenu(){toTop();
+  app.innerHTML=header("🏙️ Skyscrapers")+`<div class="guide"><div class="face" aria-hidden="true">👷</div><div class="bubble">Big numbers are just small facts wearing zeros! Break them into pieces, use the facts you know, and put them back together. Always CHECK at the end.</div></div>
+   <div class="stations">${BIG.map(b=>`<button class="station" data-id="${b.id}"><div class="ico" aria-hidden="true">${b.ico}</div><div class="txt"><h3>${b.title}</h3><small>${b.sub}</small></div><span class="stars">${S.big[b.id]?"⭐":"☆"}</span></button>`).join("")}</div>`;
+  $("back").onclick=home;app.querySelectorAll(".station[data-id]").forEach(b=>b.onclick=()=>bigRun(b.dataset.id,0,0));focusMain();
+}
+/* a sequence of input boxes, each checked on its own */
+function steps(box,lines,onDone){
+  const d=document.createElement("div");d.className="stepbox";box.append(d);let k=0;const fb=fbEl();
+  const show=()=>{const L=lines[k];const row=document.createElement("div");row.className="stepline";
+    row.innerHTML=`${L.pre}<input inputmode="numeric" aria-label="${L.aria||"answer"}" autocomplete="off"> ${L.post||""}<button class="btn" style="min-height:44px;padding:6px 14px">✓</button>`;
+    d.append(row);d.append(fb);const inp=row.querySelector("input"),bt=row.querySelector("button");let wrong=0;setTimeout(()=>inp.focus(),50);
+    const go=()=>{const v=Number(inp.value.replace(/[, ]/g,""));if(inp.value.trim()==="")return;
+      if(v===L.ans){inp.classList.add("good");inp.classList.remove("bad");inp.disabled=true;bt.remove();setFb(fb,true,"✅ "+(L.ok||""));k++;k<lines.length?show():onDone()}
+      else{wrong++;inp.classList.add("bad");shk(inp);setFb(fb,false,wrong>1&&L.hint2?L.hint2:(L.hint||"Not yet. Try again."))}};
+    bt.onclick=go;inp.onkeydown=e=>{if(e.key==="Enter")go()}};
+  show();
+}
+function bigRun(id,i,mist){
+  const B=BIG.find(b=>b.id===id),N=5;toTop();
+  app.innerHTML=header(B.ico+" "+(i+1)+" / "+N)+`<div class="panel pop" id="pn"><div class="bar" aria-hidden="true"><i style="width:${i/N*100}%"></i></div><h2>${B.title}</h2></div>`;
+  $("back").onclick=bigMenu;const pn=$("pn");
+  const next=()=>{const b=document.createElement("button");b.className="btn";b.textContent=i<N-1?"Next →":"Finish 🎉";pn.append(b);b.focus();b.onclick=()=>i<N-1?bigRun(id,i+1,mist):bigDone(id)};
+  if(id==="tens"){const a=RI(2,9),b=RI(2,9),z=R([10,100]),bz=b*z;
+    pn.insertAdjacentHTML("beforeend",`${i===0?`<p class="tip">💡 ${a} × ${bz}: first do the small fact ${a} × ${b}, then add the zero${z===100?"s":""}. Why? ${bz} is ${b} ${z===10?"tens":"hundreds"}, so ${a} × ${b} ${z===10?"tens":"hundreds"}.</p>`:""}<p class="big">${a} × ${nf(bz)} = ?</p>`);
+    steps(pn,[{pre:`Small fact: ${a} × ${b} =`,ans:a*b,hint:`${a} groups of ${b}.`},{pre:`Add ${z===10?"one zero":"two zeros"}: ${a} × ${nf(bz)} =`,ans:a*bz,hint:`Write ${a*b} and then ${z===10?"0":"00"}.`,ok:`${a} × ${nf(bz)} = ${nf(a*bz)}`}],next)}
+  else if(id==="one"){const d=i<2?2:i<4?3:4,m=RI(3,9);let n=RI(10**(d-1),10**d-1);const parts=String(n).split("").map((c,k,arr)=>Number(c)*10**(arr.length-1-k)).filter(x=>x>0);
+    const cls=["c1","c2","c3","c4"];
+    pn.insertAdjacentHTML("beforeend",`${i===0?`<p class="tip">💡 Break the big number into hundreds, tens and ones. Multiply each piece (they're small facts with zeros), then add them up.</p>`:""}<p class="big">${m} × ${nf(n)} = ?</p>
+     <div class="area" style="grid-template-columns:auto repeat(${parts.length},1fr);max-width:${120+parts.length*90}px"><div class="hd"></div>${parts.map(p=>`<div class="hd">${nf(p)}</div>`).join("")}<div class="hd">${m}</div>${parts.map((p,k)=>`<div class="${cls[k]}" id="cell${k}">?</div>`).join("")}</div>`);
+    const lines=parts.map((p,k)=>({pre:`${m} × ${nf(p)} =`,ans:m*p,hint:`Small fact ${m} × ${String(p)[0]} = ${m*Number(String(p)[0])}, then add the zeros.`,ok:""}));
+    lines.push({pre:`Add the pieces: ${parts.map(p=>nf(m*p)).join(" + ")} =`,ans:m*n,hint:"Add them carefully, one place at a time.",ok:`${m} × ${nf(n)} = ${nf(m*n)}`});
+    let k0=0;steps(pn,lines.map((L,k)=>({...L,ok:k<parts.length?`${m} × ${nf(parts[k])} = ${nf(m*parts[k])}`:L.ok})),()=>{parts.forEach((p,k)=>$("cell"+k).textContent=nf(m*p));next()});
+    const obs=new MutationObserver(()=>{pn.querySelectorAll(".stepline input.good").forEach((inp,k)=>{if(k<parts.length&&$("cell"+k))$("cell"+k).textContent=nf(m*parts[k])})});obs.observe(pn,{subtree:true,attributes:true,attributeFilter:["class"]})}
+  else if(id==="two"){const a=RI(11,39),b=RI(11,29),a1=Math.floor(a/10)*10,a2=a%10,b1=Math.floor(b/10)*10,b2=b%10;
+    pn.insertAdjacentHTML("beforeend",`${i===0?`<p class="tip">💡 ${a} × ${b}: break BOTH numbers (${a} = ${a1} + ${a2}, ${b} = ${b1} + ${b2}). Now the building has 4 rooms. Find each room, then add.</p>`:""}<p class="big">${a} × ${b} = ?</p>
+     <div class="area" style="grid-template-columns:auto 1fr 1fr;max-width:300px"><div class="hd">×</div><div class="hd">${a1}</div><div class="hd">${a2||"0"}</div>
+      <div class="hd">${b1}</div><div class="c1" id="r0">?</div><div class="c2" id="r1">?</div><div class="hd">${b2||"0"}</div><div class="c3" id="r2">?</div><div class="c4" id="r3">?</div></div>`);
+    const rooms=[[b1,a1],[b1,a2],[b2,a1],[b2,a2]];
+    const lines=rooms.map(([x,y],k)=>({pre:`${x} × ${y} =`,ans:x*y,hint:"Small fact first, then add the zeros.",ok:`${x} × ${y} = ${x*y}`}));
+    lines.push({pre:`Add all 4 rooms: ${rooms.map(([x,y])=>x*y).join(" + ")} =`,ans:a*b,hint:"Add the big ones first, then the small ones.",ok:`${a} × ${b} = ${nf(a*b)}`});
+    steps(pn,lines,()=>{rooms.forEach(([x,y],k)=>$("r"+k).textContent=x*y);next()});
+    const obs=new MutationObserver(()=>{pn.querySelectorAll(".stepline input.good").forEach((inp,k)=>{if(k<4&&$("r"+k))$("r"+k).textContent=rooms[k][0]*rooms[k][1]})});obs.observe(pn,{subtree:true,attributes:true,attributeFilter:["class"]})}
+  else if(id==="div"){const dv=RI(2,6),qt=R([12,13,14,21,22,23,31,32,41,42,111,121,212,123]).valueOf();const n=dv*qt;
+    const tens=Math.floor(n/10)*10,ones=n%10;
+    /* share by place value: split n into a big easy part and the rest */
+    const big=dv*Math.floor(qt/10)*10,rest=n-big;
+    pn.insertAdjacentHTML("beforeend",`${i===0?`<p class="tip">💡 ${nf(n)} ÷ ${dv}: break ${nf(n)} into parts that are easy to share by ${dv}. Share each part, then add the answers.</p>`:""}<p class="big">${nf(n)} ÷ ${dv} = ?</p><p style="margin:0;text-align:center;font-weight:800">${nf(n)} = ${nf(big)} + ${nf(rest)}</p>`);
+    steps(pn,[{pre:`${nf(big)} ÷ ${dv} =`,ans:big/dv,hint:`Think: ${dv} × ? = ${nf(big)}. (Small fact with zeros!)`,ok:""},{pre:`${nf(rest)} ÷ ${dv} =`,ans:rest/dv,hint:`${dv} × ? = ${rest}`},{pre:`Add: ${nf(big/dv)} + ${nf(rest/dv)} =`,ans:qt,hint:"Add the two answers."},{pre:`Check: ${nf(qt)} × ${dv} =`,ans:n,hint:`Multiply back. You should get ${nf(n)}.`,ok:`It matches! ${nf(n)} ÷ ${dv} = ${nf(qt)} ✔`}],next)}
+  else if(id==="rem"){const dv=RI(3,9),qt=RI(3,9),r=RI(1,dv-1),n=dv*qt+r;
+    pn.insertAdjacentHTML("beforeend",`${i===0?`<p class="tip">💡 Sometimes it doesn't share perfectly. ${n} cookies on ${dv} plates: find the biggest fact that FITS (not more than ${n}), and the extra cookies are the leftover, called the <b>remainder</b>. The remainder must be SMALLER than ${dv}!</p>`:""}
+     <p class="big">${n} ÷ ${dv} = ?</p><div class="pile">${"🍪".repeat(n)}</div>`);
+    steps(pn,[{pre:`Biggest: ${dv} × ? that is not more than ${n}. ${dv} ×`,post:``,ans:qt,hint:`Count by ${dv}s and stop before you pass ${n}.`,hint2:`${dv} × ${qt} = ${dv*qt}, and ${dv} × ${qt+1} = ${dv*(qt+1)} is too much.`,ok:`${dv} × ${qt} = ${dv*qt}`},
+     {pre:`Leftover: ${n} − ${dv*qt} =`,ans:r,hint:"Subtract.",ok:`So ${n} ÷ ${dv} = ${qt} R${r}`},
+     {pre:`Check: ${qt} × ${dv} + ${r} =`,ans:n,hint:`${qt} × ${dv} = ${qt*dv}, plus ${r}.`,ok:`It matches! ${n} ÷ ${dv} = ${qt} R${r} ✔`}],()=>{pn.insertAdjacentHTML("beforeend",`<div class="plates">${Array(dv).fill(0).map(()=>`<div class="plate">${"🍪".repeat(qt)}</div>`).join("")}<div class="plate" style="border-style:dashed" aria-label="leftover">${"🍪".repeat(r)}</div></div>`);next()})}
+  focusMain();
+}
+function bigDone(id){S.big[id]=1;save();toTop();
+  app.innerHTML=`<div class="panel pop" style="text-align:center;align-items:center"><div class="bigstars">🏙️⭐</div><h2>Skyscraper built!</h2><p style="margin:0;font-weight:700">Remember: break it apart, use small facts, put it together, and CHECK.</p>
+   <div class="row" style="justify-content:center"><button class="btn soft" id="a">Again</button><button class="btn" id="m">More skyscrapers →</button></div></div>`;
+  $("a").onclick=()=>bigRun(id,0,0);$("m").onclick=bigMenu;focusMain()}
+home();
+</script>
+</body></html>
