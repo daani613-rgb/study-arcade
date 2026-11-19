@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}
+.lib-back{position:fixed;left:max(12px,env(safe-area-inset-left,0px));bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:50;font:700 14px system-ui,sans-serif;padding:8px 14px;border-radius:999px;background:rgba(20,20,40,.82);color:#fff;text-decoration:none}</style>
+</head><body>
+<a class="lib-back" href="../">&larr; All games</a>
+<title>Word Problem Detectives</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@600;700;800&family=Frank+Ruhl+Libre:wght@500;700&display=swap">
+<style>
+/* Layout: a desert journey through Mitzrayim, 5 stations (pasuk words + each makkah), then the real 25-question test */
+:root{
+  --bg:#f6ead2; --card:#fffaf0; --ink:#2b2140; --muted:#6c6280; --line:#e6d3ad;
+  --accent:#2f6fd6; --accent-soft:#dbe7fb; --good:#1f9a5b; --good-soft:#d5f3e3; --bad:#d63b3b; --bad-soft:#fbe0de; --sun:#f0a92b; --hl:#d6336c;
+  --display:"Baloo 2","Trebuchet MS",system-ui,sans-serif; --body:"Nunito","Segoe UI",system-ui,sans-serif; --heb:"Frank Ruhl Libre","Times New Roman",serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#1c1712; --card:#2a2219; --ink:#f3eadb; --muted:#b8a990; --line:#45392a;
+  --accent:#7fa8f0; --accent-soft:#25344f; --good:#4fd18b; --good-soft:#173d2a; --bad:#ff6b6b; --bad-soft:#4a1d1d; --sun:#f5be55; --hl:#ff7aa8; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1c1712; --card:#2a2219; --ink:#f3eadb; --muted:#b8a990; --line:#45392a;
+  --accent:#7fa8f0; --accent-soft:#25344f; --good:#4fd18b; --good-soft:#173d2a; --bad:#ff6b6b; --bad-soft:#4a1d1d; --sun:#f5be55; --hl:#ff7aa8; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:18px;line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 40px}
+.wrap{max-width:620px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1,h2,h3{font-family:var(--display);margin:0;line-height:1.1;text-wrap:balance}
+h1{font-size:2rem} h2{font-size:1.55rem} h3{font-size:1.2rem}
+button{font:inherit;color:inherit}
+button:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
+.hb{font-family:var(--heb);font-weight:700;font-size:1.15em;unicode-bidi:isolate;direction:rtl}
+.guide{display:flex;gap:12px;align-items:flex-start}
+.guide .face{font-size:3rem;line-height:1;flex:none}
+.bubble{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:12px 14px;font-weight:700;min-width:0}
+.panel{background:var(--card);border:2px solid var(--line);border-radius:22px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.btn{font-family:var(--display);font-weight:700;font-size:1.15rem;border:0;border-radius:16px;padding:12px 20px;cursor:pointer;background:var(--accent);color:#fff;box-shadow:0 4px 0 color-mix(in srgb,var(--accent) 55%,#000)}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 color-mix(in srgb,var(--accent) 55%,#000)}
+.btn.soft{background:var(--card);color:var(--ink);border:2px solid var(--line);box-shadow:none}
+.btn:disabled{opacity:.4;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.pill{font-family:var(--display);font-weight:700;background:var(--accent-soft);border-radius:999px;padding:3px 12px;font-variant-numeric:tabular-nums}
+.stations{display:flex;flex-direction:column;gap:12px}
+.station{display:flex;align-items:center;gap:14px;background:var(--card);border:2px solid var(--line);border-radius:22px;padding:12px 16px;cursor:pointer;text-align:left;width:100%}
+.station .ico{font-size:2.2rem;width:58px;height:58px;display:grid;place-items:center;background:var(--bg);border-radius:16px;flex:none}
+.station .txt{flex:1;min-width:0}
+.station small{display:block;color:var(--muted);font-weight:700;font-size:.9rem}
+.stars{font-size:1.05rem;letter-spacing:2px;white-space:nowrap}
+.station.final{background:var(--accent);border-color:var(--accent);color:#fff}
+.station.final small{color:#fff;opacity:.9}
+.station.final .ico{background:rgba(255,255,255,.22)}
+.learn{display:flex;flex-direction:column;gap:12px}
+.picbox{background:var(--bg);border-radius:18px;padding:14px;display:grid;place-items:center;min-height:120px;text-align:center}
+.emo{font-size:3.8rem;line-height:1.15;letter-spacing:6px;text-align:center}
+.bigheb{font-family:var(--heb);font-size:2.6rem;font-weight:700;direction:rtl;line-height:1.3}
+.bigheb .p1{color:var(--hl)} .bigheb .p2{color:var(--accent)}
+.legend{display:flex;flex-direction:column;gap:4px;font-weight:800;font-size:1rem;margin-top:6px}
+.legend .p1{color:var(--hl)} .legend .p2{color:var(--accent)}
+.word{font-family:var(--display);font-size:1.9rem;font-weight:800;color:var(--accent);line-height:1.1}
+.say{font-size:1.15rem;font-weight:800;margin:0}
+.ex{margin:0;background:var(--good-soft);border-radius:14px;padding:10px 12px;font-weight:700}
+.he{margin:0;color:var(--muted);font-weight:700;direction:rtl;text-align:right}
+.animals{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;width:100%}
+.animals div{display:flex;flex-direction:column;align-items:center;font-weight:800;font-size:.85rem}
+.animals span{font-size:2.3rem}
+.dots{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.dots i{width:10px;height:10px;border-radius:50%;background:var(--line)}
+.dots i.on{background:var(--accent)}
+.q{font-size:1.25rem;font-weight:800;margin:0}
+.tag{align-self:flex-start;font-family:var(--display);font-weight:700;background:var(--sun);color:#2b1d00;border-radius:999px;padding:2px 12px;font-size:.95rem}
+.big-item{display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--bg);border-radius:18px;padding:14px;text-align:center}
+.big-item .emo{font-size:3.6rem}
+.bins{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.bin{border:3px solid var(--line);background:var(--card);border-radius:18px;padding:12px 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;font-family:var(--display);font-weight:700;font-size:1.1rem;line-height:1.15}
+.bin span{font-size:2.2rem}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{border:3px solid var(--line);background:var(--card);border-radius:16px;padding:11px 14px;text-align:left;font-weight:800;cursor:pointer;font-size:1.05rem;display:flex;gap:8px;align-items:baseline}
+.opt .l{font-family:var(--display);color:var(--accent);flex:none}
+.opt.pick{border-color:var(--sun);background:color-mix(in srgb,var(--sun) 22%,var(--card))}
+.opt.ok,.bin.ok{border-color:var(--good);background:var(--good-soft)}
+.opt.no,.bin.no{border-color:var(--bad);background:var(--bad-soft)}
+.shake{animation:shake .35s}
+.tiles{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.tile{border:3px solid var(--line);background:var(--card);border-radius:16px;padding:8px 10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;min-width:100px;max-width:150px;font-weight:800;font-size:.92rem;text-align:center}
+.tile span{font-size:2.4rem}
+.tile.used{opacity:.25;cursor:default}
+.tile.no{border-color:var(--bad)}
+.seq{display:flex;gap:8px;justify-content:center;min-height:70px;background:var(--bg);border-radius:16px;padding:8px;flex-wrap:wrap;align-items:center}
+.seq span{font-size:2.4rem}
+.seq .arrow{font-size:1.3rem;color:var(--muted)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.col{display:flex;flex-direction:column;gap:8px;min-width:0}
+.mt{border:3px solid var(--line);background:var(--card);border-radius:14px;padding:10px;font-weight:800;cursor:pointer;min-height:54px;font-size:1.05rem;text-align:center}
+.mt.sel{border-color:var(--sun);background:color-mix(in srgb,var(--sun) 25%,var(--card))}
+.mt.done{border-color:var(--good);background:var(--good-soft);cursor:default}
+.mt.no{border-color:var(--bad);background:var(--bad-soft)}
+.fb{font-weight:800;margin:0;min-height:1.4em;padding:10px 12px;border-radius:14px}
+.fb.ok{background:var(--good-soft)}
+.fb.no{background:var(--bad-soft)}
+.fb:empty{padding:0}
+.bar{height:12px;background:var(--bg);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--good);transition:width .3s}
+.huge{font-family:var(--display);font-size:3.6rem;font-weight:800;line-height:1;text-align:center;font-variant-numeric:tabular-nums}
+.bigstars{font-size:3rem;text-align:center;letter-spacing:6px}
+.miss{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+.miss li{background:var(--bad-soft);border-radius:14px;padding:10px 12px;font-weight:700}
+.miss b{display:block}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@keyframes pop{0%{transform:scale(.7);opacity:0}100%{transform:scale(1);opacity:1}}
+.pop{animation:pop .3s ease-out}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (max-width:420px){.emo{font-size:3rem}.bigheb{font-size:2.1rem}.animals span{font-size:1.9rem}}
+</style>
+
+<div class="wrap" id="app"></div>
+
+<style>
+/* additions for Bo: fill-in sentences, typing, Hebrew phrase card */
+.hphrase{font-family:var(--heb);font-weight:700;font-size:1.6rem;direction:rtl;text-align:center;line-height:1.5}
+.esent{font-size:1.15rem;font-weight:700;text-align:center;margin:0}
+.esent .gap{display:inline-block;min-width:4.5em;border-bottom:3px solid var(--accent);margin:0 4px;color:var(--accent)}
+.key{color:var(--hl);text-decoration:underline;text-underline-offset:4px}body{padding-bottom:80px}
+.typein{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.typein input{font:inherit;font-size:1.2rem;font-weight:700;padding:10px 14px;border-radius:14px;border:2px solid var(--line);background:var(--card);color:var(--ink);min-width:0;width:12em;text-align:center}
+.typein input:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+.bank{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.bank button{font:inherit;font-weight:700;border:2px dashed var(--line);background:var(--card);border-radius:12px;padding:6px 12px;cursor:pointer;min-height:44px}
+.saybtn{border:2px solid var(--line);background:var(--card);border-radius:999px;min-width:44px;min-height:44px;cursor:pointer;font-size:1.1rem}
+.mini{display:flex;flex-direction:column;gap:8px}
+.mini .ln{display:grid;grid-template-columns:1fr;gap:2px;border-bottom:1px dashed var(--line);padding-bottom:6px}
+.mini .ln .h{font-family:var(--heb);font-weight:700;font-size:1.2rem;direction:rtl;text-align:right}
+.mini .ln .e{font-weight:700}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
+<style>
+.scene{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;align-items:center;padding:10px;border-radius:16px;background:var(--bg);min-height:90px}
+.grp{display:inline-flex;flex-wrap:wrap;gap:2px;justify-content:center;align-items:center;border:2px dashed var(--line);border-radius:12px;padding:4px 6px;font-size:1.15rem;line-height:1.2;background:var(--card)}
+.grp small{display:block;width:100%;text-align:center;font-size:.75rem;font-weight:800;color:var(--muted)}
+.story{font-size:1.15rem;font-weight:700;line-height:1.55;margin:0}
+.story mark{background:#ffe9a8;color:inherit;border-radius:6px;padding:0 3px}
+.eq{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center;font-size:1.5rem;font-weight:900}
+.slot{min-width:64px;min-height:56px;border:3px dashed var(--accent);border-radius:14px;background:var(--card);font:inherit;font-size:1.5rem;font-weight:900;color:var(--ink);cursor:pointer;padding:0 8px}
+.slot.full{border-style:solid}
+.slot.ans{border-color:var(--sun)}
+.tiles2{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.tl{min-width:56px;min-height:52px;border:2px solid var(--line);border-radius:14px;background:var(--card);font:inherit;font-size:1.35rem;font-weight:900;cursor:pointer;color:var(--ink)}
+.tl.op{background:#e7f0ff}
+.tl:disabled{opacity:.35}
+.ask{display:grid;gap:10px}
+.ask .opt{justify-content:center}
+.ansin{font:inherit;font-size:1.5rem;font-weight:900;width:6em;text-align:center;padding:8px;border-radius:14px;border:2px solid var(--line);background:var(--card);color:var(--ink)}
+.steps{display:flex;flex-direction:column;gap:6px}
+.steps .done{background:#e3f7ea;border-radius:12px;padding:6px 10px;font-weight:800;font-size:1.1rem;text-align:center}
+.notebook{background:#fffef5;border:2px solid #e6dfb8;border-radius:14px;padding:12px;font-family:"Comic Sans MS","Segoe Print",cursive,var(--body);font-size:1.2rem;line-height:1.7;color:#222}
+.clue{display:flex;gap:10px;align-items:center;font-weight:700}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+<script>
+/* ===== The 4 homework problems (Hebrew Academy of Cleveland email), plus practice ===== */
+const rep=(e,n)=>Array(n).fill(e).join("");
+const grp=(inner,label)=>`<span class="grp">${inner}${label?`<small>${label}</small>`:""}</span>`;
+const HW=[
+ {id:"h1",ico:"🃏",title:"Moshe's Gedolim cards",
+  story:"Moshe is organizing his Gedolim cards. He has <mark>56 cards</mark> that he's organizing into <mark>8 pages</mark>, with the same number on each page. How many cards on each page?",
+  scene:()=>`<div class="scene">${grp(rep("🃏",56),"56 cards")}<b style="font-size:1.6rem">➜</b>${Array(8).fill(0).map((_,i)=>grp("❔","page "+(i+1))).join("")}</div>`,
+  kind:{q:"What is happening in this story?",o:["We SHARE a big pile equally into groups","We have groups that are all the same, and join them","We put two different amounts together"],a:0,
+   why:"56 cards are SHARED equally into 8 pages. Sharing equally = dividing ÷"},
+  steps:[{tiles:["56","8","7","400","+","−","×","÷"],slots:["56","÷","8"],res:56/8,label:"cards on each page"}],
+  done:()=>`<div class="scene">${Array(8).fill(0).map((_,i)=>grp(rep("🃏",7),"page "+(i+1))).join("")}</div>`,
+  check:"Check it: 8 pages × 7 cards = 56 ✔",
+  hints:["Think: 8 × what = 56?","Count by 8s: 8, 16, 24, 32, 40, 48, 56. How many jumps?"],
+  write:"56 ÷ 8 = 7. Answer: 7 cards on each page."},
+ {id:"h2",ico:"📦",title:"Yitzy's chametz boxes",
+  story:"Yitzy was cleaning for Pesach. He managed to squeeze <mark>400 pieces</mark> of chametz into <mark>each box</mark>. If Yitzy filled up <mark>6 boxes</mark>, how many pieces did he put in?",
+  scene:()=>`<div class="scene">${Array(6).fill(0).map((_,i)=>grp("📦<br>400","box "+(i+1))).join("")}</div>`,
+  kind:{q:"What is happening in this story?",o:["We have groups that are all the same, and join them","We SHARE a big pile equally into groups","We take some away"],a:0,
+   why:"6 boxes, and EACH box has the same 400 pieces. Same-size groups joined together = multiplying ×"},
+  steps:[{tiles:["400","6","60","4","+","−","×","÷"],slots:["400","×","6"],res:2400,label:"pieces of chametz"}],
+  done:()=>`<div class="scene">${grp("📦📦📦📦📦📦","6 × 400 = 2,400 pieces")}</div>`,
+  check:"Trick: 4 × 6 = 24, then add the two zeros from 400 ➜ 2,400 ✔",
+  hints:["First do 4 × 6 without the zeros.","4 × 6 = 24. Now put back the 2 zeros from 400."],
+  write:"400 × 6 = 2,400. Answer: 2,400 pieces of chametz."},
+ {id:"h3",ico:"🍕",title:"Yaakov's Siyum dinner",
+  story:"Yaakov's <mark>grandfather and grandmother</mark> were taking <mark>him and 9 friends</mark> out to eat for his Siyum. He spent <mark>9 dollars per adult</mark> and <mark>7 dollars per child</mark>. How much did it cost for everyone?",
+  scene:()=>`<div class="scene">${grp("👴👵","grown-ups: $9 each")}${grp("🧒"+rep("👦",9),"Yaakov + 9 friends: $7 each")}</div>`,
+  detective:{q:"Detective question: how many CHILDREN are eating?",o:["10","9","11"],a:0,why:"Careful! Yaakov AND his 9 friends: 1 + 9 = 10 children. (Many kids write 9 here!)"},
+  detective2:{q:"And how many ADULTS?",o:["2","1","4"],a:0,why:"Grandfather and grandmother = 2 adults."},
+  kind:{q:"This one has TWO kinds of people. What's the plan?",o:["Find the adults' cost, find the children's cost, then add them","Multiply everything together","Share the money equally"],a:0,
+   why:"Two groups that cost different amounts: figure out each group, then ADD them."},
+  steps:[{tiles:["2","10","9","7","+","−","×","÷"],slots:["2","×","9"],res:18,label:"dollars for the adults",intro:"Step 1: the adults. 2 adults, $9 each."},
+   {tiles:["10","9","7","2","+","−","×","÷"],slots:["10","×","7"],res:70,label:"dollars for the children",intro:"Step 2: the children. 10 children, $7 each."},
+   {tiles:["18","70","88","+","−","×","÷"],slots:["18","+","70"],res:88,label:"dollars for everyone",intro:"Step 3: put the two groups together."}],
+  done:()=>`<div class="scene">${grp("👴👵","$18")}<b>+</b>${grp("🧒"+rep("👦",9),"$70")}<b>=</b>${grp("💵","$88")}</div>`,
+  check:"Check it: 18 + 70 = 88 ✔",
+  hints:["2 × 9 = 9 + 9.","10 × 7: when you multiply by 10, just add a zero to 7."],
+  write:"(2 × 9) + (10 × 7) = 18 + 70 = 88. Answer: $88."},
+ {id:"h4",ico:"🌿",title:"Aron's arba minim",
+  story:"Aron has <mark>10 different sets</mark> of arba minim (<mark>1 Lulav, 1 Esrog, 2 Aravos, and 3 Haddassim</mark>). How many altogether?",
+  scene:()=>`<div class="scene">${Array(10).fill(0).map((_,i)=>grp("🌴🍋🌱🌱🍃🍃🍃","set "+(i+1))).join("")}</div><p style="margin:0;font-weight:700;text-align:center">🌴 lulav · 🍋 esrog · 🌱 aravah · 🍃 hadas</p>`,
+  kind:{q:"What's the plan?",o:["Count how many are in ONE set, then multiply by 10 sets","Add 10 + 1 + 1 + 2 + 3","Share 10 sets into 4 groups"],a:0,
+   why:"First find how many items are in one set. Then 10 sets that are all the same = multiply."},
+  steps:[{tiles:["1","1","2","3","+","+","+","7","×"],slots:["1","+","1","+","2","+","3"],res:7,label:"items in ONE set",intro:"Step 1: how many in ONE set?"},
+   {tiles:["10","7","4","70","+","−","×","÷"],slots:["10","×","7"],res:70,label:"items altogether",intro:"Step 2: 10 sets, 7 in each."}],
+  done:()=>`<div class="scene">${grp("10 × 🌴🍋🌱🌱🍃🍃🍃","= 70")}</div>`,
+  check:"Check it: 10 sets × 7 = 70 ✔ (10 lulavim + 10 esrogim + 20 aravos + 30 haddassim = 70 too!)",
+  hints:["1 + 1 = 2. 2 + 2 = 4. 4 + 3 = ?","Times 10: just add a zero."],
+  write:"1 + 1 + 2 + 3 = 7 in each set. 10 × 7 = 70. Answer: 70 altogether."}
+];
+
+/* practice: same kinds of stories, new numbers every time */
+const R=a=>a[Math.random()*a.length|0];
+const PRACT=[
+ ()=>{const g=R([3,4,5,6,7,8,9]),e=R([4,6,7,8,9]),t=g*e;return {ico:"📚",kind:"÷",story:`Shimon has <mark>${t} seforim</mark> to put on <mark>${g} shelves</mark>, the same number on each shelf. How many on each shelf?`,eq:[String(t),"÷",String(g)],res:e,tiles:[String(t),String(g),String(e),"+","−","×","÷"],why:"Sharing equally = ÷"}},
+ ()=>{const g=R([3,4,5,6,7,8]),e=R([6,7,8,9,12]);return {ico:"🍎",kind:"×",story:`Rivky packs <mark>${g} bags</mark> for Mishloach Manos. Each bag has <mark>${e} treats</mark>. How many treats altogether?`,eq:[String(g),"×",String(e)],res:g*e,tiles:[String(g),String(e),String(g+e),"+","−","×","÷"],why:"Same-size groups joined = ×"}},
+ ()=>{const g=R([2,3,4,5,6,7,8,9]),e=R([100,200,300,500]);return {ico:"🪙",kind:"×",story:`Each pushka has <mark>${e} coins</mark>. Dovid has <mark>${g} pushkas</mark>. How many coins in all?`,eq:[String(e),"×",String(g)],res:g*e,tiles:[String(e),String(g),String(e+g),"+","−","×","÷"],why:"Same-size groups joined = ×. Trick: multiply without the zeros, then add them back."}},
+ ()=>{const g=R([4,5,6,7,8,9]),e=R([3,4,5,6,7,8,9]),t=g*e;return {ico:"🍩",kind:"÷",story:`<mark>${t} sufganiyos</mark> are shared equally by <mark>${g} kids</mark>. How many does each kid get?`,eq:[String(t),"÷",String(g)],res:e,tiles:[String(t),String(g),String(t-g),"+","−","×","÷"],why:"Sharing equally = ÷"}},
+ ()=>{const k=R([5,6,7,8]),f=R([3,4,5]),a=R([2,3]),pk=R([4,5,6]),pa=R([8,9,10]);return {ico:"🎟️",kind:"2",story:`<mark>${a} adults</mark> and <mark>${k} children</mark> go to the zoo. Adults pay <mark>$${pa}</mark> each and children pay <mark>$${pk}</mark> each. How much for everyone?`,eq:null,two:[[String(a),"×",String(pa)],[String(k),"×",String(pk)]],res:a*pa+k*pk,why:"Two groups: find each group's cost, then add."}}
+];
+
+/* ===== engine ===== */
+const app=document.getElementById("app");
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+const $=id=>document.getElementById(id);
+const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const toTop=()=>window.scrollTo({top:0,behavior:reduce?"auto":"smooth"});
+const shk=el=>{if(reduce||!el)return;el.classList.add("shake");setTimeout(()=>el.classList.remove("shake"),400)};
+const focusMain=()=>{const p=app.querySelector(".panel");if(p){p.tabIndex=-1;p.focus({preventScroll:true})}};
+const PRAISE=["Awesome!","Great job, detective!","You got it!","Super!","Yasher koach!"];
+let prog={};try{prog=JSON.parse(localStorage.getItem("mathwp-stars")||"{}")}catch(e){}
+const save=()=>{try{localStorage.setItem("mathwp-stars",JSON.stringify(prog))}catch(e){}};
+const nf=n=>Number(n).toLocaleString("en-US");
+const SYM={"*":"×","x":"×","/":"÷","-":"−"};
+
+function home(){
+  const done=HW.filter(h=>prog[h.id]).length;
+  app.innerHTML=`<div class="guide"><div class="face" aria-hidden="true">🕵️</div><div class="bubble">Hi detective! Every word problem hides an equation. Your job: read the story, picture it, find the clues, build the equation, then solve it. Ready?</div></div>
+  <div class="row"><h1 tabindex="-1">Word Problem Detectives</h1><span class="pill">${done} / ${HW.length}</span></div>
+  <div class="panel" style="gap:8px"><b>The 3 detective questions:</b>
+   <div class="clue">➗ <span>Are we <b>sharing</b> a big pile equally? Then <b>÷</b></span></div>
+   <div class="clue">✖️ <span>Are there <b>groups that are all the same</b>? Then <b>×</b></span></div>
+   <div class="clue">➕ <span>Are we putting <b>different amounts</b> together? Then <b>+</b></span></div></div>
+  <div class="stations">${HW.map((h,i)=>`<button class="station" data-i="${i}"><div class="ico" aria-hidden="true">${h.ico}</div><div class="txt"><h3>Case ${i+1}: ${h.title}</h3><small>${prog[h.id]?"Solved ✔":"Homework problem "+(i+1)}</small></div><span class="stars">${prog[h.id]?"⭐":"☆"}</span></button>`).join("")}
+  <button class="station final" id="prac"><div class="ico" aria-hidden="true">🏋️</div><div class="txt"><h3>Detective Training</h3><small>New stories, new numbers every time.${prog.practice?" Best streak: "+prog.practice:""}</small></div></button>
+  <button class="station" id="nb"><div class="ico" aria-hidden="true">📓</div><div class="txt"><h3>My notebook page</h3><small>See what to write for each problem (after you solve it)</small></div></button></div>`;
+  app.querySelectorAll(".station[data-i]").forEach(b=>b.onclick=()=>caseStart(+b.dataset.i));
+  $("prac").onclick=()=>practice(0);$("nb").onclick=notebook;
+}
+
+/* a tiny multiple-choice step */
+function mc(box,q,onRight,onWrong){
+  const d=document.createElement("div");d.className="ask";
+  const order=shuffle(q.o.map((o,i)=>i));
+  d.innerHTML=`<p class="q" style="margin:0">${q.q}</p>${order.map(i=>`<button class="opt" data-i="${i}"><span>${q.o[i]}</span></button>`).join("")}`;
+  box.append(d);let over=false;
+  d.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{if(over)return;if(+b.dataset.i===q.a){over=true;b.classList.add("ok");d.querySelectorAll(".opt").forEach(x=>x.disabled=true);onRight()}else{b.classList.add("no");shk(b);setTimeout(()=>b.classList.remove("no"),450);onWrong&&onWrong()}});
+}
+/* equation builder: tap tiles into slots, then solve */
+function builder(box,st,onDone,hints){
+  const n=st.slots.length;let filled=Array(n).fill(null);
+  const d=document.createElement("div");d.style.cssText="display:flex;flex-direction:column;gap:12px";
+  d.innerHTML=`${st.intro?`<p class="q" style="margin:0">${st.intro}</p>`:""}<p style="margin:0;font-weight:700">Build the equation: tap the tiles.</p>
+   <div class="eq" id="eq">${st.slots.map((_,i)=>`<button class="slot" data-s="${i}" aria-label="empty box ${i+1}">&nbsp;</button>`).join("")}<span>=</span><span class="slot ans" aria-hidden="true">?</span></div>
+   <div class="tiles2">${shuffle(st.tiles.map((t,i)=>i)).map(i=>`<button class="tl ${/[+−×÷]/.test(st.tiles[i])?"op":""}" data-t="${i}">${st.tiles[i]}</button>`).join("")}</div>
+   <div class="row" style="justify-content:center"><button class="btn soft" id="clr">Clear</button><button class="btn" id="chk">Check my equation</button></div>
+   <p class="fb" id="bfb" role="status" aria-live="polite"></p>`;
+  box.append(d);
+  const slots=[...d.querySelectorAll(".slot[data-s]")],tiles=[...d.querySelectorAll(".tl")];
+  const draw=()=>slots.forEach((s,i)=>{s.textContent=filled[i]!=null?st.tiles[filled[i]]:" ";s.classList.toggle("full",filled[i]!=null)});
+  tiles.forEach(t=>t.onclick=()=>{const k=filled.indexOf(null);if(k<0)return;filled[k]=+t.dataset.t;t.disabled=true;draw()});
+  slots.forEach((s,i)=>s.onclick=()=>{if(filled[i]==null)return;tiles[ [...tiles].findIndex(t=>+t.dataset.t===filled[i]) ].disabled=false;filled[i]=null;draw()});
+  d.querySelector("#clr").onclick=()=>{filled=Array(n).fill(null);tiles.forEach(t=>t.disabled=false);draw()};
+  const fb=(ok,t)=>{const f=d.querySelector("#bfb");f.className="fb "+(ok?"ok":"no");f.innerHTML=t};
+  d.querySelector("#chk").onclick=()=>{if(filled.includes(null)){fb(false,"Fill all the boxes first.");return}
+    const got=filled.map(i=>st.tiles[i]);
+    const comm=st.slots[1]==="×"||st.slots[1]==="+";
+    const same=got.join(" ")===st.slots.join(" ")||(comm&&n===3&&got[1]===st.slots[1]&&got[0]===st.slots[2]&&got[2]===st.slots[0])||(n>3&&got.filter(x=>x==="+").length===st.slots.filter(x=>x==="+").length&&got.every((x,i)=>(i%2===1)===(x==="+"))&&[...got].filter(x=>x!=="+").sort().join()===st.slots.filter(x=>x!=="+").sort().join());
+    if(!same){
+      const op=got.find(x=>/[+−×÷]/.test(x));let msg="Not yet. Look at the picture again.";
+      if(op&&op!==st.slots[1])msg=`Hmm, did you pick the right sign? Think about the detective question: ${st.slots[1]==="÷"?"is it sharing equally?":st.slots[1]==="×"?"are the groups all the same size?":"are we putting amounts together?"}`;
+      else if(st.slots[1]==="÷"&&got[0]!==st.slots[0])msg="With ÷, the BIG pile goes first: the total, then how many groups.";
+      else msg="The sign is right! Now check which numbers come from the story.";
+      shk(d.querySelector("#eq"));fb(false,msg);return}
+    d.querySelector("#chk").disabled=true;d.querySelector("#clr").disabled=true;tiles.forEach(t=>t.disabled=true);slots.forEach(s=>s.disabled=true);
+    fb(true,`✅ Great equation! Now solve it: <b>${got.join(" ")} = ?</b>`);solve(d,st,onDone,hints||[])};
+}
+function solve(d,st,onDone,hints){
+  const w=document.createElement("div");w.style.cssText="display:flex;flex-direction:column;gap:10px;align-items:center";let tries=0,hi=0;
+  w.innerHTML=`<div class="row" style="justify-content:center;gap:8px"><input class="ansin" id="ai" inputmode="numeric" autocomplete="off" aria-label="Your answer"><button class="btn" id="ac">Check</button></div>
+   ${hints.length?`<button class="btn soft" id="hb">💡 I need a hint</button>`:""}<p class="fb" id="afb" role="status" aria-live="polite"></p>`;
+  d.append(w);const inp=w.querySelector("#ai");setTimeout(()=>inp.focus(),60);
+  const fb=(ok,t)=>{const f=w.querySelector("#afb");f.className="fb "+(ok?"ok":"no");f.innerHTML=t};
+  if(w.querySelector("#hb"))w.querySelector("#hb").onclick=()=>{fb(true,"💡 "+hints[Math.min(hi,hints.length-1)]);hi++};
+  const go=()=>{const v=Number(inp.value.replace(/[, ]/g,""));if(!inp.value.trim())return;
+    if(v===st.res){inp.disabled=true;w.querySelector("#ac").disabled=true;if(w.querySelector("#hb"))w.querySelector("#hb").hidden=true;
+      d.querySelector(".slot.ans").textContent=nf(st.res);fb(true,`🎉 ${PRAISE[Math.random()*5|0]} ${nf(st.res)} ${st.label||""}`);onDone(tries)}
+    else{tries++;shk(inp);fb(false,tries===1?"Close? Try again. You can use a hint!":"Try once more. Use the hint button 💡")}};
+  w.querySelector("#ac").onclick=go;inp.onkeydown=e=>{if(e.key==="Enter")go()};
+}
+
+function caseStart(i){
+  const h=HW[i];toTop();let mist=0;
+  app.innerHTML=`<div class="row"><button class="btn soft" id="back">← Cases</button><span class="pill">${h.ico} Case ${i+1}</span></div>
+   <div class="panel pop" id="pn"><h2>${h.title}</h2><p class="story">${h.story}</p>
+   <p style="margin:0;font-weight:700">👀 Picture it:</p>${h.scene()}<div id="flow" style="display:flex;flex-direction:column;gap:14px"></div></div>`;
+  $("back").onclick=home;const flow=$("flow");
+  const say=(ok,t)=>{const p=document.createElement("p");p.className="fb "+(ok?"ok":"no");p.setAttribute("role","status");p.innerHTML=t;flow.append(p);return p};
+  const chain=[];
+  if(h.detective)chain.push(nx=>mc(flow,h.detective,()=>{say(true,"✅ "+h.detective.why);nx()},()=>mist++));
+  if(h.detective2)chain.push(nx=>mc(flow,h.detective2,()=>{say(true,"✅ "+h.detective2.why);nx()},()=>mist++));
+  chain.push(nx=>mc(flow,h.kind,()=>{say(true,"✅ "+h.kind.why);nx()},()=>mist++));
+  h.steps.forEach((st,k)=>chain.push(nx=>{builder(flow,st,t=>{mist+=t;if(k<h.steps.length-1){const done=document.createElement("div");done.className="steps";done.innerHTML=`<div class="done">${st.slots.join(" ")} = ${nf(st.res)} ✔</div>`;flow.append(done)}nx()},k===h.steps.length-1?h.hints:[h.hints[0]])}));
+  chain.push(()=>{const f=document.createElement("div");f.style.cssText="display:flex;flex-direction:column;gap:10px";
+    f.innerHTML=`${h.done()}<p class="fb ok" style="margin:0">${h.check}</p><p style="margin:0;font-weight:800">📓 Write this in your notebook:</p><div class="notebook">${h.write}</div>
+     <div class="row" style="justify-content:center"><button class="btn soft" id="map">Back to the cases</button>${i<HW.length-1?`<button class="btn" id="nxt">Next case →</button>`:`<button class="btn" id="tr">Detective Training 🏋️</button>`}</div>`;
+    flow.append(f);prog[h.id]=1;save();
+    $("map").onclick=home;if($("nxt"))$("nxt").onclick=()=>caseStart(i+1);if($("tr"))$("tr").onclick=()=>practice(0);
+    setTimeout(()=>f.scrollIntoView({behavior:reduce?"auto":"smooth",block:"start"}),50)});
+  let c=0;const nx=()=>{c++;if(c<chain.length){chain[c](nx);const last=flow.lastElementChild;if(last&&c>0)setTimeout(()=>last.scrollIntoView({behavior:reduce?"auto":"smooth",block:"nearest"}),50)}};
+  chain[0](nx);focusMain();
+}
+
+function practice(streak){
+  const p=R(PRACT)();toTop();
+  app.innerHTML=`<div class="row"><button class="btn soft" id="back">← Cases</button><span class="pill">🏋️ Streak: ${streak}</span></div>
+   <div class="panel pop"><p class="story">${p.ico} ${p.story}</p><div id="flow" style="display:flex;flex-direction:column;gap:14px"></div></div>`;
+  $("back").onclick=home;const flow=$("flow");let clean=true;
+  const end=()=>{const s=clean?streak+1:0;if(s>(prog.practice||0)){prog.practice=s;save()}
+    const f=document.createElement("div");f.className="row";f.style.justifyContent="center";
+    f.innerHTML=`<p class="fb ok" style="margin:0;width:100%">${clean?"🔥 First try! Streak: "+s:"✔ Solved! Next one, first try?"}</p><button class="btn" id="more">Another story →</button>`;flow.append(f);$("more").onclick=()=>practice(s);$("more").focus()};
+  const kindQ={q:"Which sign does this story need?",o:["÷ sharing equally","× same-size groups","+ putting together"],a:p.kind==="÷"?0:p.kind==="×"?1:2};
+  if(p.kind!=="2"){mc(flow,kindQ,()=>{const pf=document.createElement("p");pf.className="fb ok";pf.textContent="✅ "+p.why;flow.append(pf);
+      builder(flow,{tiles:p.tiles,slots:p.eq,res:p.res,label:""},t=>{if(t)clean=false;end()},[p.kind==="÷"?"Think: "+p.eq[2]+" × what = "+p.eq[0]+"?":"Multiply without zeros first, then add them back."])},()=>clean=false)}
+  else{const [a,b]=p.two;const t1=Number(a[0])*Number(a[2]),t2=Number(b[0])*Number(b[2]);
+    builder(flow,{intro:"Step 1: the adults.",tiles:[a[0],a[2],b[0],b[2],"+","×"],slots:a,res:t1,label:"dollars"},x=>{if(x)clean=false;
+      builder(flow,{intro:"Step 2: the children.",tiles:[a[0],a[2],b[0],b[2],"+","×"],slots:b,res:t2,label:"dollars"},y=>{if(y)clean=false;
+        builder(flow,{intro:"Step 3: everyone together.",tiles:[String(t1),String(t2),String(t1*t2>999?t1+1:t1*t2),"+","−","×"],slots:[String(t1),"+",String(t2)],res:t1+t2,label:"dollars"},z=>{if(z)clean=false;end()},[])},[])},[])}
+  focusMain();
+}
+
+function notebook(){toTop();
+  app.innerHTML=`<div class="row"><button class="btn soft" id="back">← Cases</button><span class="pill">📓 Notebook</span></div>
+   <div class="panel pop"><h2>My notebook page</h2><p style="margin:0">Solve a case first, then its answer shows here. Write the equation AND the answer with a word, like on the homework.</p>
+   ${HW.map((h,i)=>`<div class="notebook"><b>${i+1})</b> ${prog[h.id]?h.write:"🔒 Solve Case "+(i+1)+" first"}</div>`).join("")}</div>`;
+  $("back").onclick=home;focusMain()}
+home();
+</script>
+</body></html>
