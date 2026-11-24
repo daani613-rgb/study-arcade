@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}
+.lib-back{position:fixed;left:max(12px,env(safe-area-inset-left,0px));bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:50;font:700 14px system-ui,sans-serif;padding:8px 14px;border-radius:999px;background:rgba(20,20,40,.82);color:#fff;text-decoration:none}</style>
+</head><body>
+<a class="lib-back" href="../">&larr; All games</a>
+<title>Sound-Alike Spelling</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@600;700;800&family=Frank+Ruhl+Libre:wght@500;700&display=swap">
+<style>
+/* Sound-Alike Spelling: 3 learning stations, a spelling test practice, and a sentence coach for the worksheet */
+:root{
+  --bg:#f6ead2; --card:#fffaf0; --ink:#2b2140; --muted:#6c6280; --line:#e6d3ad;
+  --accent:#2f6fd6; --accent-soft:#dbe7fb; --good:#1f9a5b; --good-soft:#d5f3e3; --bad:#d63b3b; --bad-soft:#fbe0de; --sun:#f0a92b; --hl:#d6336c;
+  --display:"Baloo 2","Trebuchet MS",system-ui,sans-serif; --body:"Nunito","Segoe UI",system-ui,sans-serif; --heb:"Frank Ruhl Libre","Times New Roman",serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#1c1712; --card:#2a2219; --ink:#f3eadb; --muted:#b8a990; --line:#45392a;
+  --accent:#7fa8f0; --accent-soft:#25344f; --good:#4fd18b; --good-soft:#173d2a; --bad:#ff6b6b; --bad-soft:#4a1d1d; --sun:#f5be55; --hl:#ff7aa8; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1c1712; --card:#2a2219; --ink:#f3eadb; --muted:#b8a990; --line:#45392a;
+  --accent:#7fa8f0; --accent-soft:#25344f; --good:#4fd18b; --good-soft:#173d2a; --bad:#ff6b6b; --bad-soft:#4a1d1d; --sun:#f5be55; --hl:#ff7aa8; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:18px;line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 40px}
+.wrap{max-width:620px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1,h2,h3{font-family:var(--display);margin:0;line-height:1.1;text-wrap:balance}
+h1{font-size:2rem} h2{font-size:1.55rem} h3{font-size:1.2rem}
+button{font:inherit;color:inherit}
+button:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
+.hb{font-family:var(--heb);font-weight:700;font-size:1.15em;unicode-bidi:isolate;direction:rtl}
+.guide{display:flex;gap:12px;align-items:flex-start}
+.guide .face{font-size:3rem;line-height:1;flex:none}
+.bubble{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:12px 14px;font-weight:700;min-width:0}
+.panel{background:var(--card);border:2px solid var(--line);border-radius:22px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.btn{font-family:var(--display);font-weight:700;font-size:1.15rem;border:0;border-radius:16px;padding:12px 20px;cursor:pointer;background:var(--accent);color:#fff;box-shadow:0 4px 0 color-mix(in srgb,var(--accent) 55%,#000)}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 color-mix(in srgb,var(--accent) 55%,#000)}
+.btn.soft{background:var(--card);color:var(--ink);border:2px solid var(--line);box-shadow:none}
+.btn:disabled{opacity:.4;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.pill{font-family:var(--display);font-weight:700;background:var(--accent-soft);border-radius:999px;padding:3px 12px;font-variant-numeric:tabular-nums}
+.stations{display:flex;flex-direction:column;gap:12px}
+.station{display:flex;align-items:center;gap:14px;background:var(--card);border:2px solid var(--line);border-radius:22px;padding:12px 16px;cursor:pointer;text-align:left;width:100%}
+.station .ico{font-size:2.2rem;width:58px;height:58px;display:grid;place-items:center;background:var(--bg);border-radius:16px;flex:none}
+.station .txt{flex:1;min-width:0}
+.station small{display:block;color:var(--muted);font-weight:700;font-size:.9rem}
+.stars{font-size:1.05rem;letter-spacing:2px;white-space:nowrap}
+.station.final{background:var(--accent);border-color:var(--accent);color:#fff}
+.station.final small{color:#fff;opacity:.9}
+.station.final .ico{background:rgba(255,255,255,.22)}
+.learn{display:flex;flex-direction:column;gap:12px}
+.picbox{background:var(--bg);border-radius:18px;padding:14px;display:grid;place-items:center;min-height:120px;text-align:center}
+.emo{font-size:3.8rem;line-height:1.15;letter-spacing:6px;text-align:center}
+.bigheb{font-family:var(--heb);font-size:2.6rem;font-weight:700;direction:rtl;line-height:1.3}
+.bigheb .p1{color:var(--hl)} .bigheb .p2{color:var(--accent)}
+.legend{display:flex;flex-direction:column;gap:4px;font-weight:800;font-size:1rem;margin-top:6px}
+.legend .p1{color:var(--hl)} .legend .p2{color:var(--accent)}
+.word{font-family:var(--display);font-size:1.9rem;font-weight:800;color:var(--accent);line-height:1.1}
+.say{font-size:1.15rem;font-weight:800;margin:0}
+.ex{margin:0;background:var(--good-soft);border-radius:14px;padding:10px 12px;font-weight:700}
+.he{margin:0;color:var(--muted);font-weight:700;direction:rtl;text-align:right}
+.animals{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;width:100%}
+.animals div{display:flex;flex-direction:column;align-items:center;font-weight:800;font-size:.85rem}
+.animals span{font-size:2.3rem}
+.dots{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.dots i{width:10px;height:10px;border-radius:50%;background:var(--line)}
+.dots i.on{background:var(--accent)}
+.q{font-size:1.25rem;font-weight:800;margin:0}
+.tag{align-self:flex-start;font-family:var(--display);font-weight:700;background:var(--sun);color:#2b1d00;border-radius:999px;padding:2px 12px;font-size:.95rem}
+.big-item{display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--bg);border-radius:18px;padding:14px;text-align:center}
+.big-item .emo{font-size:3.6rem}
+.bins{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.bin{border:3px solid var(--line);background:var(--card);border-radius:18px;padding:12px 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;font-family:var(--display);font-weight:700;font-size:1.1rem;line-height:1.15}
+.bin span{font-size:2.2rem}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{border:3px solid var(--line);background:var(--card);border-radius:16px;padding:11px 14px;text-align:left;font-weight:800;cursor:pointer;font-size:1.05rem;display:flex;gap:8px;align-items:baseline}
+.opt .l{font-family:var(--display);color:var(--accent);flex:none}
+.opt.pick{border-color:var(--sun);background:color-mix(in srgb,var(--sun) 22%,var(--card))}
+.opt.ok,.bin.ok{border-color:var(--good);background:var(--good-soft)}
+.opt.no,.bin.no{border-color:var(--bad);background:var(--bad-soft)}
+.shake{animation:shake .35s}
+.tiles{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.tile{border:3px solid var(--line);background:var(--card);border-radius:16px;padding:8px 10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;min-width:100px;max-width:150px;font-weight:800;font-size:.92rem;text-align:center}
+.tile span{font-size:2.4rem}
+.tile.used{opacity:.25;cursor:default}
+.tile.no{border-color:var(--bad)}
+.seq{display:flex;gap:8px;justify-content:center;min-height:70px;background:var(--bg);border-radius:16px;padding:8px;flex-wrap:wrap;align-items:center}
+.seq span{font-size:2.4rem}
+.seq .arrow{font-size:1.3rem;color:var(--muted)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.col{display:flex;flex-direction:column;gap:8px;min-width:0}
+.mt{border:3px solid var(--line);background:var(--card);border-radius:14px;padding:10px;font-weight:800;cursor:pointer;min-height:54px;font-size:1.05rem;text-align:center}
+.mt.sel{border-color:var(--sun);background:color-mix(in srgb,var(--sun) 25%,var(--card))}
+.mt.done{border-color:var(--good);background:var(--good-soft);cursor:default}
+.mt.no{border-color:var(--bad);background:var(--bad-soft)}
+.fb{font-weight:800;margin:0;min-height:1.4em;padding:10px 12px;border-radius:14px}
+.fb.ok{background:var(--good-soft)}
+.fb.no{background:var(--bad-soft)}
+.fb:empty{padding:0}
+.bar{height:12px;background:var(--bg);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--good);transition:width .3s}
+.huge{font-family:var(--display);font-size:3.6rem;font-weight:800;line-height:1;text-align:center;font-variant-numeric:tabular-nums}
+.bigstars{font-size:3rem;text-align:center;letter-spacing:6px}
+.miss{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+.miss li{background:var(--bad-soft);border-radius:14px;padding:10px 12px;font-weight:700}
+.miss b{display:block}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@keyframes pop{0%{transform:scale(.7);opacity:0}100%{transform:scale(1);opacity:1}}
+.pop{animation:pop .3s ease-out}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (max-width:420px){.emo{font-size:3rem}.bigheb{font-size:2.1rem}.animals span{font-size:1.9rem}}
+</style>
+<style>
+.saybtn{border:2px solid var(--line);background:var(--card);border-radius:999px;min-width:44px;min-height:44px;font-size:1.2rem;cursor:pointer;flex:none}
+.wordrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.pairs{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.pcard{background:var(--bg);border-radius:18px;padding:12px;display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.pcard .emo{font-size:2.6rem;letter-spacing:2px}
+.pcard .word{font-size:1.7rem}
+.mean{margin:0;font-weight:700}
+.trick{margin:0;background:color-mix(in srgb,var(--sun) 25%,var(--card));border-radius:14px;padding:10px 12px;font-weight:700}
+.trick b,.word b{color:var(--hl)}
+.sent{margin:0;font-style:italic;font-weight:700;color:var(--muted)}
+.blank{display:inline-block;min-width:70px;border-bottom:3px solid var(--ink);text-align:center}
+.slots{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;min-height:58px}
+.slot{width:44px;height:52px;border:3px solid var(--line);border-radius:12px;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:1.6rem;background:var(--card)}
+.slot.f{border-color:var(--good);background:var(--good-soft)}
+.letters{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.let{width:52px;height:56px;border:3px solid var(--line);border-radius:14px;background:var(--card);font-family:var(--display);font-weight:800;font-size:1.6rem;cursor:pointer}
+.let.used{opacity:.2;cursor:default}
+.let.no{border-color:var(--bad);background:var(--bad-soft)}
+input.type,textarea.type{font:inherit;font-size:1.4rem;font-weight:800;padding:12px 14px;border:3px solid var(--line);border-radius:16px;background:var(--card);color:var(--ink);width:100%}
+textarea.type{font-size:1.15rem;min-height:110px;resize:vertical;line-height:1.4}
+input.type:focus-visible,textarea.type:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+.qs{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px}
+.qs li{background:var(--bg);border-radius:16px;padding:10px 12px}
+.qs li b{display:block;margin-bottom:6px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:2px solid var(--line);background:var(--card);border-radius:999px;padding:6px 12px;font-weight:800;cursor:pointer;font-size:1rem}
+.chip.on{border-color:var(--accent);background:var(--accent-soft)}
+.ideas{background:var(--accent-soft);border-radius:14px;padding:10px 12px;font-weight:800;min-height:1.4em}
+.checks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;font-weight:800}
+.mysent{background:var(--good-soft);border-radius:14px;padding:10px 12px;font-weight:800}
+.stepnum{font-family:var(--display);font-weight:800;color:var(--muted)}
+</style>
+
+<div class="wrap" id="app" aria-live="polite"></div>
+
+<script>
+/* ===== Content: the 20 words from the homework sheet, in sound-alike groups ===== */
+const G=[
+ {st:"a",words:[
+  {w:"wait",mean:"to stay until something happens",emo:"⏳",s:"Please wait for me at the corner.",trick:"WAIT is the short one, just 4 letters. WEIGHT is long because it carries <b>EIGHT</b> inside."},
+  {w:"weight",mean:"how heavy something is",emo:"⚖️",s:"The doctor checked my weight on the scale.",trick:"WEIGHT has <b>EIGHT</b> inside it: a box with a weight of eight pounds."}]},
+ {st:"a",words:[
+  {w:"heard",mean:"listened to a sound (hear, heard)",emo:"👂",s:"I heard the phone ring.",trick:"HEARD has an <b>EAR</b> inside it. You hear with your ear!"},
+  {w:"herd",mean:"a big group of animals",emo:"🐄🐄🐄",s:"A herd of cows walked across the field.",trick:"HERD is short and has no ear: h-e-r-d. Cows, not ears!"}]},
+ {st:"a",words:[
+  {w:"days",mean:"more than one day",emo:"📅",s:"There are seven days in a week.",trick:"DAYS = <b>day + s</b>. More than one day."},
+  {w:"daze",mean:"a dizzy, mixed-up feeling",emo:"😵‍💫",s:"After the spinning ride, I walked around in a daze.",trick:"DAZE has a <b>Z</b>, like the zig-zag stars when you feel dizzy 💫."}]},
+ {st:"b",words:[
+  {w:"heel",mean:"the back part of your foot",emo:"🦶",s:"I got a blister on my heel from my new shoes.",trick:"HEEL and FEET both have <b>EE</b>, and both are on your foot!"},
+  {w:"heal",mean:"to get better",emo:"🩹",s:"The cut on my finger will heal soon.",trick:"HEAL is inside <b>HEAL</b>TH. To heal is to get healthy again."}]},
+ {st:"b",words:[
+  {w:"peak",mean:"the top of a mountain",emo:"🏔️",s:"We climbed all the way to the peak of the mountain.",trick:"PEAK has an <b>A</b>. The letter A is pointy, like a mountain top ▲."},
+  {w:"peek",mean:"a quick, secret look",emo:"🙈",s:"Don't peek at the presents before the party.",trick:"PEEK: the <b>EE</b> are two eyes 👀 peeking."}]},
+ {st:"b",words:[
+  {w:"feet",mean:"what you stand on (more than one foot)",emo:"🦶🦶",s:"I wear warm socks on my feet.",trick:"FEET: the <b>EE</b> are your two feet 🦶🦶."},
+  {w:"feat",mean:"a great, hard thing someone did",emo:"🏆",s:"Climbing the tallest mountain was an amazing feat.",trick:"FEAT ends like GR<b>EAT</b>. A feat is a great thing you did."}]},
+ {st:"c",words:[
+  {w:"sent",mean:"mailed or passed along (send, sent)",emo:"✉️",s:"Grandma sent me a letter.",trick:"SENT is SEND that already happened: send, sent."},
+  {w:"cent",mean:"one penny (100 cents make a dollar)",emo:"🪙",s:"A penny is worth one cent.",trick:"CENT starts with <b>C</b>, like <b>C</b>oin."},
+  {w:"scent",mean:"a smell",emo:"👃🌸",s:"I love the scent of fresh challah.",trick:"SCENT is the only one with <b>SC</b>: <b>S</b> for <b>S</b>mell, then a quiet C."}]},
+ {st:"c",words:[
+  {w:"vain",mean:"too proud of how you look",emo:"🪞",s:"The vain king looked in the mirror all day.",trick:"VAIN has <b>AI</b>, like R<b>AI</b>N: the vain king won't go out in the rain, it might ruin his hair!"},
+  {w:"vane",mean:"a pointer on a roof that shows the wind",emo:"🐓🌬️",s:"The weather vane on the roof shows which way the wind blows.",trick:"VANE ends with <b>E</b>, like the <b>E</b> for East on a weather vane (N, E, S, W)."},
+  {w:"vein",mean:"a tube that carries blood in your body",emo:"🩸💪",s:"Blood moves through the vein in your arm.",trick:"VEIN has <b>E</b> then <b>I</b>. Think: <b>E</b>verything <b>I</b>nside. A vein is inside your body."}]},
+ {st:"c",words:[
+  {w:"miner",mean:"a person who digs in a mine",emo:"⛏️",s:"The miner dug for gold deep under the ground.",trick:"MINER = <b>MINE + R</b>. A miner works in a mine."},
+  {w:"minor",mean:"small, not a big deal",emo:"🤏",s:"It was only a minor scratch, nothing serious.",trick:"MINOR has <b>OR</b>, like \"min<b>or</b> or maj<b>or</b>\": small or big."}]}
+];
+const ALL=G.flatMap((g,gi)=>g.words.map(x=>({...x,gi})));
+const W=w=>ALL.find(x=>x.w===w);
+const STATIONS=[
+ {id:"a",name:"Sound Twins 1",ico:"👂",sub:"wait / weight · heard / herd · days / daze"},
+ {id:"b",name:"Sound Twins 2",ico:"🦶",sub:"heel / heal · peak / peek · feet / feat"},
+ {id:"c",name:"Sound Triplets",ico:"🪙",sub:"sent / cent / scent · vain / vane / vein · miner / minor"}];
+
+/* The worksheet: write a sentence with each word. Idea chips are pieces, never a whole sentence. */
+const SHEET=[
+ {w:"wait",chips:[["Who?",["me","my sister","our class"]],["Where?",["bus stop","doctor's office","long line"]],["For what?",["Shabbos","my turn","ice cream"]]]},
+ {w:"weight",chips:[["What thing?",["backpack","baby","watermelon","puppy"]],["Where?",["scale","doctor","store"]],["How does it feel?",["heavy","light","surprising"]]]},
+ {w:"feet",chips:[["Whose?",["mine","my brother","a duck"]],["Where?",["snow","beach","puddle"]],["How do they feel?",["cold","wet","tired"]]]},
+ {w:"feat",chips:[["Who?",["firefighter","my team","a small boy"]],["What hard thing?",["tall mountain","heavy box","long race"]],["How do people feel?",["proud","amazed"]]]},
+ {w:"miner",chips:[["What does he have?",["helmet light","pick","cart"]],["Where?",["underground","mountain","cave"]],["What does he look for?",["gold","coal","diamonds"]]]},
+ {w:"minor",chips:[["What small thing?",["cut","mistake","problem"]],["Where?",["knee","test","game"]],["How do you feel?",["calm","okay"]]]}];
+
+/* ===== engine ===== */
+const app=document.getElementById("app");
+const $=id=>document.getElementById(id);
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+const PRAISE=["Awesome!","Great job!","You got it!","Super!","Yasher koach!"];
+const pr=()=>PRAISE[Math.random()*PRAISE.length|0];
+const starStr=n=>"⭐".repeat(n)+"☆".repeat(3-n);
+const toTop=()=>window.scrollTo({top:0,behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth"});
+const shk=el=>{el.classList.add("shake");setTimeout(()=>el.classList.remove("shake"),400)};
+const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let stars={},mine={};
+try{stars=JSON.parse(localStorage.getItem("soundalike-stars")||"{}")}catch(e){}
+try{mine=JSON.parse(localStorage.getItem("soundalike-sentences")||"{}")}catch(e){}
+const save=()=>{try{localStorage.setItem("soundalike-stars",JSON.stringify(stars));localStorage.setItem("soundalike-sentences",JSON.stringify(mine))}catch(e){}};
+
+let VOICE=null;const pickV=()=>{const v=(window.speechSynthesis&&speechSynthesis.getVoices?speechSynthesis.getVoices():[]).filter(x=>/^en(-|_)US/i.test(x.lang));VOICE=v.find(x=>/natural|premium|enhanced|samantha|aria|jenny|google us/i.test(x.name))||v[0]||null};
+if(window.speechSynthesis){pickV();speechSynthesis.onvoiceschanged=pickV}
+const speak=t=>{if(!window.speechSynthesis)return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang="en-US";u.rate=.85;if(VOICE)u.voice=VOICE;speechSynthesis.speak(u)};
+const sayBtn=(t,label)=>`<button class="saybtn" data-say="${esc(t)}" aria-label="${esc(label||"Read aloud")}">🔊</button>`;
+document.addEventListener("click",e=>{const b=e.target.closest("[data-say]");if(b)speak(b.dataset.say)});
+/* like the teacher on the test: word, sentence, word */
+const testSay=x=>`${x.w}. ${x.s} ${x.w}.`;
+const blankS=x=>x.s.replace(new RegExp("\\b"+x.w+"\\b","i"),'<span class="blank">?</span>');
+
+function home(){toTop();
+  const sheetDone=SHEET.filter(s=>mine[s.w]).length;
+  app.innerHTML=`<div class="guide"><div class="face">🦉</div><div class="bubble">Hi! I'm Ollie the owl. These words <b>sound the same</b> but are <b>spelled differently</b>. The meaning tells you the spelling! Learn the twins, practice the test, and write your sentences.</div></div>
+  <div class="row"><h1>Sound-Alike Spelling</h1><span class="pill">Test on Thursday</span></div>
+  <div class="stations">${STATIONS.map((s,i)=>`<button class="station" data-i="${i}"><div class="ico">${s.ico}</div><div class="txt"><h3>${i+1}. ${s.name}</h3><small>${s.sub}</small></div><span class="stars" aria-label="${stars[s.id]||0} of 3 stars">${starStr(stars[s.id]||0)}</span></button>`).join("")}
+   <button class="station" id="sheetbtn"><div class="ico">✏️</div><div class="txt"><h3>4. My Sentences</h3><small>Your homework page: wait, weight, feet, feat, miner, minor (${sheetDone} / 6 done)</small></div><span class="stars" aria-label="${stars.sheet||0} of 3 stars">${starStr(stars.sheet||0)}</span></button>
+   <button class="station final" id="final"><div class="ico">🏆</div><div class="txt"><h3>The Spelling Test</h3><small>All 20 words. Listen and type, just like on Thursday.</small></div>${stars.test?`<span class="stars" aria-label="${stars.test} of 3 stars">${starStr(stars.test)}</span>`:""}</button></div>`;
+  app.querySelectorAll(".station[data-i]").forEach(b=>b.onclick=()=>learn(+b.dataset.i,0));
+  $("sheetbtn").onclick=()=>sheetHome();$("final").onclick=()=>test(ALL.map(x=>x.w),false);
+}
+
+/* --- learning: one card per sound group --- */
+function learn(si,ci){toTop();
+  const S=STATIONS[si],groups=G.filter(g=>g.st===S.id),g=groups[ci];
+  app.innerHTML=`<div class="row"><button class="btn soft" id="back">← Map</button><span class="pill">${S.ico} ${S.name}</span></div>
+  ${ci===0?`<div class="guide"><div class="face">🦉</div><div class="bubble">Tap 🔊 to hear each word. Same sound, different spelling. Look at the picture and the trick!</div></div>`:""}
+  <div class="panel pop"><h2>${g.words.length===3?"Sound triplets":"Sound twins"}: they all sound the same!</h2>
+   <div class="pairs">${g.words.map(x=>`<div class="pcard"><div class="emo" aria-hidden="true">${x.emo}</div><div class="wordrow"><span class="word">${x.w}</span>${sayBtn(x.w,"Say "+x.w)}</div>
+     <p class="mean">= ${x.mean}</p><p class="sent">"${x.s}" ${sayBtn(x.s,"Read the sentence")}</p><p class="trick">💡 ${x.trick}</p></div>`).join("")}</div>
+   <div class="dots" aria-hidden="true">${groups.map((c,i)=>`<i class="${i===ci?"on":""}"></i>`).join("")}</div>
+   <div class="row"><button class="btn soft" id="prev" ${ci===0?'style="visibility:hidden"':""}>← Back</button>
+   <button class="btn" id="next">${ci===groups.length-1?"Let's play! 🎮":"Next →"}</button></div></div>`;
+  $("back").onclick=home;$("prev").onclick=()=>learn(si,ci-1);
+  $("next").onclick=()=>ci<groups.length-1?learn(si,ci+1):play(si);
+}
+
+/* --- station games: "which one fits?" then "build the word" --- */
+function play(si){
+  const S=STATIONS[si],words=ALL.filter(x=>G[x.gi].st===S.id);let ai=0,mist=0;
+  const steps=[...shuffle(words).map(x=>({t:"fit",x})),...shuffle(words).map(x=>({t:"build",x}))];
+  const next=()=>{ai++;ai<steps.length?step():finish()};
+  function frame(){toTop();app.innerHTML=`<div class="row"><button class="btn soft" id="back">← Map</button><span class="pill">${S.ico} Game ${ai+1} / ${steps.length}</span></div>
+    <div class="bar" aria-hidden="true"><i style="width:${ai/steps.length*100}%"></i></div><div class="panel pop" id="pn"><p class="fb" id="fb"></p><button class="btn" id="go" hidden>Next →</button></div>`;
+    $("back").onclick=home;$("go").onclick=next;return $("pn")}
+  const fb=(ok,t)=>{const f=$("fb");f.className="fb "+(ok?"ok":"no");f.innerHTML=t};
+  const ready=()=>{$("go").hidden=false;$("go").focus()};
+  function step(){const s=steps[ai],x=s.x,pn=frame(),d=document.createElement("div");d.style.cssText="display:flex;flex-direction:column;gap:12px";
+    if(s.t==="fit"){const opts=shuffle(G[x.gi].words);
+      d.innerHTML=`<span class="tag">Which one fits?</span><p class="q">${blankS(x)} ${sayBtn(x.s,"Read the sentence")}</p>
+      <div class="opts">${opts.map(o=>`<button class="opt" data-w="${o.w}"><span>${o.w}</span></button>`).join("")}</div>`;pn.insertBefore(d,$("fb"));
+      let over=false;d.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{if(over)return;
+        if(b.dataset.w===x.w){over=true;}else if(b.dataset.tried){return}else{b.dataset.tried=1}if(b.dataset.w===x.w){b.classList.add("ok");fb(true,`✅ ${pr()} <b>${x.w}</b> = ${x.mean}.`);speak(x.s);ready()}
+        else{mist++;b.classList.add("no");shk(b);setTimeout(()=>b.classList.remove("no"),450);const o=W(b.dataset.w);fb(false,`Not that one. <b>${o.w}</b> means ${o.mean}. Try again!`)}})}
+    else{const L=x.w.split("");let n=0;
+      d.innerHTML=`<span class="tag">Build the word</span><p class="q">Listen, then tap the letters in order. ${sayBtn(testSay(x),"Hear the word")}</p>
+      <p class="sent">${blankS(x)}</p><div class="slots" id="slots">${L.map(()=>`<span class="slot"></span>`).join("")}</div>
+      <div class="letters">${shuffle(L.map((c,i)=>i)).map(i=>`<button class="let" data-c="${L[i]}" aria-label="letter ${L[i]}">${L[i]}</button>`).join("")}</div>`;pn.insertBefore(d,$("fb"));
+      speak(testSay(x));
+      d.querySelectorAll(".let").forEach(b=>b.onclick=()=>{if(b.classList.contains("used")||n>=L.length)return;
+        if(b.dataset.c!==L[n]&&b.dataset.tried){shk(b);return}if(b.dataset.c===L[n]){b.classList.add("used");const sl=d.querySelectorAll(".slot")[n];sl.textContent=L[n];sl.classList.add("f");n++;
+          if(n===L.length){fb(true,`🎉 <b>${x.w}</b>! 💡 ${x.trick}`);ready()}}
+        else{mist++;b.dataset.tried=1;b.classList.add("no");shk(b);setTimeout(()=>b.classList.remove("no"),450);fb(false,`Hmm. The next letter is not "${b.dataset.c}". 💡 ${x.trick}`)}})}
+  }
+  function finish(){const st=mist<=1?3:mist<=4?2:1;stars[S.id]=Math.max(stars[S.id]||0,st);save();toTop();const nxt=si<STATIONS.length-1;
+    app.innerHTML=`<div class="panel pop" style="align-items:center;text-align:center"><div class="bigstars" aria-label="${st} of 3 stars">${starStr(st)}</div>
+     <h2>${S.name}: done!</h2><p style="margin:0;font-weight:700">${mist===0?"No mistakes at all. Amazing!":"Mistakes: "+mist+(st<3?". Play again to get 3 stars!":"")}</p>
+     <div class="row" style="justify-content:center"><button class="btn soft" id="again">Play again</button><button class="btn" id="on">${nxt?"Next station →":"Practice the test 🏆"}</button></div>
+     <button class="btn soft" id="map">Back to the map</button></div>`;
+    $("again").onclick=()=>play(si);$("map").onclick=home;$("on").onclick=()=>nxt?learn(si+1,0):test(ALL.map(x=>x.w),false)}
+  step();
+}
+
+/* --- the spelling test: hear it, type it. Exact spelling only, like the real test. --- */
+function test(list,onlyMissed){
+  list=shuffle(list);let i=0,right=0;const missed=[];
+  function ask(){const x=W(list[i]);toTop();let done=false;
+    app.innerHTML=`<div class="row"><button class="btn soft" id="back">← Map</button><span class="pill">🏆 Word ${i+1} / ${list.length}</span><span class="pill">✅ ${right}</span></div>
+    <div class="bar" aria-hidden="true"><i style="width:${i/list.length*100}%"></i></div>
+    <div class="panel pop"><p class="q">Listen to the word and the sentence. Then type the word.</p>
+     <div class="row" style="justify-content:flex-start"><button class="btn" id="hear">🔊 Hear it</button><button class="btn soft" id="hint">Show the sentence</button></div>
+     <p class="sent" id="hs" hidden>${blankS(x)}</p>
+     <label for="ti" class="stepnum">Type the word:</label>
+     <input class="type" id="ti" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" inputmode="text">
+     <button class="btn" id="tc">Check</button><p class="fb" id="fb"></p><button class="btn" id="go" hidden>${i===list.length-1?"See my score 🏆":"Next →"}</button></div>`;
+    $("back").onclick=home;$("hear").onclick=()=>speak(testSay(x));$("hint").onclick=()=>{$("hs").hidden=false};
+    const inp=$("ti"),check=()=>{if(done||!inp.value.trim())return;done=true;inp.disabled=true;$("tc").hidden=true;const g=inp.value.toLowerCase().replace(/[^a-z]/g,""),f=$("fb");
+      if(g===x.w){right++;f.className="fb ok";f.innerHTML=`✅ ${pr()} <b>${x.w}</b> = ${x.mean}.`}
+      else{missed.push(x.w);const twin=ALL.find(y=>y.w===g&&y.gi===x.gi);f.className="fb no";
+        f.innerHTML=twin?`That's the sound twin! <b>${g}</b> means ${twin.mean}. In this sentence we need <b>${x.w}</b> = ${x.mean}.<br>💡 ${x.trick}`:`The spelling is <b>${x.w}</b> = ${x.mean}.<br>💡 ${x.trick}`}
+      $("go").hidden=false;$("go").focus()};
+    $("tc").onclick=check;inp.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();check()}};
+    $("go").onclick=()=>{i++;i<list.length?ask():end()};
+    speak(testSay(x));setTimeout(()=>inp.focus(),80)}
+  function end(){toTop();const pct=Math.round(right/list.length*100),st=pct>=90?3:pct>=70?2:1;
+    if(!onlyMissed){stars.test=Math.max(stars.test||0,st);save()}
+    app.innerHTML=`<div class="panel pop" style="text-align:center"><div class="bigstars" aria-label="${st} of 3 stars">${starStr(st)}</div>
+    <div class="huge">${right} / ${list.length}</div><span class="pill" style="align-self:center">${pct}%</span>
+    <h2>${pct===100?"Perfect! You're ready for Thursday!":pct>=85?"Excellent! Yasher koach!":pct>=65?"Good job! Almost there!":"Nice try! Let's practice a bit more."}</h2>
+    ${missed.length?`<div style="text-align:left"><h3 style="margin-bottom:8px">Words to practice:</h3><ul class="miss">${missed.map(w=>{const x=W(w);return `<li><b>${x.w} ${x.emo}</b>${x.mean}. 💡 ${x.trick}</li>`}).join("")}</ul></div>`:""}
+    <div class="row" style="justify-content:center"><button class="btn soft" id="map">Back to the map</button>${missed.length?`<button class="btn" id="miss">Practice only these (${missed.length})</button>`:""}<button class="btn ${missed.length?"soft":""}" id="again">Take the whole test again</button></div></div>`;
+    $("map").onclick=home;$("again").onclick=()=>test(ALL.map(x=>x.w),false);if(missed.length)$("miss").onclick=()=>test(missed,true)}
+  ask();
+}
+
+/* --- the sentence coach: the child thinks and writes; the game only asks questions and checks --- */
+function sheetHome(){toTop();
+  app.innerHTML=`<div class="row"><button class="btn soft" id="back">← Map</button><span class="pill">✏️ My Sentences</span></div>
+  <div class="guide"><div class="face">🦉</div><div class="bubble">Your homework page says: <b>write a sentence with each word</b>. I won't write it for you, but I'll help you think! Pick a word.</div></div>
+  <div class="stations">${SHEET.map((s,i)=>{const x=W(s.w);return `<button class="station" data-i="${i}"><div class="ico" aria-hidden="true">${x.emo}</div><div class="txt"><h3>${s.w}</h3><small>${mine[s.w]?esc(mine[s.w]):"Not written yet"}</small></div><span class="stars">${mine[s.w]?"✅":""}</span></button>`}).join("")}</div>
+  ${Object.keys(mine).length?`<button class="btn soft" id="page">📄 Show all my sentences</button>`:""}`;
+  $("back").onclick=home;app.querySelectorAll(".station[data-i]").forEach(b=>b.onclick=()=>coach(+b.dataset.i));
+  if($("page"))$("page").onclick=page;
+}
+function page(){toTop();
+  app.innerHTML=`<div class="row"><button class="btn soft" id="back">← My Sentences</button></div>
+  <div class="panel"><h2>My sentences</h2><p style="margin:0;font-weight:700">Copy each one onto your homework page, in your neatest handwriting ✏️</p>
+  ${SHEET.map(s=>`<div><h3>${s.w}</h3><p class="mysent">${mine[s.w]?esc(mine[s.w]):"(not written yet)"}</p></div>`).join("")}</div>`;
+  $("back").onclick=sheetHome}
+function coach(k){const S=SHEET[k],x=W(S.w),twins=G[x.gi].words;toTop();
+  /* step 1: meaning */
+  const opts=shuffle(twins);
+  app.innerHTML=`<div class="row"><button class="btn soft" id="back">← My Sentences</button><span class="pill">✏️ ${S.w}</span></div>
+  <div class="panel pop"><span class="stepnum">Step 1 of 3: what does it mean?</span>
+   <div class="wordrow"><span class="word">${S.w}</span>${sayBtn(S.w,"Say "+S.w)}</div>
+   <p class="q">Which meaning goes with <b>${S.w}</b>?</p>
+   <div class="opts">${opts.map(o=>`<button class="opt" data-w="${o.w}"><span aria-hidden="true">${o.emo}</span><span>${o.mean}</span></button>`).join("")}</div>
+   <p class="fb" id="fb"></p><button class="btn" id="go" hidden>Next →</button></div>`;
+  $("back").onclick=sheetHome;let over=false;
+  app.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{if(over)return;const f=$("fb");
+    if(b.dataset.w===S.w){over=true;b.classList.add("ok");f.className="fb ok";f.innerHTML=`✅ Yes! <b>${S.w}</b> = ${x.mean}. 💡 ${x.trick}`;$("go").hidden=false;$("go").focus()}
+    else{b.classList.add("no");shk(b);setTimeout(()=>b.classList.remove("no"),450);f.className="fb no";f.innerHTML=`That meaning is for <b>${b.dataset.w}</b>, the sound twin. Try again!`}});
+  $("go").onclick=()=>think(k);
+}
+function think(k){const S=SHEET[k],x=W(S.w);toTop();const picked=new Set();
+  app.innerHTML=`<div class="row"><button class="btn soft" id="back">← My Sentences</button><span class="pill">✏️ ${S.w}</span></div>
+  <div class="panel pop"><span class="stepnum">Step 2 of 3: think of a picture</span>
+   <p class="q">Close your eyes and picture <b>${S.w}</b> (${x.mean}). Answer these questions in your head. Tap ideas if they help, or use your own! Then YOU make the sentence.</p>
+   <ul class="qs">${S.chips.map(([q,cs],qi)=>`<li><b>${q}</b><div class="chips">${cs.map((c,ci)=>`<button class="chip" data-k="${qi}-${ci}" aria-pressed="false">${c}</button>`).join("")}</div></li>`).join("")}</ul>
+   <div class="ideas" id="ideas">My ideas: </div>
+   <button class="btn" id="go">I have an idea! Write it →</button></div>`;
+  $("back").onclick=sheetHome;
+  app.querySelectorAll(".chip").forEach(b=>b.onclick=()=>{const on=!picked.has(b.textContent);on?picked.add(b.textContent):picked.delete(b.textContent);b.classList.toggle("on",on);b.setAttribute("aria-pressed",on);$("ideas").textContent="My ideas: "+[...picked].join(" · ")});
+  $("go").onclick=()=>write(k,[...picked]);
+}
+function write(k,ideas){const S=SHEET[k],x=W(S.w),twins=G[x.gi].words.filter(t=>t.w!==S.w);toTop();
+  app.innerHTML=`<div class="row"><button class="btn soft" id="back">← My Sentences</button><span class="pill">✏️ ${S.w}</span></div>
+  <div class="panel pop"><span class="stepnum">Step 3 of 3: write your own sentence</span>
+   ${ideas.length?`<div class="ideas">My ideas: ${ideas.map(esc).join(" · ")}</div>`:""}
+   <p class="q">Put your ideas together into one sentence with the word <b>${S.w}</b>.</p>
+   <label for="ta" class="stepnum">My sentence:</label>
+   <textarea class="type" id="ta" autocomplete="off" autocorrect="off" spellcheck="false">${mine[S.w]?esc(mine[S.w]):""}</textarea>
+   <button class="btn" id="chk">Check my sentence</button><div id="res"></div></div>`;
+  $("back").onclick=sheetHome;
+  $("chk").onclick=()=>{const t=$("ta").value.trim().replace(/\s+/g," "),res=$("res"),low=t.toLowerCase(),has=w=>new RegExp("\\b"+w+"(s|es|ed|ing)?\\b","i").test(t);
+    const words=t.split(" ").filter(Boolean).length,usedTwin=twins.find(o=>has(o.w));
+    const C=[[/^["'“]?[A-Z]/.test(t),"Starts with a capital letter"],[/[.!?]["'”]?$/.test(t),"Ends with a period . (or ! or ?)"],[has(S.w),`Has the word <b>${S.w}</b>, spelled right`],[words>=5,"Has at least 5 words"],[low.replace(/[^a-z ]/g,"")!==x.s.toLowerCase().replace(/[^a-z ]/g,""),"Is your OWN sentence (not the one from the game)"]];
+    let msg=`<ul class="checks">${C.map(([ok,l])=>`<li>${ok?"✅":"⬜"} ${l}</li>`).join("")}</ul>`;
+    if(!has(S.w)&&usedTwin)msg+=`<p class="fb no">Careful! You wrote <b>${usedTwin.w}</b> (${usedTwin.mean}). We need <b>${S.w}</b> = ${x.mean}.</p>`;
+    if(C.every(c=>c[0])){msg+=`<p class="q">Now listen to your sentence ${sayBtn(t,"Read my sentence")}. Does it use <b>${S.w}</b> to mean <i>${x.mean}</i>?</p>
+      <div class="row" style="justify-content:flex-start"><button class="btn" id="yes">Yes! 👍</button><button class="btn soft" id="no">Not yet, let me fix it</button></div>`}
+    res.innerHTML=msg;
+    if($("yes")){speak(t);$("yes").onclick=()=>{mine[S.w]=t;stars.sheet=SHEET.filter(s=>mine[s.w]).length>=6?3:SHEET.filter(s=>mine[s.w]).length>=3?2:1;save();
+      res.innerHTML=`<p class="mysent">${esc(t)}</p><p class="fb ok">🎉 ${pr()} Now copy it onto your homework page ✏️</p><div class="row"><button class="btn soft" id="list">All my words</button>${k<SHEET.length-1?`<button class="btn" id="nx">Next word: ${SHEET[k+1].w} →</button>`:""}</div>`;
+      $("list").onclick=sheetHome;if($("nx"))$("nx").onclick=()=>coach(k+1)};
+      $("no").onclick=()=>{$("ta").focus();res.innerHTML=`<p class="fb">Change it so it shows that <b>${S.w}</b> means ${x.mean}. Then check again.</p>`}}};
+}
+home();
+</script>
+</body></html>
